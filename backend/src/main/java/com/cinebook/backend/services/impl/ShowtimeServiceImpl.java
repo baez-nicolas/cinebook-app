@@ -171,7 +171,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         ShowtimeType[] types = ShowtimeType.values();
         return types[random.nextInt(types.length)];
     }
-    
+
     private BigDecimal calculatePrice(ShowtimeType type) {
         return switch (type) {
             case SPANISH_2D -> BigDecimal.valueOf(1500);         // $1500
