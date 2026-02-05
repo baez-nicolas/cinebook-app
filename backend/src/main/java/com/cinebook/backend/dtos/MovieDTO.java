@@ -1,5 +1,6 @@
 package com.cinebook.backend.dtos;
 
+import com.cinebook.backend.entities.enums.MovieRating;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ public class MovieDTO {
     private String description;
     private Integer duration;
     private String genre;
+    private MovieRating rating;
     private String posterUrl;
+    private String trailerUrl;
     private LocalDate releaseDate;
 }

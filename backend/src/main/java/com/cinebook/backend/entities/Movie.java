@@ -1,5 +1,6 @@
 package com.cinebook.backend.entities;
 
+import com.cinebook.backend.entities.enums.MovieRating;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,8 +31,15 @@ public class Movie {
     @Column(length = 50)
     private String genre;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private MovieRating rating;
+
     @Column(length = 500)
     private String posterUrl;
+
+    @Column(length = 500)
+    private String trailerUrl;
 
     private LocalDate releaseDate;
 
