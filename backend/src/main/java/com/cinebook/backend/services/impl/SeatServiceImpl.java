@@ -50,7 +50,7 @@ public class SeatServiceImpl implements ISeatService {
     @Transactional
     public void generateSeatsForShowtime(Long showtimeId) {
         log.info("💺 Generando asientos para la función ID: {}", showtimeId);
-        
+
         List<Seat> existingSeats = seatRepository.findByShowtimeId(showtimeId);
         if (!existingSeats.isEmpty()) {
             log.info("⚠️ Ya existen {} asientos para esta función. Saltando generación.", existingSeats.size());
