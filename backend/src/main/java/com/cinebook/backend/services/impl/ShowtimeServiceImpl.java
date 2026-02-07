@@ -38,6 +38,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     private final Random random = new Random();
 
     @Override
+    @Transactional(readOnly = true)
     public List<ShowtimeDTO> getCurrentWeekShowtimes() {
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
         log.info("Obteniendo funciones de la semana actual (weekId: {})", currentWeek.getWeekId());
@@ -49,6 +50,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByMovie(Long movieId) {
         log.info("Obteniendo funciones de la película ID: {}", movieId);
         return showtimeRepository.findByMovieId(movieId)
@@ -58,6 +60,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByCinema(Long cinemaId) {
         log.info("Obteniendo funciones del cine ID: {}", cinemaId);
         return showtimeRepository.findByCinemaId(cinemaId)
@@ -67,6 +70,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByCinemaAndMovie(Long cinemaId, Long movieId) {
         log.info("Obteniendo funciones del cine {} y película {}", cinemaId, movieId);
         return showtimeRepository.findByCinemaIdAndMovieId(cinemaId, movieId)
@@ -76,6 +80,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ShowtimeDTO getShowtimeById(Long id) {
         log.info("Obteniendo función con ID: {}", id);
         Showtime showtime = showtimeRepository.findById(id)
