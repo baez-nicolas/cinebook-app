@@ -12,6 +12,35 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cinebook-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinebook_user -d cinebook_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cinebook-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cinebook_db
+      SPRING_DATASOURCE_USERNAME: cinebook_user
+      SPRING_DATASOURCE_PASSWORD: cinebook_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - cinebook-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+
+networks:
+  cinebook-network:
+    driver: bridge
