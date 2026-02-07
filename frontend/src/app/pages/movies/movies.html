@@ -1,0 +1,78 @@
+<div class="movies-page">
+  <div class="container">
+    <section class="hero">
+      <h1 class="hero-title">
+        <span class="title-white">Películas en</span>
+        <span class="title-gold">Cartelera</span>
+      </h1>
+      <p class="hero-subtitle">Las mejores películas te esperan</p>
+      <div class="hero-decoration">
+        <span class="star">⭐</span>
+        <span class="popcorn">🍿</span>
+        <span class="star">⭐</span>
+      </div>
+    </section>
+
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando películas...</p>
+      </div>
+    }
+
+    @if (error) {
+      <div class="error-message">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error }}</p>
+        <button class="retry-btn" (click)="loadMovies()">Reintentar</button>
+      </div>
+    }
+
+    @if (!loading && !error) {
+      <div class="movies-grid">
+        @for (movie of movies; track $index) {
+          <div class="movie-card" [routerLink]="['/movies', movie.id]">
+            <div class="movie-poster">
+              <img
+                [src]="movie.posterUrl"
+                [alt]="movie.title"
+                (error)="
+                  $any($event.target).src = 'https://via.placeholder.com/300x450?text=Sin+Imagen'
+                "
+              />
+              <div class="poster-overlay">
+                <span class="play-icon">▶️</span>
+                <p class="overlay-text">Ver Funciones</p>
+              </div>
+            </div>
+
+            <div class="movie-info">
+              <h3 class="movie-title">{{ movie.title }}</h3>
+
+              <div class="movie-meta">
+                <span class="rating-badge" [style.background-color]="getRatingColor(movie.rating)">
+                  {{ movie.rating.replace('_', '-') }}
+                </span>
+                <span class="duration">⏱️ {{ movie.duration }} min</span>
+              </div>
+
+              <p class="movie-genre">{{ movie.genre }}</p>
+
+              <div class="movie-footer">
+                <span class="footer-icon">🎬</span>
+                <span class="footer-text">Ver más</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading && !error && movies.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">🎭</span>
+        <p>No hay películas disponibles en este momento</p>
+      </div>
+    }
+  </div>
+</div>
