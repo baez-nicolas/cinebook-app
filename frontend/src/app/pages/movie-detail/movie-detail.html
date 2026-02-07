@@ -1,0 +1,119 @@
+<div class="movie-detail-page">
+  <div class="container">
+
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+      </div>
+    }
+
+    @if (error) {
+      <div class="error-message">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error }}</p>
+        <button class="btn-primary" (click)="goBack()">Volver al inicio</button>
+      </div>
+    }
+
+    @if (movie && !loading && !error) {
+      <button class="back-btn" (click)="goBack()">
+        <span class="back-icon">←</span>
+        <span>Volver</span>
+      </button>
+
+      <div class="movie-header">
+
+        <div class="poster-container">
+          <img
+            [src]="movie.posterUrl"
+            [alt]="movie.title"
+            class="movie-poster"
+          >
+          <div class="poster-overlay">
+            @if (movie.trailerUrl) {
+              <button class="trailer-btn" (click)="openTrailer()">
+                <span class="play-icon">▶️</span>
+                <span>Ver Trailer</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="movie-info">
+          <h1 class="movie-title">{{ movie.title }}</h1>
+
+          <div class="movie-badges">
+            <span class="badge rating-badge">{{ movie.rating.replace('_', '-') }}</span>
+            <span class="badge duration-badge">⏱️ {{ movie.duration }} min</span>
+            <span class="badge genre-badge">{{ movie.genre }}</span>
+          </div>
+
+          <div class="movie-description">
+            <h3 class="section-title">📝 Sinopsis</h3>
+            <p>{{ movie.description }}</p>
+          </div>
+
+          <div class="movie-release">
+            <span class="release-label">🗓️ Fecha de estreno:</span>
+            <span class="release-date">{{ movie.releaseDate }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="showtimes-section">
+        <h2 class="section-title">🎬 Funciones Disponibles</h2>
+
+        @if (showtimesByCinema.length === 0) {
+          <div class="no-showtimes">
+            <span class="empty-icon">😔</span>
+            <p>No hay funciones disponibles para esta película</p>
+          </div>
+        }
+
+        @for (cinema of showtimesByCinema; track cinema.cinemaId) {
+          <div class="cinema-card">
+
+            <div class="cinema-header">
+              <h3 class="cinema-name">🏢 {{ cinema.cinemaName }}</h3>
+            </div>
+
+            <div class="showtimes-grid">
+              @for (showtime of cinema.showtimes; track showtime.id) {
+                <div class="showtime-card" [routerLink]="['/booking', showtime.id]">
+
+                  <div class="showtime-header">
+                    <span class="showtime-date">{{ formatDate(showtime.showDateTime) }}</span>
+                    <span class="showtime-type">{{ getTypeLabel(showtime.type) }}</span>
+                  </div>
+
+                  <div class="showtime-body">
+                    <div class="showtime-price">
+                      <span class="price-label">Precio</span>
+                      <span class="price-value">${{ showtime.price }}</span>
+                    </div>
+
+                    <div class="showtime-seats"
+                         [class]="'seats-' + getAvailabilityClass(showtime.availableSeats, showtime.totalSeats)">
+                      <span class="seats-icon">💺</span>
+                      <span class="seats-text">{{ showtime.availableSeats }}/{{ showtime.totalSeats }}</span>
+                    </div>
+                  </div>
+
+                  <button class="reserve-btn">
+                    <span class="btn-icon">🎫</span>
+                    <span>Reservar</span>
+                  </button>
+
+                </div>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
