@@ -1,0 +1,44 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-icon">🎬</span>
+          <span class="logo-text">CINE<span class="logo-highlight">BOOK</span></span>
+        </div>
+        <p class="footer-tagline">Tu plataforma de reservas de cine</p>
+      </div>
+
+      <div class="footer-social">
+        <h3 class="social-title">Conectá conmigo</h3>
+        <div class="social-links">
+          @for (link of socialLinks; track link.name) {
+            <a
+              [href]="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-link"
+              [style.--hover-color]="link.color"
+              [title]="link.name"
+            >
+              <span class="social-icon" [innerHTML]="link.icon"></span>
+              <span class="social-name">{{ link.name }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <p class="footer-copyright">
+        <span class="heart">Desarrollado con ♥ por</span>
+        <a href="https://www.linkedin.com/in/baez-nicolas/" target="_blank" class="author-link">
+          Nicolás Báez
+        </a>
+      </p>
+      <p class="footer-legal">Fines educativos © {{ currentYear }}</p>
+    </div>
+  </div>
+</footer>
