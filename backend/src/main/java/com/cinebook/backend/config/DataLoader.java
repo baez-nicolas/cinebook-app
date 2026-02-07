@@ -104,7 +104,7 @@ public class DataLoader implements CommandLineRunner {
         movie5.setDuration(115);
         movie5.setGenre("Acción");
         movie5.setRating(MovieRating.PG_13);
-        movie5.setPosterUrl("https://www.mubis.es/media/users/27585/323257/poster-y-trailer-de-godzilla-x-kong-the-new-empire-original.jpeg");
+        movie5.setPosterUrl("https://w0.peakpx.com/wallpaper/719/37/HD-wallpaper-godzilla-vs-kong-boat-boats-china-ships-viking.jpg");
         movie5.setTrailerUrl("https://www.youtube.com/watch?v=qqrpMRDuPfc");
         movie5.setReleaseDate(LocalDate.of(2024, 3, 29));
         movie5.setIsActive(true);
@@ -126,7 +126,7 @@ public class DataLoader implements CommandLineRunner {
         movie7.setDuration(111);
         movie7.setGenre("Acción");
         movie7.setRating(MovieRating.PG_13);
-        movie7.setPosterUrl("https://www.mubis.es/media/users/9192/198802/e5Gt2V-original.jpg");
+        movie7.setPosterUrl("https://oyster.ignimgs.com/wordpress/stg.ign.com/2017/09/PRU_Tsr1Sheet8_John_RGB_3.jpg");
         movie7.setTrailerUrl("https://www.youtube.com/watch?v=fUjicxMPDzs");
         movie7.setReleaseDate(LocalDate.of(2018, 3, 23));
         movie7.setIsActive(true);
@@ -137,7 +137,7 @@ public class DataLoader implements CommandLineRunner {
         movie8.setDuration(148);
         movie8.setGenre("Acción");
         movie8.setRating(MovieRating.PG_13);
-        movie8.setPosterUrl("https://www.mubis.es/media/users/2652/291486/ahora-si-primer-poster-oficial-de-spiderman-no-way-home-original.jpg");
+        movie8.setPosterUrl("https://postercity.com.ar/wp-content/uploads/2022/03/Spiderman-No-way-home-60x90-1.jpg");
         movie8.setTrailerUrl("https://www.youtube.com/watch?v=JfVOs4VSpmA");
         movie8.setReleaseDate(LocalDate.of(2021, 12, 17));
         movie8.setIsActive(true);
@@ -153,6 +153,39 @@ public class DataLoader implements CommandLineRunner {
         movie9.setReleaseDate(LocalDate.of(2025, 12, 5));
         movie9.setIsActive(true);
 
+        Movie movie10 = new Movie();
+        movie10.setTitle("Rápidos y Furiosos");
+        movie10.setDescription("Dominic Toretto y su familia de corredores callejeros deben enfrentar al adversario más letal que jamás hayan encontrado: un enemigo que emerge de las sombras del pasado.");
+        movie10.setDuration(142);
+        movie10.setGenre("Acción");
+        movie10.setRating(MovieRating.PG_13);
+        movie10.setPosterUrl("https://image.tmdb.org/t/p/original/x3zlm6VxPvVrYWE3bHkYUQMR798.jpg");
+        movie10.setTrailerUrl("https://www.youtube.com/watch?v=O5BOxn8Go8U");
+        movie10.setReleaseDate(LocalDate.of(2023, 5, 19));
+        movie10.setIsActive(true);
+
+        Movie movie11 = new Movie();
+        movie11.setTitle("Minecraft Movie");
+        movie11.setDescription("Una aventura épica basada en el popular videojuego donde los jugadores deben sobrevivir y construir en un mundo lleno de posibilidades infinitas y criaturas peligrosas.");
+        movie11.setDuration(110);
+        movie11.setGenre("Aventura");
+        movie11.setRating(MovieRating.PG);
+        movie11.setPosterUrl("https://m.media-amazon.com/images/M/MV5BYzFjMzNjOTktNDBlNy00YWZhLWExYTctZDcxNDA4OWVhOTJjXkEyXkFqcGc@._V1_.jpg");
+        movie11.setTrailerUrl("https://www.youtube.com/watch?v=wJO_vIDZn-I");
+        movie11.setReleaseDate(LocalDate.of(2025, 4, 4));
+        movie11.setIsActive(true);
+
+        Movie movie12 = new Movie();
+        movie12.setTitle("Supergirl");
+        movie12.setDescription("Kara Zor-El debe usar sus poderes kryptonianos para proteger la Tierra mientras descubre su lugar en un mundo que necesita un nuevo tipo de héroe.");
+        movie12.setDuration(125);
+        movie12.setGenre("Acción");
+        movie12.setRating(MovieRating.PG_13);
+        movie12.setPosterUrl("https://image.tmdb.org/t/p/original/aWwUDeGTta7kslsZMKxyy7j4ZBh.jpg");
+        movie12.setTrailerUrl("https://www.youtube.com/watch?v=VfUVEB0IpYk");
+        movie12.setReleaseDate(LocalDate.of(2026, 6, 25));
+        movie12.setIsActive(true);
+
         movieRepository.save(movie1);
         movieRepository.save(movie2);
         movieRepository.save(movie3);
@@ -162,8 +195,11 @@ public class DataLoader implements CommandLineRunner {
         movieRepository.save(movie7);
         movieRepository.save(movie8);
         movieRepository.save(movie9);
+        movieRepository.save(movie10);
+        movieRepository.save(movie11);
+        movieRepository.save(movie12);
 
-        log.info("✅ 9 películas cargadas exitosamente");
+        log.info("✅ 12 películas cargadas exitosamente");
     }
 
     private void loadCinemas() {
