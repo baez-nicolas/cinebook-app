@@ -1,1 +1,95 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Variables CSS */
+:root {
+  --primary-red: #8B0000;
+  --crimson: #C41E3A;
+  --dark-bg: #1a1a1a;
+  --darker-bg: #0d0d0d;
+  --card-bg: #2d2d2d;
+  --white: #ffffff;
+  --gold: #FFD700;
+  --gray-light: #cccccc;
+  --gray-medium: #999999;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* Body */
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--dark-bg);
+  color: var(--white);
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--darker-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-red);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--crimson);
+}
+
+/* Tipografía */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  color: var(--white);
+}
+
+a {
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--gold);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+/* Utilidades */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.text-red {
+  color: var(--crimson);
+}

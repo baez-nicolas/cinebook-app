@@ -1,0 +1,42 @@
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-content">
+      <div class="logo">
+        <a routerLink="/">
+          <span class="logo-icon">🎬</span>
+          <span class="logo-text">CINE<span class="logo-highlight">BOOK</span></span>
+        </a>
+      </div>
+
+      <!-- Menu Desktop -->
+      <div class="nav-links desktop-menu">
+        <a routerLink="/movies" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🎥</span>
+          <span>Películas</span>
+        </a>
+        <a routerLink="/my-bookings" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🎫</span>
+          <span>Mis Reservas</span>
+        </a>
+      </div>
+
+      <!-- Menu (Mobile) -->
+      <button class="hamburger" (click)="toggleMenu()" [class.active]="menuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="mobile-menu" [class.show]="menuOpen">
+      <a routerLink="/movies" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
+        <span class="nav-icon">🎥</span>
+        <span>Películas</span>
+      </a>
+      <a routerLink="/my-bookings" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
+        <span class="nav-icon">🎫</span>
+        <span>Mis Reservas</span>
+      </a>
+    </div>
+  </div>
+</nav>
