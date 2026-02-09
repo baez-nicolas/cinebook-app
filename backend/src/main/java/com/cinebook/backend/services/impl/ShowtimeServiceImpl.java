@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -157,12 +158,15 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
             ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
 
+            BigDecimal basePrice = calculatePrice(type);
+            BigDecimal finalPrice = applyWednesdayDiscount(basePrice, date);
+
             Showtime showtime = new Showtime();
             showtime.setMovie(movie);
             showtime.setCinema(cinema);
             showtime.setShowDateTime(showDateTime);
             showtime.setType(type);
-            showtime.setPrice(calculatePrice(type));
+            showtime.setPrice(finalPrice);
             showtime.setWeekId(weekId);
             showtime.setTotalSeats(30);
             showtime.setAvailableSeats(30);
@@ -180,12 +184,15 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
             ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
 
+            BigDecimal basePrice = calculatePrice(type);
+            BigDecimal finalPrice = applyWednesdayDiscount(basePrice, date);
+
             Showtime showtime = new Showtime();
             showtime.setMovie(movie);
             showtime.setCinema(cinema);
             showtime.setShowDateTime(showDateTime);
             showtime.setType(type);
-            showtime.setPrice(calculatePrice(type));
+            showtime.setPrice(finalPrice);
             showtime.setWeekId(weekId);
             showtime.setTotalSeats(30);
             showtime.setAvailableSeats(30);
@@ -225,10 +232,18 @@ public class ShowtimeServiceImpl implements IShowtimeService {
 
     private BigDecimal calculatePrice(ShowtimeType type) {
         return switch (type) {
-            case SPANISH_2D -> new BigDecimal("1500");
-            case SUBTITLED_2D -> new BigDecimal("1700");
-            case SPANISH_3D -> new BigDecimal("2000");
+            case SPANISH_2D -> new BigDecimal("5000");
+            case SUBTITLED_2D -> new BigDecimal("5000");
+            case SPANISH_3D -> new BigDecimal("8000");
         };
+    }
+
+    private BigDecimal applyWednesdayDiscount(BigDecimal basePrice, LocalDate date) {
+        if (date.getDayOfWeek() == DayOfWeek.WEDNESDAY) {
+            log.info("🎉 Aplicando descuento del 50% por ser miércoles");
+            return basePrice.multiply(new BigDecimal("0.5"));
+        }
+        return basePrice;
     }
 
     @Override
