@@ -20,9 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,96 +90,97 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Transactional
     public void generateShowtimesForCurrentWeek() {
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
-        Long weekId = currentWeek.getWeekId();
 
-        log.info("🎬 Generando funciones para la semana {} ({} a {})",
-                weekId, currentWeek.getWeekStartDate(), currentWeek.getWeekEndDate());
-
-        List<Showtime> existing = showtimeRepository.findByWeekId(weekId);
-        if (!existing.isEmpty()) {
-            log.info("⚠️ Ya existen {} funciones para esta semana. Saltando generación.", existing.size());
+        List<Showtime> existingShowtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId());
+        if (!existingShowtimes.isEmpty()) {
+            log.info("Ya existen {} funciones para la semana {}", existingShowtimes.size(), currentWeek.getWeekId());
             return;
         }
 
-        List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
+        log.info("🎬 Generando funciones para la semana {}...", currentWeek.getWeekId());
 
         List<Movie> movies = movieRepository.findByIsActiveTrue();
+        List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
 
-        if (cinemas.isEmpty() || movies.isEmpty()) {
-            log.warn("⚠️ No hay cines o películas activas. No se pueden generar funciones.");
+        if (movies.isEmpty() || cinemas.isEmpty()) {
+            log.warn("No hay películas o cines activos para generar funciones");
             return;
         }
 
-        int totalShowtimes = 0;
+        Map<Long, List<ShowtimeType>> movieTypes = generateRandomTypesForMovies(movies);
+
+        int totalGenerated = 0;
+        Random random = new Random();
 
         for (Cinema cinema : cinemas) {
-            log.info("Generando funciones para: {}", cinema.getName());
+            for (int sala = 1; sala <= 18; sala++) {
+                Movie movie = movies.get(random.nextInt(movies.size()));
 
-            for (int i = 0; i < 6; i++) {
-                Showtime showtime = generateRandomShowtime(cinema, movies, weekId, currentWeek);
+                List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
+                ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
+
+                LocalDateTime showDateTime = generateRandomDateTime(currentWeek);
+
+                Showtime showtime = new Showtime();
+                showtime.setMovie(movie);
+                showtime.setCinema(cinema);
+                showtime.setShowDateTime(showDateTime);
+                showtime.setType(type);
+                showtime.setPrice(calculatePrice(type));
+                showtime.setWeekId(currentWeek.getWeekId());
+                showtime.setTotalSeats(30);
+                showtime.setAvailableSeats(30);
+
                 showtimeRepository.save(showtime);
-                totalShowtimes++;
+                totalGenerated++;
             }
         }
 
-        log.info("✅ Se generaron {} funciones para {} cines", totalShowtimes, cinemas.size());
+        log.info("✅ Se generaron {} funciones para {} cines (18 salas cada uno)", totalGenerated, cinemas.size());
+    }
+    
+    private Map<Long, List<ShowtimeType>> generateRandomTypesForMovies(List<Movie> movies) {
+        Map<Long, List<ShowtimeType>> movieTypes = new HashMap<>();
+        Random random = new Random();
+
+        for (Movie movie : movies) {
+            List<ShowtimeType> types = new ArrayList<>();
+
+            types.add(ShowtimeType.SPANISH_2D);
+
+            if (random.nextBoolean()) {
+                types.add(ShowtimeType.SUBTITLED_2D);
+            }
+
+            if (random.nextBoolean()) {
+                types.add(ShowtimeType.SPANISH_3D);
+            }
+
+            movieTypes.put(movie.getId(), types);
+
+            log.info("📽️ {} - Tipos disponibles: {}", movie.getTitle(), types);
+        }
+
+        return movieTypes;
     }
 
-    private Showtime generateRandomShowtime(Cinema cinema, List<Movie> movies,
-                                            Long weekId, WeeklySchedule currentWeek) {
-        Showtime showtime = new Showtime();
+    private LocalDateTime generateRandomDateTime(WeeklySchedule week) {
+        Random random = new Random();
 
-        showtime.setCinema(cinema);
+        int dayOffset = random.nextInt(7);
+        LocalDate date = week.getWeekStartDate().plusDays(dayOffset);
 
-        Movie randomMovie = movies.get(random.nextInt(movies.size()));
-        showtime.setMovie(randomMovie);
+        int[] hours = {13, 16, 19, 22};
+        int hour = hours[random.nextInt(hours.length)];
 
-        LocalDateTime randomDateTime = generateRandomDateTime(
-                currentWeek.getWeekStartDate(),
-                currentWeek.getWeekEndDate()
-        );
-        showtime.setShowDateTime(randomDateTime);
-
-        ShowtimeType randomType = getRandomShowtimeType();
-        showtime.setType(randomType);
-
-        BigDecimal price = calculatePrice(randomType);
-        showtime.setPrice(price);
-
-        showtime.setTotalSeats(30);
-        showtime.setAvailableSeats(30);
-
-        showtime.setWeekId(weekId);
-
-        return showtime;
-    }
-
-    private LocalDateTime generateRandomDateTime(LocalDate startDate, LocalDate endDate) {
-        long daysBetween = startDate.until(endDate).getDays();
-        int randomDays = random.nextInt((int) daysBetween + 1);
-        LocalDate randomDate = startDate.plusDays(randomDays);
-
-        int[] possibleHours = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
-        int randomHour = possibleHours[random.nextInt(possibleHours.length)];
-
-        int[] possibleMinutes = {0, 15, 30, 45};
-        int randomMinute = possibleMinutes[random.nextInt(possibleMinutes.length)];
-
-        LocalTime randomTime = LocalTime.of(randomHour, randomMinute);
-
-        return LocalDateTime.of(randomDate, randomTime);
-    }
-
-    private ShowtimeType getRandomShowtimeType() {
-        ShowtimeType[] types = ShowtimeType.values();
-        return types[random.nextInt(types.length)];
+        return LocalDateTime.of(date, LocalTime.of(hour, 30));
     }
 
     private BigDecimal calculatePrice(ShowtimeType type) {
         return switch (type) {
-            case SPANISH_2D -> BigDecimal.valueOf(1500);         // $1500
-            case SUBTITLED_2D -> BigDecimal.valueOf(1500);    // $1500
-            case SPANISH_3D -> BigDecimal.valueOf(2000);      // $2000
+            case SPANISH_2D -> new BigDecimal("1500");
+            case SUBTITLED_2D -> new BigDecimal("1700");
+            case SPANISH_3D -> new BigDecimal("2000");
         };
     }
 
