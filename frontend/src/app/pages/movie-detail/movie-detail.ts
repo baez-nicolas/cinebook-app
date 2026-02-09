@@ -84,34 +84,44 @@ export class MovieDetailComponent implements OnInit {
   }
 
   filterShowtimes(): void {
-    console.log('🎬 Filtrando funciones...');
-    console.log('  - selectedCinemaId:', this.selectedCinemaId);
-    console.log('  - Tipo:', typeof this.selectedCinemaId);
-    console.log('  - Total showtimes:', this.allShowtimes.length);
+    const now = new Date();
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+    );
+
+    const nextWednesday = new Date(today);
+    const daysUntilWednesday = (3 - today.getDay() + 7) % 7;
+    if (daysUntilWednesday === 0 && today.getDay() === 3) {
+      nextWednesday.setDate(today.getDate());
+    } else {
+      nextWednesday.setDate(today.getDate() + daysUntilWednesday);
+    }
+    nextWednesday.setHours(23, 59, 59, 999);
+
+    console.log('📅 Ahora:', now);
+    console.log('📅 Hasta:', nextWednesday);
+
+    let filteredShowtimes = this.allShowtimes.filter((st) => {
+      const showtimeDate = new Date(st.showDateTime);
+      return showtimeDate >= now && showtimeDate <= nextWednesday;
+    });
+
+    console.log('📅 Funciones futuras en rango:', filteredShowtimes.length);
 
     const cinemaId = Number(this.selectedCinemaId);
 
-    let filteredShowtimes: Showtime[];
-
-    if (cinemaId === 0 || isNaN(cinemaId)) {
-      filteredShowtimes = [...this.allShowtimes];
-      console.log('  ✅ Mostrando TODOS los cines');
-    } else {
-      filteredShowtimes = this.allShowtimes.filter((st) => {
-        const match = st.cinemaId === cinemaId;
-        if (match) {
-          console.log('    ✓ Función:', st.cinemaName, st.showDateTime);
-        }
-        return match;
-      });
-      console.log('  ✅ Filtrado:', filteredShowtimes.length, 'funciones del cine', cinemaId);
+    if (cinemaId !== 0 && !isNaN(cinemaId)) {
+      filteredShowtimes = filteredShowtimes.filter((st) => st.cinemaId === cinemaId);
+      console.log('🏢 Funciones del cine', cinemaId, ':', filteredShowtimes.length);
     }
-
-    console.log('  - Funciones filtradas:', filteredShowtimes.length);
 
     this.groupShowtimesByCinema(filteredShowtimes);
 
-    console.log('  - Cines agrupados:', this.showtimesByCinema.length);
+    console.log('🎬 Cines agrupados:', this.showtimesByCinema.length);
   }
 
   onCinemaChange(): void {
@@ -163,6 +173,12 @@ export class MovieDetailComponent implements OnInit {
     if (percentage > 50) return 'good';
     if (percentage > 20) return 'medium';
     return 'low';
+  }
+
+  isPastShowtime(showtime: Showtime): boolean {
+    const now = new Date();
+    const showtimeDate = new Date(showtime.showDateTime);
+    return showtimeDate < now;
   }
 
   goBack(): void {

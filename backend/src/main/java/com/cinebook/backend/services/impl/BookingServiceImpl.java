@@ -41,35 +41,32 @@ public class BookingServiceImpl implements IBookingService {
     public BookingResponseDTO createBooking(String userName, BookingRequestDTO request) {
         log.info("🎫 Procesando reserva para usuario: {}", userName);
 
-        // 1. Validar que exista la función
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + request.getShowtimeId()));
 
-        // 2. Validar que los asientos existan y estén disponibles
+        if (showtime.getShowDateTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("No se pueden reservar funciones pasadas");
+        }
+
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
 
         if (seats.size() != request.getSeatIds().size()) {
             throw new RuntimeException("Algunos asientos no fueron encontrados");
         }
 
-        // Verificar que todos estén disponibles
         for (Seat seat : seats) {
             if (seat.getStatus() != SeatStatus.AVAILABLE) {
                 throw new RuntimeException("El asiento " + seat.getSeatNumber() + " no está disponible");
             }
         }
 
-        // 3. Calcular precio total
         BigDecimal pricePerSeat = showtime.getPrice();
         BigDecimal totalPrice = pricePerSeat.multiply(BigDecimal.valueOf(seats.size()));
 
-        log.info("💰 Precio total: ${} ({} asientos × ${})",
-                totalPrice, seats.size(), pricePerSeat);
+        log.info("💰 Precio total: ${} ({} asientos × ${})", totalPrice, seats.size(), pricePerSeat);
 
-        // 4. Reservar los asientos (cambiar estado)
         seatService.reserveSeats(request.getSeatIds());
 
-        // 5. Crear la reserva
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
 
         Booking booking = new Booking();
@@ -84,8 +81,7 @@ public class BookingServiceImpl implements IBookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        log.info("✅ Reserva creada: ID {} - Código: {}",
-                savedBooking.getId(), savedBooking.getConfirmationCode());
+        log.info("✅ Reserva creada: ID {} - Código: {}", savedBooking.getId(), savedBooking.getConfirmationCode());
 
         return convertToDTO(savedBooking);
     }
@@ -118,10 +114,8 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public String generateConfirmationCode() {
         String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
         long count = bookingRepository.count() + 1;
         String sequence = String.format("%04d", count);
-
         return String.format("CNB-%s-%s", date, sequence);
     }
 
@@ -148,7 +142,6 @@ public class BookingServiceImpl implements IBookingService {
                 .collect(Collectors.toList());
         dto.setSeatNumbers(seatNumbers);
 
-        // Pago
         dto.setTotalPrice(booking.getTotalPrice());
         dto.setPaymentStatus(booking.getPaymentStatus());
         dto.setBookingDateTime(booking.getBookingDateTime());

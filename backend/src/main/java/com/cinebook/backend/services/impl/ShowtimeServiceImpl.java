@@ -39,8 +39,11 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
         log.info("Obteniendo funciones de la semana actual (weekId: {})", currentWeek.getWeekId());
 
+        LocalDateTime now = LocalDateTime.now();
+
         return showtimeRepository.findByWeekId(currentWeek.getWeekId())
                 .stream()
+                .filter(showtime -> showtime.getShowDateTime().isAfter(now))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -49,8 +52,12 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByMovie(Long movieId) {
         log.info("Obteniendo funciones de la película ID: {}", movieId);
+
+        LocalDateTime now = LocalDateTime.now();
+
         return showtimeRepository.findByMovieId(movieId)
                 .stream()
+                .filter(showtime -> showtime.getShowDateTime().isAfter(now))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -59,8 +66,12 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByCinema(Long cinemaId) {
         log.info("Obteniendo funciones del cine ID: {}", cinemaId);
+
+        LocalDateTime now = LocalDateTime.now();
+
         return showtimeRepository.findByCinemaId(cinemaId)
                 .stream()
+                .filter(showtime -> showtime.getShowDateTime().isAfter(now))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -69,8 +80,12 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Transactional(readOnly = true)
     public List<ShowtimeDTO> getShowtimesByCinemaAndMovie(Long cinemaId, Long movieId) {
         log.info("Obteniendo funciones del cine {} y película {}", cinemaId, movieId);
+
+        LocalDateTime now = LocalDateTime.now();
+
         return showtimeRepository.findByCinemaIdAndMovieId(cinemaId, movieId)
                 .stream()
+                .filter(showtime -> showtime.getShowDateTime().isAfter(now))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

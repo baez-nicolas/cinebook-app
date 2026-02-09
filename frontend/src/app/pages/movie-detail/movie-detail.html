@@ -120,9 +120,13 @@
                     </div>
                   </div>
 
-                  <button class="reserve-btn">
+                  <button
+                    class="reserve-btn"
+                    [routerLink]="['/booking', showtime.id]"
+                    [disabled]="isPastShowtime(showtime)"
+                  >
                     <span class="btn-icon">🎫</span>
-                    <span>Reservar</span>
+                    <span>{{ isPastShowtime(showtime) ? 'Función pasada' : 'Reservar' }}</span>
                   </button>
                 </div>
               }
