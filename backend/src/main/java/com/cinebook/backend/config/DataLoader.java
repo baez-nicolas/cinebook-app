@@ -220,8 +220,8 @@ public class DataLoader implements CommandLineRunner {
         cinema2.setIsActive(true);
 
         Cinema cinema3 = new Cinema();
-        cinema3.setName("Cine Village");
-        cinema3.setAddress("Av. Rafael Núñez 4860");
+        cinema3.setName("Cine Malvinas Argentinas");
+        cinema3.setAddress("Av. Fuerza Aérea 2950");
         cinema3.setCity("Córdoba");
         cinema3.setPhone("0351-4333333");
         cinema3.setIsActive(true);
@@ -234,17 +234,17 @@ public class DataLoader implements CommandLineRunner {
         cinema4.setIsActive(true);
 
         Cinema cinema5 = new Cinema();
-        cinema5.setName("Cine Showcase");
-        cinema5.setAddress("Av. Circunvalación y Av. Fuerza Aérea");
-        cinema5.setCity("Córdoba");
-        cinema5.setPhone("0351-4555555");
+        cinema5.setName("Cine Santa Fe");
+        cinema5.setAddress("Av. Brig. Gral. Juan Manuel de Rosas 2019");
+        cinema5.setCity("Santa Fe");
+        cinema5.setPhone("0342-4555555");
         cinema5.setIsActive(true);
 
         Cinema cinema6 = new Cinema();
-        cinema6.setName("Cine Hoyts");
-        cinema6.setAddress("Duarte Quirós 1400");
-        cinema6.setCity("Córdoba");
-        cinema6.setPhone("0351-4666666");
+        cinema6.setName("Cine Rosario");
+        cinema6.setAddress("Av. Carlos Pellegrini 3330");
+        cinema6.setCity("Rosario");
+        cinema6.setPhone("0341-4666666");
         cinema6.setIsActive(true);
 
         cinemaRepository.save(cinema1);
