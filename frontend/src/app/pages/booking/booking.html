@@ -1,6 +1,5 @@
 <div class="booking-page">
   <div class="container">
-
     @if (loading) {
       <div class="loading">
         <div class="spinner"></div>
@@ -17,7 +16,6 @@
     }
 
     @if (showtime && !loading && !error) {
-
       <button class="back-btn" (click)="goBack()">
         <span class="back-icon">←</span>
         <span>Volver</span>
@@ -39,55 +37,59 @@
       </div>
 
       <div class="booking-content">
-
         <div class="seats-section">
+          <h2 class="section-title">🎭 Seleccioná tus Asientos</h2>
 
-          <div class="screen-container">
-            <div class="screen">
-              <span class="screen-text">🎥 PANTALLA 🎥</span>
+          <div class="seats-legend">
+            <div class="legend-item">
+              <div class="legend-seat available"></div>
+              <span>Disponible</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-seat selected"></div>
+              <span>Seleccionado</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-seat reserved"></div>
+              <span>Ocupado</span>
             </div>
           </div>
 
-          <div class="seats-grid">
+          <div class="screen-container">
+            <div class="screen">🎬 PANTALLA</div>
+          </div>
+
+          <div class="cinema-seats">
             @for (row of rows; track row) {
               <div class="seat-row">
-                <span class="row-label">{{ row }}</span>
+                <div class="row-label">{{ row }}</div>
+
                 <div class="row-seats">
-                  @for (seat of getRowSeats(row); track seat.id) {
+                  @for (seat of getSeatsByRow(row); track seat.id) {
                     <button
                       class="seat"
-                      [class]="getSeatClass(seat)"
+                      [class.available]="seat.status === 'AVAILABLE'"
+                      [class.reserved]="seat.status !== 'AVAILABLE'"
+                      [class.selected]="isSeatSelected(seat)"
                       [disabled]="seat.status !== 'AVAILABLE'"
                       (click)="toggleSeat(seat)"
-                      [title]="seat.seatNumber"
                     >
                       {{ seat.seatNumber }}
                     </button>
+
+                    @if (getColumnNumber(seat) === 6) {
+                      <div class="aisle"></div>
+                    }
                   }
                 </div>
+
+                <div class="row-label">{{ row }}</div>
               </div>
             }
           </div>
-
-          <div class="legend">
-            <div class="legend-item">
-              <span class="legend-color available"></span>
-              <span class="legend-text">Disponible</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-color reserved_random"></span>
-              <span class="legend-text">Ocupado</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-color selected"></span>
-              <span class="legend-text">Seleccionado</span>
-            </div>
-          </div>
-
         </div>
 
         <div class="summary-section">
-
           <div class="summary-card">
             <h2 class="summary-title">📝 Resumen de tu Reserva</h2>
 
@@ -103,7 +105,7 @@
                 [(ngModel)]="userName"
                 placeholder="Ingresá tu usuario"
                 [disabled]="processing"
-              >
+              />
             </div>
 
             @if (selectedSeats.length > 0) {
@@ -129,7 +131,9 @@
               <div class="price-breakdown">
                 <div class="price-row">
                   <span class="price-label">Asientos ({{ selectedSeats.length }})</span>
-                  <span class="price-value">{{ selectedSeats.length }} × ${{ showtime.price }}</span>
+                  <span class="price-value"
+                    >{{ selectedSeats.length }} × ${{ showtime.price }}</span
+                  >
                 </div>
                 <div class="price-divider"></div>
                 <div class="price-row total">
@@ -157,14 +161,9 @@
               <span class="info-icon">ℹ️</span>
               <p>Tus asientos quedarán reservados por 10 minutos</p>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     }
-
   </div>
 </div>

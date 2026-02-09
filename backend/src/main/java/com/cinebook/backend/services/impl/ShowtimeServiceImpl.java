@@ -168,8 +168,8 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             showtime.setType(type);
             showtime.setPrice(finalPrice);
             showtime.setWeekId(weekId);
-            showtime.setTotalSeats(30);
-            showtime.setAvailableSeats(30);
+            showtime.setTotalSeats(120);
+            showtime.setAvailableSeats(120);
 
             showtimeRepository.save(showtime);
             generated++;
@@ -194,8 +194,8 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             showtime.setType(type);
             showtime.setPrice(finalPrice);
             showtime.setWeekId(weekId);
-            showtime.setTotalSeats(30);
-            showtime.setAvailableSeats(30);
+            showtime.setTotalSeats(120);
+            showtime.setAvailableSeats(120);
 
             showtimeRepository.save(showtime);
             generated++;

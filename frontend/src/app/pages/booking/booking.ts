@@ -23,6 +23,8 @@ export class BookingComponent implements OnInit {
   loading = true;
   error: string | null = null;
   processing = false;
+  rows: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  seatsPerRow: number = 12;
 
   constructor(
     private route: ActivatedRoute,
@@ -301,11 +303,14 @@ export class BookingComponent implements OnInit {
     window.history.back();
   }
 
-  getRowSeats(row: string): Seat[] {
-    return this.seats.filter((seat) => seat.seatNumber.startsWith(row));
+  getSeatsByRow(row: string): Seat[] {
+    return this.seats
+      .filter((seat) => seat.seatNumber.startsWith(row))
+      .sort((a, b) => this.getColumnNumber(a) - this.getColumnNumber(b));
   }
 
-  get rows(): string[] {
-    return ['A', 'B', 'C', 'D', 'E'];
+  getColumnNumber(seat: Seat): number {
+    const match = seat.seatNumber.match(/\d+$/);
+    return match ? parseInt(match[0], 10) : 0;
   }
 }

@@ -26,8 +26,6 @@ public class SeatServiceImpl implements ISeatService {
     private final ShowtimeRepository showtimeRepository;
     private final IWeeklyScheduleService weeklyScheduleService;
 
-    private final Random random = new Random();
-
     @Override
     public List<SeatDTO> getSeatsByShowtime(Long showtimeId) {
         log.info("Obteniendo asientos de la función ID: {}", showtimeId);
@@ -48,50 +46,63 @@ public class SeatServiceImpl implements ISeatService {
 
     @Override
     @Transactional
-    public void generateSeatsForShowtime(Long showtimeId) {
-        log.info("💺 Generando asientos para la función ID: {}", showtimeId);
-
-        List<Seat> existingSeats = seatRepository.findByShowtimeId(showtimeId);
+    public void generateSeatsForShowtime(Showtime showtime) {
+        List<Seat> existingSeats = seatRepository.findByShowtimeId(showtime.getId());
         if (!existingSeats.isEmpty()) {
-            log.info("⚠️ Ya existen {} asientos para esta función. Saltando generación.", existingSeats.size());
+            log.debug("Los asientos ya fueron generados para la función {}", showtime.getId());
             return;
         }
 
-        Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + showtimeId));
+        log.info("🎭 Generando 120 asientos para función {} ({} - {})",
+                showtime.getId(),
+                showtime.getMovie().getTitle(),
+                showtime.getCinema().getName());
 
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
-
         List<Seat> seats = new ArrayList<>();
-        char[] rows = {'A', 'B', 'C', 'D', 'E'};
+        String[] rows = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
-        for (char row : rows) {
-            for (int col = 1; col <= 6; col++) {
+        for (String row : rows) {
+            for (int number = 1; number <= 12; number++) {
                 Seat seat = new Seat();
                 seat.setShowtime(showtime);
-                seat.setSeatNumber(row + String.valueOf(col));
+                seat.setSeatNumber(row + number);
                 seat.setStatus(SeatStatus.AVAILABLE);
                 seat.setWeekId(currentWeek.getWeekId());
                 seats.add(seat);
             }
         }
 
-        int randomOccupied = 7 + random.nextInt(9);
-        log.info("Marcando {} asientos como ocupados (aleatorio)", randomOccupied);
+        seatRepository.saveAll(seats);
+        log.info("✅ 120 asientos generados para función {}", showtime.getId());
 
-        Collections.shuffle(seats);
-        for (int i = 0; i < randomOccupied; i++) {
-            seats.get(i).setStatus(SeatStatus.RESERVED_RANDOM);
+        occupyRandomSeats(showtime.getId());
+    }
+
+    private void occupyRandomSeats(Long showtimeId) {
+        Random random = new Random();
+        int seatsToOccupy = 20 + random.nextInt(11);
+
+        log.info("🎲 Ocupando {} asientos aleatoriamente para función {}", seatsToOccupy, showtimeId);
+
+        List<Seat> allSeats = seatRepository.findByShowtimeId(showtimeId);
+        Collections.shuffle(allSeats);
+
+        for (int i = 0; i < seatsToOccupy && i < allSeats.size(); i++) {
+            Seat seat = allSeats.get(i);
+            seat.setStatus(SeatStatus.RESERVED_RANDOM);
         }
 
-        seatRepository.saveAll(seats);
+        seatRepository.saveAll(allSeats.subList(0, Math.min(seatsToOccupy, allSeats.size())));
 
-        int availableSeats = 30 - randomOccupied;
+        Showtime showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + showtimeId));
+
+        int availableSeats = 120 - seatsToOccupy;
         showtime.setAvailableSeats(availableSeats);
         showtimeRepository.save(showtime);
 
-        log.info("✅ Generados 30 asientos: {} disponibles, {} ocupados",
-                availableSeats, randomOccupied);
+        log.info("✅ {} asientos fueron ocupados, {} asientos disponibles", seatsToOccupy, availableSeats);
     }
 
     @Override
@@ -109,7 +120,7 @@ public class SeatServiceImpl implements ISeatService {
 
         int generatedCount = 0;
         for (Showtime showtime : showtimes) {
-            generateSeatsForShowtime(showtime.getId());
+            generateSeatsForShowtime(showtime);
             generatedCount++;
         }
 
