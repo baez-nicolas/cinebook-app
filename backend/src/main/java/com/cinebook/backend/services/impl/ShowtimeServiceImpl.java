@@ -33,8 +33,6 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     private final CinemaRepository cinemaRepository;
     private final IWeeklyScheduleService weeklyScheduleService;
 
-    private final Random random = new Random();
-
     @Override
     @Transactional(readOnly = true)
     public List<ShowtimeDTO> getCurrentWeekShowtimes() {
@@ -90,14 +88,15 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Transactional
     public void generateShowtimesForCurrentWeek() {
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+        Long weekIdLong = currentWeek.getWeekId();
 
-        List<Showtime> existingShowtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId());
+        List<Showtime> existingShowtimes = showtimeRepository.findByWeekId(weekIdLong);
         if (!existingShowtimes.isEmpty()) {
-            log.info("Ya existen {} funciones para la semana {}", existingShowtimes.size(), currentWeek.getWeekId());
+            log.info("Ya existen {} funciones para la semana {}", existingShowtimes.size(), weekIdLong);
             return;
         }
 
-        log.info("🎬 Generando funciones para la semana {}...", currentWeek.getWeekId());
+        log.info("🎬 Generando funciones para la semana {}...", weekIdLong);
 
         List<Movie> movies = movieRepository.findByIsActiveTrue();
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
@@ -110,35 +109,80 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         Map<Long, List<ShowtimeType>> movieTypes = generateRandomTypesForMovies(movies);
 
         int totalGenerated = 0;
-        Random random = new Random();
 
         for (Cinema cinema : cinemas) {
-            for (int sala = 1; sala <= 18; sala++) {
-                Movie movie = movies.get(random.nextInt(movies.size()));
-
-                List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
-                ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
-
-                LocalDateTime showDateTime = generateRandomDateTime(currentWeek);
-
-                Showtime showtime = new Showtime();
-                showtime.setMovie(movie);
-                showtime.setCinema(cinema);
-                showtime.setShowDateTime(showDateTime);
-                showtime.setType(type);
-                showtime.setPrice(calculatePrice(type));
-                showtime.setWeekId(currentWeek.getWeekId());
-                showtime.setTotalSeats(30);
-                showtime.setAvailableSeats(30);
-
-                showtimeRepository.save(showtime);
-                totalGenerated++;
+            for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
+                LocalDate currentDate = currentWeek.getWeekStartDate().plusDays(dayOffset);
+                totalGenerated += generateShowtimesForCinemaDay(cinema, movies, movieTypes, currentDate, weekIdLong);
             }
         }
 
-        log.info("✅ Se generaron {} funciones para {} cines (18 salas cada uno)", totalGenerated, cinemas.size());
+        log.info("✅ Se generaron {} funciones para {} cines en 7 días", totalGenerated, cinemas.size());
     }
-    
+
+    private int generateShowtimesForCinemaDay(Cinema cinema, List<Movie> movies, Map<Long, List<ShowtimeType>> movieTypes, LocalDate date, Long weekId) {
+        Random random = new Random();
+        int generated = 0;
+
+        List<LocalTime> timeSlots = Arrays.asList(
+                LocalTime.of(13, 30),
+                LocalTime.of(16, 30),
+                LocalTime.of(19, 30),
+                LocalTime.of(22, 30)
+        );
+
+        int salasUsadas = 0;
+
+        for (Movie movie : movies) {
+            if (salasUsadas >= 18) break;
+
+            LocalTime time = timeSlots.get(random.nextInt(timeSlots.size()));
+            LocalDateTime showDateTime = LocalDateTime.of(date, time);
+
+            List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
+            ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
+
+            Showtime showtime = new Showtime();
+            showtime.setMovie(movie);
+            showtime.setCinema(cinema);
+            showtime.setShowDateTime(showDateTime);
+            showtime.setType(type);
+            showtime.setPrice(calculatePrice(type));
+            showtime.setWeekId(weekId);
+            showtime.setTotalSeats(30);
+            showtime.setAvailableSeats(30);
+
+            showtimeRepository.save(showtime);
+            generated++;
+            salasUsadas++;
+        }
+
+        while (salasUsadas < 18) {
+            Movie movie = movies.get(random.nextInt(movies.size()));
+            LocalTime time = timeSlots.get(random.nextInt(timeSlots.size()));
+            LocalDateTime showDateTime = LocalDateTime.of(date, time);
+
+            List<ShowtimeType> availableTypes = movieTypes.get(movie.getId());
+            ShowtimeType type = availableTypes.get(random.nextInt(availableTypes.size()));
+
+            Showtime showtime = new Showtime();
+            showtime.setMovie(movie);
+            showtime.setCinema(cinema);
+            showtime.setShowDateTime(showDateTime);
+            showtime.setType(type);
+            showtime.setPrice(calculatePrice(type));
+            showtime.setWeekId(weekId);
+            showtime.setTotalSeats(30);
+            showtime.setAvailableSeats(30);
+
+            showtimeRepository.save(showtime);
+            generated++;
+            salasUsadas++;
+        }
+
+        return generated;
+    }
+
     private Map<Long, List<ShowtimeType>> generateRandomTypesForMovies(List<Movie> movies) {
         Map<Long, List<ShowtimeType>> movieTypes = new HashMap<>();
         Random random = new Random();
@@ -162,18 +206,6 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         }
 
         return movieTypes;
-    }
-
-    private LocalDateTime generateRandomDateTime(WeeklySchedule week) {
-        Random random = new Random();
-
-        int dayOffset = random.nextInt(7);
-        LocalDate date = week.getWeekStartDate().plusDays(dayOffset);
-
-        int[] hours = {13, 16, 19, 22};
-        int hour = hours[random.nextInt(hours.length)];
-
-        return LocalDateTime.of(date, LocalTime.of(hour, 30));
     }
 
     private BigDecimal calculatePrice(ShowtimeType type) {
