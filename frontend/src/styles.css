@@ -7,20 +7,21 @@
 
 /* Variables CSS */
 :root {
-  --primary-red: #8B0000;
-  --crimson: #C41E3A;
+  --primary-red: #8b0000;
+  --crimson: #c41e3a;
   --dark-bg: #1a1a1a;
   --darker-bg: #0d0d0d;
   --card-bg: #2d2d2d;
   --white: #ffffff;
-  --gold: #FFD700;
+  --gold: #ffd700;
   --gray-light: #cccccc;
   --gray-medium: #999999;
   --shadow: rgba(0, 0, 0, 0.5);
 }
 
 /* Body */
-html, body {
+html,
+body {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--dark-bg);
@@ -52,7 +53,12 @@ body {
 }
 
 /* Tipografía */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: bold;
   color: var(--white);
 }
@@ -92,4 +98,79 @@ button {
 
 .text-red {
   color: var(--crimson);
+}
+
+.custom-swal-popup {
+  border: 3px solid #ffd700 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+.custom-swal-title {
+  color: #ffd700 !important;
+  font-size: 2rem !important;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+}
+
+.custom-swal-confirm {
+  padding: 15px 40px !important;
+  font-size: 1.2rem !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
+  box-shadow: 0 5px 20px rgba(139, 0, 0, 0.5) !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-swal-confirm:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 8px 30px rgba(139, 0, 0, 0.7) !important;
+}
+
+.custom-swal-cancel {
+  padding: 15px 40px !important;
+  font-size: 1.2rem !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-swal-cancel:hover {
+  transform: scale(1.05) !important;
+}
+
+.swal2-html-container {
+  max-height: 500px !important;
+  overflow-y: auto !important;
+}
+
+.swal2-html-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.swal2-html-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.swal2-html-container::-webkit-scrollbar-thumb {
+  background: #ffd700;
+  border-radius: 10px;
+}
+
+.custom-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 20px auto;
+  border: 6px solid rgba(255, 215, 0, 0.2);
+  border-top: 6px solid #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

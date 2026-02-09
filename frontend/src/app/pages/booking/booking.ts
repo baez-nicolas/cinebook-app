@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BookingRequest } from '../../models/booking.model';
 import { Seat } from '../../models/seat.model';
 import { Showtime } from '../../models/showtime.model';
 import { ApiService } from '../../services/api.service';
@@ -16,6 +15,7 @@ import { ApiService } from '../../services/api.service';
 })
 export class BookingComponent implements OnInit {
   showtime: Showtime | null = null;
+  showtimeId: number = 0;
   seats: Seat[] = [];
   selectedSeats: Seat[] = [];
   userName: string = 'user1';
@@ -32,7 +32,8 @@ export class BookingComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('showtimeId');
     if (id) {
-      this.loadShowtime(+id);
+      this.showtimeId = +id;
+      this.loadShowtime(this.showtimeId);
     }
   }
 
@@ -91,35 +92,30 @@ export class BookingComponent implements OnInit {
   }
 
   confirmBooking(): void {
-    if (!this.userName.trim()) {
-      alert('Por favor ingresá tu nombre de usuario');
+    if (this.processing || !this.userName.trim() || this.selectedSeats.length === 0) {
       return;
     }
-
-    if (this.selectedSeats.length === 0) {
-      alert('Por favor seleccioná al menos un asiento');
-      return;
-    }
-
-    if (!this.showtime) return;
 
     this.processing = true;
 
-    const request: BookingRequest = {
-      showtimeId: this.showtime.id,
-      seatIds: this.selectedSeats.map((s) => s.id),
+    const request = {
+      showtimeId: this.showtimeId,
+      seatIds: this.selectedSeats.map((seat) => seat.id),
     };
 
     this.apiService.createBooking(this.userName, request).subscribe({
-      next: (booking) => {
+      next: (response) => {
+        console.log('✅ Reserva creada:', response);
+        this.processing = false;
+
         this.router.navigate(['/booking-confirmation'], {
-          state: { booking },
+          state: { booking: response },
         });
       },
       error: (err) => {
         this.processing = false;
-        alert('Error al confirmar la reserva: ' + (err.error?.message || 'Intenta nuevamente'));
-        console.error(err);
+        console.error('❌ Error al crear reserva:', err);
+        alert('Error al procesar la reserva: ' + (err.error?.message || 'Error desconocido'));
       },
     });
   }
