@@ -1,1 +1,170 @@
-<p>booking works!</p>
+<div class="booking-page">
+  <div class="container">
+
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando asientos...</p>
+      </div>
+    }
+
+    @if (error) {
+      <div class="error-message">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error }}</p>
+        <button class="btn-primary" (click)="goBack()">Volver</button>
+      </div>
+    }
+
+    @if (showtime && !loading && !error) {
+
+      <button class="back-btn" (click)="goBack()">
+        <span class="back-icon">←</span>
+        <span>Volver</span>
+      </button>
+
+      <div class="showtime-info">
+        <div class="info-content">
+          <h1 class="movie-title">🎬 {{ showtime.movieTitle }}</h1>
+          <div class="info-details">
+            <span class="detail-item">📍 {{ showtime.cinemaName }}</span>
+            <span class="detail-separator">|</span>
+            <span class="detail-item">🗓️ {{ formatDate(showtime.showDateTime) }}</span>
+            <span class="detail-separator">|</span>
+            <span class="detail-item">{{ getTypeLabel(showtime.type) }}</span>
+            <span class="detail-separator">|</span>
+            <span class="detail-item price">${{ showtime.price }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="booking-content">
+
+        <div class="seats-section">
+
+          <div class="screen-container">
+            <div class="screen">
+              <span class="screen-text">🎥 PANTALLA 🎥</span>
+            </div>
+          </div>
+
+          <div class="seats-grid">
+            @for (row of rows; track row) {
+              <div class="seat-row">
+                <span class="row-label">{{ row }}</span>
+                <div class="row-seats">
+                  @for (seat of getRowSeats(row); track seat.id) {
+                    <button
+                      class="seat"
+                      [class]="getSeatClass(seat)"
+                      [disabled]="seat.status !== 'AVAILABLE'"
+                      (click)="toggleSeat(seat)"
+                      [title]="seat.seatNumber"
+                    >
+                      {{ seat.seatNumber }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="legend">
+            <div class="legend-item">
+              <span class="legend-color available"></span>
+              <span class="legend-text">Disponible</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color reserved_random"></span>
+              <span class="legend-text">Ocupado</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color selected"></span>
+              <span class="legend-text">Seleccionado</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="summary-section">
+
+          <div class="summary-card">
+            <h2 class="summary-title">📝 Resumen de tu Reserva</h2>
+
+            <div class="form-group">
+              <label for="userName" class="form-label">
+                <span class="label-icon">👤</span>
+                <span>Usuario</span>
+              </label>
+              <input
+                type="text"
+                id="userName"
+                class="form-input"
+                [(ngModel)]="userName"
+                placeholder="Ingresá tu usuario"
+                [disabled]="processing"
+              >
+            </div>
+
+            @if (selectedSeats.length > 0) {
+              <div class="summary-section-item">
+                <h3 class="section-subtitle">
+                  <span class="subtitle-icon">💺</span>
+                  <span>Asientos Seleccionados</span>
+                </h3>
+                <div class="selected-seats-list">
+                  @for (seat of selectedSeats; track seat.id) {
+                    <span class="seat-badge">{{ seat.seatNumber }}</span>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="empty-selection">
+                <span class="empty-icon">👆</span>
+                <p>Seleccioná tus asientos en el mapa</p>
+              </div>
+            }
+
+            @if (selectedSeats.length > 0) {
+              <div class="price-breakdown">
+                <div class="price-row">
+                  <span class="price-label">Asientos ({{ selectedSeats.length }})</span>
+                  <span class="price-value">{{ selectedSeats.length }} × ${{ showtime.price }}</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="price-row total">
+                  <span class="price-label">Total</span>
+                  <span class="price-value">${{ getTotal() }}</span>
+                </div>
+              </div>
+
+              <button
+                class="confirm-btn"
+                (click)="confirmBooking()"
+                [disabled]="processing || !userName.trim()"
+              >
+                @if (processing) {
+                  <span class="btn-spinner"></span>
+                  <span>Procesando...</span>
+                } @else {
+                  <span class="btn-icon">🎫</span>
+                  <span>Confirmar Reserva</span>
+                }
+              </button>
+            }
+
+            <div class="info-box">
+              <span class="info-icon">ℹ️</span>
+              <p>Tus asientos quedarán reservados por 10 minutos</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+</div>

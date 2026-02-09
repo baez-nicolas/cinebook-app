@@ -4,18 +4,23 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: '/movies',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'movies',
-    loadComponent: () => import('./pages/movies/movies').then(m => m.MoviesComponent)
+    loadComponent: () => import('./pages/movies/movies').then((m) => m.MoviesComponent),
   },
   {
     path: 'movies/:id',
-    loadComponent: () => import('./pages/movie-detail/movie-detail').then(m => m.MovieDetailComponent)
+    loadComponent: () =>
+      import('./pages/movie-detail/movie-detail').then((m) => m.MovieDetailComponent),
+  },
+  {
+    path: 'booking/:showtimeId',
+    loadComponent: () => import('./pages/booking/booking').then((m) => m.BookingComponent),
   },
   {
     path: '**',
-    redirectTo: '/movies'
-  }
+    redirectTo: '/movies',
+  },
 ];
