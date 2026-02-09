@@ -25,7 +25,7 @@ export class MovieDetailComponent implements OnInit {
   allShowtimes: Showtime[] = [];
   showtimesByCinema: ShowtimesByCinema[] = [];
   cinemas: Cinema[] = [];
-  selectedCinemaId: number | null = null;
+  selectedCinemaId: number = 0;
   loading = true;
   error: string | null = null;
 
@@ -86,7 +86,7 @@ export class MovieDetailComponent implements OnInit {
   filterShowtimes(): void {
     let filteredShowtimes = this.allShowtimes;
 
-    if (this.selectedCinemaId) {
+    if (this.selectedCinemaId !== 0) {
       filteredShowtimes = this.allShowtimes.filter((st) => st.cinemaId === this.selectedCinemaId);
     }
 
