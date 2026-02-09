@@ -19,8 +19,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading p {
@@ -72,6 +76,74 @@
 
 .back-icon {
   font-size: 1.5rem;
+}
+
+.filter-section {
+  margin: 30px 0 40px;
+}
+
+.filter-container {
+  background: var(--card-bg);
+  padding: 25px 30px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.filter-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 10px var(--gold));
+}
+
+.filter-text {
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold);
+}
+
+.cinema-select {
+  width: 100%;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+  border: 3px solid var(--gold);
+  border-radius: 15px;
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.cinema-select:hover {
+  border-color: var(--crimson);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.cinema-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+.cinema-select option {
+  background: var(--darker-bg);
+  color: var(--white);
+  padding: 15px;
+  font-size: 1.1rem;
+}
+
+.cinema-select option:hover {
+  background: var(--primary-red);
 }
 
 .movie-header {
@@ -145,8 +217,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
 }
 
 .movie-info {
@@ -267,6 +344,9 @@
 }
 
 .cinema-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 2px solid rgba(255, 215, 0, 0.3);
@@ -276,6 +356,16 @@
   font-size: 2rem;
   color: var(--gold);
   text-shadow: 0 0 10px var(--gold);
+}
+
+.cinema-count {
+  background: var(--gold);
+  color: var(--darker-bg);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
 }
 
 .showtimes-grid {
@@ -353,17 +443,17 @@
 
 .seats-good {
   background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .seats-medium {
   background: rgba(255, 152, 0, 0.2);
-  color: #FF9800;
+  color: #ff9800;
 }
 
 .seats-low {
   background: rgba(244, 67, 54, 0.2);
-  color: #F44336;
+  color: #f44336;
 }
 
 .seats-icon {
@@ -397,7 +487,6 @@
   font-size: 1.3rem;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .movie-header {
     grid-template-columns: 1fr;
@@ -420,5 +509,23 @@
 
   .showtimes-grid {
     grid-template-columns: 1fr;
+  }
+
+  .filter-label {
+    font-size: 1.1rem;
+  }
+
+  .filter-icon {
+    font-size: 1.5rem;
+  }
+
+  .cinema-select {
+    font-size: 1rem;
+    padding: 12px 15px;
+  }
+
+  .cinema-count {
+    font-size: 0.9rem;
+    padding: 6px 12px;
   }
 }

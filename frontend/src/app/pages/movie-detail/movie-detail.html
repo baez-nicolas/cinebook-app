@@ -1,6 +1,5 @@
 <div class="movie-detail-page">
   <div class="container">
-
     @if (loading) {
       <div class="loading">
         <div class="spinner"></div>
@@ -22,14 +21,29 @@
         <span>Volver</span>
       </button>
 
-      <div class="movie-header">
-
-        <div class="poster-container">
-          <img
-            [src]="movie.posterUrl"
-            [alt]="movie.title"
-            class="movie-poster"
+      <div class="filter-section">
+        <div class="filter-container">
+          <label for="cinema-filter" class="filter-label">
+            <span class="filter-icon">🏢</span>
+            <span class="filter-text">Seleccioná un Cine</span>
+          </label>
+          <select
+            id="cinema-filter"
+            class="cinema-select"
+            [(ngModel)]="selectedCinemaId"
+            (change)="onCinemaChange()"
           >
+            <option [value]="null">🎬 Todos los cines</option>
+            @for (cinema of cinemas; track cinema.id) {
+              <option [value]="cinema.id">🏢 {{ cinema.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="movie-header">
+        <div class="poster-container">
+          <img [src]="movie.posterUrl" [alt]="movie.title" class="movie-poster" />
           <div class="poster-overlay">
             @if (movie.trailerUrl) {
               <button class="trailer-btn" (click)="openTrailer()">
@@ -59,7 +73,6 @@
             <span class="release-date">{{ movie.releaseDate }}</span>
           </div>
         </div>
-
       </div>
 
       <div class="showtimes-section">
@@ -68,21 +81,20 @@
         @if (showtimesByCinema.length === 0) {
           <div class="no-showtimes">
             <span class="empty-icon">😔</span>
-            <p>No hay funciones disponibles para esta película</p>
+            <p>No hay funciones disponibles para esta película en el cine seleccionado</p>
           </div>
         }
 
         @for (cinema of showtimesByCinema; track cinema.cinemaId) {
           <div class="cinema-card">
-
             <div class="cinema-header">
               <h3 class="cinema-name">🏢 {{ cinema.cinemaName }}</h3>
+              <span class="cinema-count">{{ cinema.showtimes.length }} funciones</span>
             </div>
 
             <div class="showtimes-grid">
               @for (showtime of cinema.showtimes; track showtime.id) {
                 <div class="showtime-card" [routerLink]="['/booking', showtime.id]">
-
                   <div class="showtime-header">
                     <span class="showtime-date">{{ formatDate(showtime.showDateTime) }}</span>
                     <span class="showtime-type">{{ getTypeLabel(showtime.type) }}</span>
@@ -94,10 +106,17 @@
                       <span class="price-value">${{ showtime.price }}</span>
                     </div>
 
-                    <div class="showtime-seats"
-                         [class]="'seats-' + getAvailabilityClass(showtime.availableSeats, showtime.totalSeats)">
+                    <div
+                      class="showtime-seats"
+                      [class]="
+                        'seats-' +
+                        getAvailabilityClass(showtime.availableSeats, showtime.totalSeats)
+                      "
+                    >
                       <span class="seats-icon">💺</span>
-                      <span class="seats-text">{{ showtime.availableSeats }}/{{ showtime.totalSeats }}</span>
+                      <span class="seats-text"
+                        >{{ showtime.availableSeats }}/{{ showtime.totalSeats }}</span
+                      >
                     </div>
                   </div>
 
@@ -105,15 +124,12 @@
                     <span class="btn-icon">🎫</span>
                     <span>Reservar</span>
                   </button>
-
                 </div>
               }
             </div>
-
           </div>
         }
       </div>
     }
-
   </div>
 </div>
