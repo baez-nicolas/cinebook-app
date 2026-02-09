@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 import { Seat } from '../../models/seat.model';
 import { Showtime } from '../../models/showtime.model';
 import { ApiService } from '../../services/api.service';
@@ -91,32 +92,174 @@ export class BookingComponent implements OnInit {
     return this.selectedSeats.length * this.showtime.price;
   }
 
+  get totalPrice(): number {
+    return this.getTotal();
+  }
+
   confirmBooking(): void {
     if (this.processing || !this.userName.trim() || this.selectedSeats.length === 0) {
       return;
     }
 
-    this.processing = true;
-
-    const request = {
+    const bookingData = {
+      userName: this.userName,
       showtimeId: this.showtimeId,
       seatIds: this.selectedSeats.map((seat) => seat.id),
+      seatNumbers: this.selectedSeats.map((seat) => seat.seatNumber),
+      totalPrice: this.totalPrice,
+      movieTitle: this.showtime?.movieTitle || '',
+      moviePosterUrl: this.showtime?.moviePosterUrl || '',
+      cinemaName: this.showtime?.cinemaName || '',
+      showDateTime: this.showtime?.showDateTime || '',
+      showtimeType: this.showtime?.type || '',
     };
 
-    this.apiService.createBooking(this.userName, request).subscribe({
-      next: (response) => {
-        console.log('✅ Reserva creada:', response);
-        this.processing = false;
+    this.showPaymentDialog(bookingData);
+  }
 
-        this.router.navigate(['/booking-confirmation'], {
-          state: { booking: response },
+  showPaymentDialog(bookingData: any): void {
+    Swal.fire({
+      title: '💳 Confirmar Pago',
+      html: `
+        <div style="text-align: left; padding: 20px;">
+          <h3 style="color: #FFD700; margin-bottom: 20px; text-align: center;">📋 Resumen de tu Reserva</h3>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+            <p style="margin: 10px 0;"><strong>🎬 Película:</strong> ${bookingData.movieTitle}</p>
+            <p style="margin: 10px 0;"><strong>🏢 Cine:</strong> ${bookingData.cinemaName}</p>
+            <p style="margin: 10px 0;"><strong>📅 Fecha y Hora:</strong> ${this.formatDateForDialog(bookingData.showDateTime)}</p>
+            <p style="margin: 10px 0;"><strong>🎞️ Tipo:</strong> ${this.getTypeLabel(bookingData.showtimeType)}</p>
+            <p style="margin: 10px 0;"><strong>💺 Asientos:</strong> ${bookingData.seatNumbers.join(', ')}</p>
+            <p style="margin: 10px 0;"><strong>👤 Usuario:</strong> ${bookingData.userName}</p>
+          </div>
+
+          <hr style="margin: 20px 0; border: 1px solid #FFD700;">
+
+          <p style="font-size: 1.8rem; color: #FFD700; text-align: center; font-weight: bold; margin: 20px 0;">
+            💰 Total a Pagar: $${bookingData.totalPrice.toLocaleString('es-AR')}
+          </p>
+
+          <p style="text-align: center; color: #ccc; font-size: 0.9rem; margin-top: 15px;">
+            ⚠️ Esta es una simulación de pago. No se realizará ningún cargo real.
+          </p>
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '✅ Confirmar Pago',
+      cancelButtonText: '❌ Cancelar',
+      confirmButtonColor: '#8B0000',
+      cancelButtonColor: '#666',
+      background: '#1a1a1a',
+      color: '#fff',
+      width: '600px',
+      customClass: {
+        popup: 'custom-swal-popup',
+        title: 'custom-swal-title',
+        confirmButton: 'custom-swal-confirm',
+        cancelButton: 'custom-swal-cancel',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.processPayment(bookingData);
+      } else {
+        Swal.fire({
+          title: 'Reserva Cancelada',
+          text: 'Tu reserva no fue procesada. Los asientos no fueron reservados.',
+          icon: 'info',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#8B0000',
+          background: '#1a1a1a',
+          color: '#fff',
         });
+      }
+    });
+  }
+
+  processPayment(bookingData: any): void {
+    this.processing = true;
+
+    Swal.fire({
+      title: 'Procesando pago...',
+      html: '<div style="text-align: center;"><div class="custom-spinner"></div><p style="margin-top: 20px; color: #FFD700;">Por favor, espera un momento</p></div>',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      background: '#1a1a1a',
+      color: '#fff',
+      didOpen: () => {
+        Swal.showLoading();
       },
-      error: (err) => {
-        this.processing = false;
-        console.error('❌ Error al crear reserva:', err);
-        alert('Error al procesar la reserva: ' + (err.error?.message || 'Error desconocido'));
+    });
+
+    setTimeout(() => {
+      const request = {
+        showtimeId: bookingData.showtimeId,
+        seatIds: bookingData.seatIds,
+      };
+
+      this.apiService.createBooking(bookingData.userName, request).subscribe({
+        next: (response) => {
+          this.processing = false;
+          this.showSuccessMessage(response);
+        },
+        error: (err) => {
+          this.processing = false;
+          Swal.fire({
+            title: 'Error en el Pago',
+            text:
+              'Hubo un problema al procesar tu reserva: ' +
+              (err.error?.message || 'Error desconocido'),
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#8B0000',
+            background: '#1a1a1a',
+            color: '#fff',
+          });
+        },
+      });
+    }, 2000);
+  }
+
+  showSuccessMessage(booking: any): void {
+    Swal.fire({
+      title: '🎉 ¡Pago Exitoso!',
+      html: `
+        <div style="text-align: center; padding: 20px;">
+          <h2 style="color: #FFD700; margin-bottom: 25px;">¡Tu reserva fue confirmada!</h2>
+
+          <div style="background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(139,0,0,0.2) 100%); padding: 25px; border-radius: 15px; margin: 25px 0; border: 2px solid #FFD700;">
+            <p style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">Código de Confirmación:</p>
+            <p style="font-size: 2.5rem; color: #FFD700; font-weight: bold; letter-spacing: 2px; margin: 10px 0;">
+              ${booking.confirmationCode}
+            </p>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; text-align: left; margin: 20px 0;">
+            <p style="margin: 12px 0;"><strong>🎬</strong> ${booking.movieTitle}</p>
+            <p style="margin: 12px 0;"><strong>🏢</strong> ${booking.cinemaName}</p>
+            <p style="margin: 12px 0;"><strong>📅</strong> ${this.formatDateForDialog(booking.showDateTime)}</p>
+            <p style="margin: 12px 0;"><strong>💺</strong> ${booking.seatNumbers.join(', ')}</p>
+            <p style="margin: 12px 0;"><strong>👤</strong> ${booking.userName}</p>
+            <p style="margin: 12px 0; font-size: 1.3rem; color: #FFD700;"><strong>💰</strong> $${booking.totalPrice.toLocaleString('es-AR')}</p>
+          </div>
+
+          <p style="margin-top: 25px; color: #ccc; font-size: 1rem;">
+            📱 Guarda este código para retirar tus entradas en el cine
+          </p>
+        </div>
+      `,
+      icon: 'success',
+      confirmButtonText: '🏠 Volver al Inicio',
+      confirmButtonColor: '#8B0000',
+      background: '#1a1a1a',
+      color: '#fff',
+      width: '650px',
+      customClass: {
+        popup: 'custom-swal-popup',
+        confirmButton: 'custom-swal-confirm',
       },
+    }).then(() => {
+      this.router.navigate(['/movies']);
     });
   }
 
@@ -126,6 +269,19 @@ export class BookingComponent implements OnInit {
       weekday: 'short',
       day: '2-digit',
       month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    };
+    return date.toLocaleDateString('es-AR', options);
+  }
+
+  formatDateForDialog(dateString: string): string {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     };
