@@ -84,16 +84,39 @@ export class MovieDetailComponent implements OnInit {
   }
 
   filterShowtimes(): void {
-    let filteredShowtimes = this.allShowtimes;
+    console.log('🎬 Filtrando funciones...');
+    console.log('  - selectedCinemaId:', this.selectedCinemaId);
+    console.log('  - Tipo:', typeof this.selectedCinemaId);
+    console.log('  - Total showtimes:', this.allShowtimes.length);
 
-    if (this.selectedCinemaId !== 0) {
-      filteredShowtimes = this.allShowtimes.filter((st) => st.cinemaId === this.selectedCinemaId);
+    const cinemaId = Number(this.selectedCinemaId);
+
+    let filteredShowtimes: Showtime[];
+
+    if (cinemaId === 0 || isNaN(cinemaId)) {
+      filteredShowtimes = [...this.allShowtimes];
+      console.log('  ✅ Mostrando TODOS los cines');
+    } else {
+      filteredShowtimes = this.allShowtimes.filter((st) => {
+        const match = st.cinemaId === cinemaId;
+        if (match) {
+          console.log('    ✓ Función:', st.cinemaName, st.showDateTime);
+        }
+        return match;
+      });
+      console.log('  ✅ Filtrado:', filteredShowtimes.length, 'funciones del cine', cinemaId);
     }
 
+    console.log('  - Funciones filtradas:', filteredShowtimes.length);
+
     this.groupShowtimesByCinema(filteredShowtimes);
+
+    console.log('  - Cines agrupados:', this.showtimesByCinema.length);
   }
 
   onCinemaChange(): void {
+    console.log('🔍 Cinema seleccionado:', this.selectedCinemaId);
+    console.log('🔍 Total funciones:', this.allShowtimes.length);
     this.filterShowtimes();
   }
 
