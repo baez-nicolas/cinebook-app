@@ -5,12 +5,14 @@ import com.cinebook.backend.dtos.BookingResponseDTO;
 import com.cinebook.backend.entities.Booking;
 import com.cinebook.backend.entities.Seat;
 import com.cinebook.backend.entities.Showtime;
+import com.cinebook.backend.entities.User;
 import com.cinebook.backend.entities.WeeklySchedule;
 import com.cinebook.backend.entities.enums.PaymentStatus;
 import com.cinebook.backend.entities.enums.SeatStatus;
 import com.cinebook.backend.repositories.BookingRepository;
 import com.cinebook.backend.repositories.SeatRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
+import com.cinebook.backend.repositories.UserRepository;
 import com.cinebook.backend.services.interfaces.IBookingService;
 import com.cinebook.backend.services.interfaces.ISeatService;
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
@@ -33,13 +35,17 @@ public class BookingServiceImpl implements IBookingService {
     private final BookingRepository bookingRepository;
     private final ShowtimeRepository showtimeRepository;
     private final SeatRepository seatRepository;
+    private final UserRepository userRepository;
     private final ISeatService seatService;
     private final IWeeklyScheduleService weeklyScheduleService;
 
     @Override
     @Transactional
-    public BookingResponseDTO createBooking(String userName, BookingRequestDTO request) {
-        log.info("🎫 Procesando reserva para usuario: {}", userName);
+    public BookingResponseDTO createBooking(String userEmail, BookingRequestDTO request) {
+        log.info("🎫 Procesando reserva para usuario: {}", userEmail);
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + userEmail));
 
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + request.getShowtimeId()));
@@ -70,7 +76,7 @@ public class BookingServiceImpl implements IBookingService {
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
 
         Booking booking = new Booking();
-        booking.setUserName(userName);
+        booking.setUser(user);
         booking.setShowtime(showtime);
         booking.setSeats(seats);
         booking.setTotalPrice(totalPrice);
@@ -88,9 +94,13 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponseDTO> getBookingsByUser(String userName) {
-        log.info("Obteniendo reservas del usuario: {}", userName);
-        return bookingRepository.findByUserName(userName)
+    public List<BookingResponseDTO> getBookingsByUser(String userEmail) {
+        log.info("Obteniendo reservas del usuario: {}", userEmail);
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + userEmail));
+
+        return bookingRepository.findByUserId(user.getId())
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -138,7 +148,7 @@ public class BookingServiceImpl implements IBookingService {
 
         dto.setBookingId(booking.getId());
         dto.setConfirmationCode(booking.getConfirmationCode());
-        dto.setUserName(booking.getUserName());
+        dto.setUserName(booking.getUser().getFirstName() + " " + booking.getUser().getLastName());
 
         dto.setMovieTitle(booking.getShowtime().getMovie().getTitle());
         dto.setMoviePosterUrl(booking.getShowtime().getMovie().getPosterUrl());

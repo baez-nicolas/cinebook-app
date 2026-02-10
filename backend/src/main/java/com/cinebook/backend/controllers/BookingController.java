@@ -27,13 +27,13 @@ public class BookingController {
     @PostMapping
     @Operation(summary = "Crear una nueva reserva")
     public ResponseEntity<BookingResponseDTO> createBooking(
-            @RequestParam(defaultValue = "user1") String userName,
+            @RequestParam String userEmail,
             @Valid @RequestBody BookingRequestDTO request) {
 
         log.info("POST /api/bookings - Usuario: {} - Función: {} - Asientos: {}",
-                userName, request.getShowtimeId(), request.getSeatIds());
+                userEmail, request.getShowtimeId(), request.getSeatIds());
 
-        BookingResponseDTO response = bookingService.createBooking(userName, request);
+        BookingResponseDTO response = bookingService.createBooking(userEmail, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -45,11 +45,11 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
-    @GetMapping("/user/{userName}")
+    @GetMapping("/user/{userEmail}")
     @Operation(summary = "Obtener todas las reservas de un usuario")
-    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@PathVariable String userName) {
-        log.info("GET /api/bookings/user/{} - Obteniendo reservas", userName);
-        List<BookingResponseDTO> bookings = bookingService.getBookingsByUser(userName);
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@PathVariable String userEmail) {
+        log.info("GET /api/bookings/user/{} - Obteniendo reservas", userEmail);
+        List<BookingResponseDTO> bookings = bookingService.getBookingsByUser(userEmail);
         return ResponseEntity.ok(bookings);
     }
 
