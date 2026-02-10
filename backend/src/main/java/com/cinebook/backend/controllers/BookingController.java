@@ -37,6 +37,14 @@ public class BookingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping
+    @Operation(summary = "Obtener todas las reservas")
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+        log.info("GET /api/bookings - Obteniendo todas las reservas");
+        List<BookingResponseDTO> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(bookings);
+    }
+
     @GetMapping("/user/{userName}")
     @Operation(summary = "Obtener todas las reservas de un usuario")
     public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@PathVariable String userName) {

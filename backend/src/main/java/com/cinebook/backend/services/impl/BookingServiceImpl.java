@@ -96,6 +96,15 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    public List<BookingResponseDTO> getAllBookings() {
+        log.info("Obteniendo todas las reservas");
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public BookingResponseDTO getBookingByConfirmationCode(String confirmationCode) {
         log.info("Buscando reserva con código: {}", confirmationCode);
         Booking booking = bookingRepository.findByConfirmationCode(confirmationCode)

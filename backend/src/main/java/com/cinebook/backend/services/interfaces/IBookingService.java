@@ -11,6 +11,7 @@ public interface IBookingService {
     List<BookingResponseDTO> getBookingsByUser(String userName);
     BookingResponseDTO getBookingByConfirmationCode(String confirmationCode);
     BookingResponseDTO getBookingById(Long bookingId);
+    List<BookingResponseDTO> getAllBookings();
     String generateConfirmationCode();
     BookingResponseDTO convertToDTO(Booking booking);
 }
