@@ -1,0 +1,99 @@
+<div class="my-bookings-page">
+  <div class="container">
+    <h1 class="page-title">🎟️ Mis Reservas</h1>
+
+    @if (showForm) {
+      <div class="user-form">
+        <h2>Ingresa tu nombre de usuario</h2>
+        <div class="form-group">
+          <input
+            type="text"
+            [(ngModel)]="userName"
+            placeholder="Nombre de usuario"
+            (keyup.enter)="loadBookings()"
+            class="user-input"
+          />
+          <button (click)="loadBookings()" class="btn-primary">Buscar Reservas</button>
+        </div>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando tus reservas...</p>
+      </div>
+    }
+
+    @if (!loading && !showForm && bookings.length === 0) {
+      <div class="no-bookings">
+        <div class="empty-icon">🎬</div>
+        <h2>No tienes reservas</h2>
+        <p>Aún no has realizado ninguna reserva</p>
+        <button [routerLink]="['/movies']" class="btn-primary">Ver Películas</button>
+      </div>
+    }
+
+    @if (!loading && !showForm && bookings.length > 0) {
+      <div class="bookings-header">
+        <p class="total-bookings">
+          Total: {{ bookings.length }} reserva{{ bookings.length !== 1 ? 's' : '' }}
+        </p>
+        <button (click)="changeUser()" class="btn-secondary">Cambiar Usuario</button>
+      </div>
+
+      <div class="bookings-grid">
+        @for (booking of bookings; track booking.bookingId) {
+          <div class="booking-card" [class.past]="isPastShowtime(booking.showDateTime)">
+            <div class="booking-poster">
+              <img [src]="booking.moviePosterUrl" [alt]="booking.movieTitle" />
+              @if (isPastShowtime(booking.showDateTime)) {
+                <div class="past-badge">Finalizada</div>
+              }
+            </div>
+
+            <div class="booking-info">
+              <h3 class="movie-title">{{ booking.movieTitle }}</h3>
+
+              <div class="booking-details">
+                <div class="detail-row">
+                  <span class="icon">🏢</span>
+                  <span>{{ booking.cinemaName }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <span class="icon">📅</span>
+                  <span>{{ formatDate(booking.showDateTime) }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <span class="icon">🎞️</span>
+                  <span>{{ getTypeLabel(booking.showtimeType) }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <span class="icon">💺</span>
+                  <span>{{ booking.seatNumbers.join(', ') }}</span>
+                </div>
+
+                <div class="detail-row price">
+                  <span class="icon">💰</span>
+                  <span>${{ booking.totalPrice.toLocaleString('es-AR') }}</span>
+                </div>
+              </div>
+
+              <div class="confirmation-code">
+                <span class="code-label">Código:</span>
+                <span class="code-value">{{ booking.confirmationCode }}</span>
+              </div>
+
+              <button (click)="showBookingDetails(booking)" class="btn-details">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

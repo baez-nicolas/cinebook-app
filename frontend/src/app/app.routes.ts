@@ -20,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/booking/booking').then((m) => m.BookingComponent),
   },
   {
+    path: 'my-bookings',
+    loadComponent: () =>
+      import('./pages/my-bookings/my-bookings').then((m) => m.MyBookingsComponent),
+  },
+  {
     path: '**',
     redirectTo: '/movies',
   },
