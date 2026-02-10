@@ -19,7 +19,7 @@ export class BookingComponent implements OnInit {
   showtimeId: number = 0;
   seats: Seat[] = [];
   selectedSeats: Seat[] = [];
-  userName: string = 'user1';
+  userName: string = '';
   loading = true;
   error: string | null = null;
   processing = false;

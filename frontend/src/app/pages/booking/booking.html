@@ -93,19 +93,20 @@
           <div class="summary-card">
             <h2 class="summary-title">📝 Resumen de tu Reserva</h2>
 
-            <div class="form-group">
-              <label for="userName" class="form-label">
-                <span class="label-icon">👤</span>
-                <span>Usuario</span>
-              </label>
-              <input
-                type="text"
-                id="userName"
-                class="form-input"
-                [(ngModel)]="userName"
-                placeholder="Ingresá tu usuario"
-                [disabled]="processing"
-              />
+            <div class="user-section">
+              <h2 class="section-title">👤 Tu Información</h2>
+              <div class="user-input-container">
+                <label for="userName">Nombre completo:</label>
+                <input
+                  id="userName"
+                  type="text"
+                  [(ngModel)]="userName"
+                  placeholder="Ingresa tu nombre"
+                  class="user-input"
+                  [disabled]="processing"
+                  required
+                />
+              </div>
             </div>
 
             @if (selectedSeats.length > 0) {
