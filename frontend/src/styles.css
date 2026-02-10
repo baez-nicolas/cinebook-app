@@ -30,8 +30,7 @@ body {
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
-  background-attachment: fixed;
+  background: var(--dark-bg);
 }
 
 /* Scrollbar */
