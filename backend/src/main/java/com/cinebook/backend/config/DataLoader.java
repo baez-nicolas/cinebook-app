@@ -11,6 +11,7 @@ import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Order(2)
 public class DataLoader implements CommandLineRunner {
 
     private final MovieRepository movieRepository;

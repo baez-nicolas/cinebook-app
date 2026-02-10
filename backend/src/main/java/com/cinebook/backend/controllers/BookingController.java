@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +27,12 @@ public class BookingController {
     private final IBookingService bookingService;
 
     @PostMapping
-    @Operation(summary = "Crear una nueva reserva")
+    @Operation(summary = "Crear una nueva reserva (requiere autenticación)")
     public ResponseEntity<BookingResponseDTO> createBooking(
-            @RequestParam String userEmail,
+            Authentication authentication,
             @Valid @RequestBody BookingRequestDTO request) {
 
+        String userEmail = authentication.getName();
         log.info("POST /api/bookings - Usuario: {} - Función: {} - Asientos: {}",
                 userEmail, request.getShowtimeId(), request.getSeatIds());
 
@@ -38,17 +41,28 @@ public class BookingController {
     }
 
     @GetMapping
-    @Operation(summary = "Obtener todas las reservas")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Obtener todas las reservas (solo ADMIN)")
     public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
-        log.info("GET /api/bookings - Obteniendo todas las reservas");
+        log.info("GET /api/bookings - Obteniendo todas las reservas (ADMIN)");
         List<BookingResponseDTO> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
     }
 
+    @GetMapping("/my-bookings")
+    @Operation(summary = "Obtener mis reservas (requiere autenticación)")
+    public ResponseEntity<List<BookingResponseDTO>> getMyBookings(Authentication authentication) {
+        String userEmail = authentication.getName();
+        log.info("GET /api/bookings/my-bookings - Usuario: {}", userEmail);
+        List<BookingResponseDTO> bookings = bookingService.getBookingsByUser(userEmail);
+        return ResponseEntity.ok(bookings);
+    }
+
     @GetMapping("/user/{userEmail}")
-    @Operation(summary = "Obtener todas las reservas de un usuario")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Obtener reservas de un usuario específico (solo ADMIN)")
     public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@PathVariable String userEmail) {
-        log.info("GET /api/bookings/user/{} - Obteniendo reservas", userEmail);
+        log.info("GET /api/bookings/user/{} - Obteniendo reservas (ADMIN)", userEmail);
         List<BookingResponseDTO> bookings = bookingService.getBookingsByUser(userEmail);
         return ResponseEntity.ok(bookings);
     }
@@ -69,3 +83,4 @@ public class BookingController {
         return ResponseEntity.ok(booking);
     }
 }
+
