@@ -30,9 +30,10 @@ interface Booking {
 })
 export class MyBookingsComponent implements OnInit {
   bookings: Booking[] = [];
-  loading = true;
+  loading = false;
   userName = '';
-  showForm = true;
+  searched = false;
+  availableUsers: string[] = ['user1', 'user2', 'user3', 'Juan', 'María', 'Pedro', 'Ana'];
 
   constructor(
     private apiService: ApiService,
@@ -48,21 +49,15 @@ export class MyBookingsComponent implements OnInit {
   }
 
   loadBookings(): void {
-    if (!this.userName.trim()) {
-      Swal.fire({
-        title: 'Usuario Requerido',
-        text: 'Por favor, ingresa tu nombre de usuario',
-        icon: 'warning',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: '#8B0000',
-        background: '#1a1a1a',
-        color: '#fff',
-      });
+    if (!this.userName || this.userName === '') {
+      this.bookings = [];
+      this.searched = false;
+      localStorage.removeItem('userName');
       return;
     }
 
     this.loading = true;
-    this.showForm = false;
+    this.searched = true;
 
     this.apiService.getMyBookings(this.userName).subscribe({
       next: (data) => {
@@ -75,10 +70,11 @@ export class MyBookingsComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar reservas:', err);
         this.loading = false;
+        this.bookings = [];
         Swal.fire({
-          title: 'Error',
-          text: 'No se pudieron cargar las reservas',
-          icon: 'error',
+          title: 'No se encontraron reservas',
+          text: `No hay reservas para el usuario "${this.userName}"`,
+          icon: 'info',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#8B0000',
           background: '#1a1a1a',
@@ -88,11 +84,15 @@ export class MyBookingsComponent implements OnInit {
     });
   }
 
-  changeUser(): void {
-    this.showForm = true;
-    this.bookings = [];
+  clearSearch(): void {
     this.userName = '';
+    this.bookings = [];
+    this.searched = false;
     localStorage.removeItem('userName');
+  }
+
+  onUserChange(): void {
+    this.loadBookings();
   }
 
   formatDate(dateString: string): string {

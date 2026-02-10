@@ -2,44 +2,41 @@
   <div class="container">
     <h1 class="page-title">🎟️ Mis Reservas</h1>
 
-    @if (showForm) {
-      <div class="user-form">
-        <h2>Ingresa tu nombre de usuario</h2>
-        <div class="form-group">
-          <input
-            type="text"
-            [(ngModel)]="userName"
-            placeholder="Nombre de usuario"
-            (keyup.enter)="loadBookings()"
-            class="user-input"
-          />
-          <button (click)="loadBookings()" class="btn-primary">Buscar Reservas</button>
-        </div>
+    <div class="search-section">
+      <h2>Selecciona un usuario</h2>
+      <div class="search-form">
+        <select [(ngModel)]="userName" (change)="onUserChange()" class="user-select">
+          <option value="">-- Selecciona un usuario --</option>
+          @for (user of availableUsers; track user) {
+            <option [value]="user">{{ user }}</option>
+          }
+        </select>
       </div>
-    }
+    </div>
 
     @if (loading) {
       <div class="loading">
         <div class="spinner"></div>
-        <p>Cargando tus reservas...</p>
+        <p>Cargando reservas...</p>
       </div>
     }
 
-    @if (!loading && !showForm && bookings.length === 0) {
+    @if (!loading && searched && bookings.length === 0) {
       <div class="no-bookings">
         <div class="empty-icon">🎬</div>
-        <h2>No tienes reservas</h2>
-        <p>Aún no has realizado ninguna reserva</p>
+        <h2>No se encontraron reservas</h2>
+        <p>El usuario "{{ userName }}" no tiene reservas</p>
         <button [routerLink]="['/movies']" class="btn-primary">Ver Películas</button>
       </div>
     }
 
-    @if (!loading && !showForm && bookings.length > 0) {
+    @if (!loading && bookings.length > 0) {
       <div class="bookings-header">
         <p class="total-bookings">
-          Total: {{ bookings.length }} reserva{{ bookings.length !== 1 ? 's' : '' }}
+          Reservas de <strong>{{ userName }}</strong
+          >: {{ bookings.length }}
+          {{ bookings.length !== 1 ? 'reservas' : 'reserva' }}
         </p>
-        <button (click)="changeUser()" class="btn-secondary">Cambiar Usuario</button>
       </div>
 
       <div class="bookings-grid">
@@ -93,6 +90,12 @@
             </div>
           </div>
         }
+      </div>
+    }
+
+    @if (!loading && !searched) {
+      <div class="info-message">
+        <p>👆 Ingresa un nombre de usuario para buscar sus reservas</p>
       </div>
     }
   </div>
