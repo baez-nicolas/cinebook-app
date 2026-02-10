@@ -181,6 +181,9 @@ export class BookingComponent implements OnInit {
   processPayment(bookingData: any): void {
     this.processing = true;
 
+    console.log('🎬 DATOS DE RESERVA:', bookingData);
+    console.log('👤 Usuario:', bookingData.userName);
+
     Swal.fire({
       title: 'Procesando pago...',
       html: '<div style="text-align: center;"><div class="custom-spinner"></div><p style="margin-top: 20px; color: #FFD700;">Por favor, espera un momento</p></div>',
@@ -199,18 +202,24 @@ export class BookingComponent implements OnInit {
         seatIds: bookingData.seatIds,
       };
 
+      console.log('📤 ENVIANDO AL BACKEND:', request);
+
       this.apiService.createBooking(bookingData.userName, request).subscribe({
         next: (response) => {
+          console.log('✅ RESPUESTA DEL BACKEND:', response);
           this.processing = false;
           this.showSuccessMessage(response);
         },
         error: (err) => {
+          console.error('❌ ERROR COMPLETO:', err);
+          console.error('❌ ERROR MESSAGE:', err.message);
+          console.error('❌ ERROR ERROR:', err.error);
           this.processing = false;
           Swal.fire({
             title: 'Error en el Pago',
             text:
               'Hubo un problema al procesar tu reserva: ' +
-              (err.error?.message || 'Error desconocido'),
+              (err.error?.message || err.message || 'Error desconocido'),
             icon: 'error',
             confirmButtonText: 'Entendido',
             confirmButtonColor: '#8B0000',
