@@ -150,7 +150,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         int salasUsadas = 0;
 
         for (Movie movie : movies) {
-            if (salasUsadas >= 8) break;
+            if (salasUsadas >= 13) break;
 
             LocalTime time = timeSlots.get(random.nextInt(timeSlots.size()));
             LocalDateTime showDateTime = LocalDateTime.of(date, time);
@@ -176,7 +176,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             salasUsadas++;
         }
 
-        while (salasUsadas < 8) {
+        while (salasUsadas < 13) {
             Movie movie = movies.get(random.nextInt(movies.size()));
             LocalTime time = timeSlots.get(random.nextInt(timeSlots.size()));
             LocalDateTime showDateTime = LocalDateTime.of(date, time);
