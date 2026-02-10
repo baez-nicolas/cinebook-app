@@ -515,6 +515,7 @@
   background: rgba(33, 150, 243, 0.1);
   border: 2px solid rgba(33, 150, 243, 0.3);
   border-radius: 12px;
+  margin-top: 25px;
 }
 
 .info-icon {
