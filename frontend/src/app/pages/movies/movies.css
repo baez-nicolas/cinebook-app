@@ -33,6 +33,51 @@
   margin-bottom: 20px;
 }
 
+.new-releases-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 30px;
+  margin: 20px 0;
+  background: linear-gradient(135deg, var(--gold) 0%, #ffa500 100%);
+  color: var(--darker-bg);
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+  }
+}
+
+.banner-icon {
+  font-size: 1.5rem;
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.banner-text {
+  letter-spacing: 0.5px;
+}
+
 .hero-decoration {
   display: flex;
   justify-content: center;
@@ -42,8 +87,13 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .star {
@@ -51,8 +101,13 @@
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .popcorn {
@@ -75,8 +130,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading p {
@@ -143,8 +202,9 @@
 .movie-card:hover {
   transform: translateY(-15px) scale(1.03);
   border-color: var(--gold);
-  box-shadow: 0 20px 50px rgba(255, 215, 0, 0.3),
-              0 0 40px rgba(139, 0, 0, 0.5);
+  box-shadow:
+    0 20px 50px rgba(255, 215, 0, 0.3),
+    0 0 40px rgba(139, 0, 0, 0.5);
 }
 
 .movie-poster {
@@ -191,8 +251,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
 }
 
 .overlay-text {
