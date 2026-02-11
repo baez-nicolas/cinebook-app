@@ -1,20 +1,40 @@
 <div class="movies-page">
   <div class="container">
-    <section class="hero">
-      <h1 class="hero-title">
-        <span class="title-white">Películas en </span>
-        <span class="title-gold">Cartelera</span>
-      </h1>
-      <p class="hero-subtitle">Las mejores películas te esperan</p>
+    <!-- Carousel -->
+    <section class="carousel">
+      <div class="carousel-container">
+        @for (image of carouselImages; track $index) {
+          <div
+            class="carousel-slide"
+            [class.active]="currentSlide === $index"
+            [style.background-image]="'url(' + image.url + ')'"
+          >
+            <div class="carousel-overlay">
+              <h2 class="carousel-title">{{ image.title }}</h2>
+              <p class="carousel-subtitle">{{ image.subtitle }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      <button class="carousel-btn prev" (click)="prevSlide()">❮</button>
+      <button class="carousel-btn next" (click)="nextSlide()">❯</button>
+      <div class="carousel-dots">
+        @for (image of carouselImages; track $index) {
+          <span
+            class="dot"
+            [class.active]="currentSlide === $index"
+            (click)="goToSlide($index)"
+          ></span>
+        }
+      </div>
+    </section>
+
+    <!-- Banner nuevo -->
+    <div class="section-header">
       <div class="new-releases-banner">
         <span class="banner-text">¡Nuevas funciones todos los jueves!</span>
       </div>
-      <div class="hero-decoration">
-        <span class="star">⭐</span>
-        <span class="popcorn">🍿</span>
-        <span class="star">⭐</span>
-      </div>
-    </section>
+    </div>
 
     @if (loading) {
       <div class="loading">

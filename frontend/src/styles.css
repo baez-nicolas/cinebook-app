@@ -7,16 +7,16 @@
 
 /* Variables CSS */
 :root {
-  --primary-red: #8b0000;
-  --crimson: #c41e3a;
-  --dark-bg: #1a1a1a;
-  --darker-bg: #0d0d0d;
-  --card-bg: #2d2d2d;
+  --primary-gray: #e0e0e0;
+  --accent-gray: #b0b0b0;
+  --dark-bg: #0a0a0a;
+  --darker-bg: #000000;
+  --card-bg: #1a1a1a;
   --white: #ffffff;
-  --gold: #ffd700;
+  --light-gray: #f5f5f5;
   --gray-light: #cccccc;
-  --gray-medium: #999999;
-  --shadow: rgba(0, 0, 0, 0.5);
+  --gray-medium: #808080;
+  --shadow: rgba(0, 0, 0, 0.7);
 }
 
 /* Body */
@@ -26,6 +26,8 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--dark-bg);
   color: var(--white);
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -43,12 +45,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-red);
+  background: var(--primary-gray);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--crimson);
+  background: var(--light-gray);
 }
 
 /* Tipografía */
@@ -69,7 +71,7 @@ a {
 }
 
 a:hover {
-  color: var(--gold);
+  color: var(--primary-gray);
 }
 
 /* Buttons */
@@ -82,9 +84,10 @@ button {
 
 /* Utilidades */
 .container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 30px;
+  width: 100%;
 }
 
 .text-center {
@@ -92,11 +95,11 @@ button {
 }
 
 .text-gold {
-  color: var(--gold);
+  color: var(--light-gray);
 }
 
 .text-red {
-  color: var(--crimson);
+  color: var(--primary-gray);
 }
 
 .custom-swal-popup {
