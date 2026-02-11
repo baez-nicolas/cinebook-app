@@ -19,11 +19,16 @@ export class LoginComponent {
     password: '',
   };
   loading = false;
+  showPassword = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
   ) {}
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit(): void {
     if (!this.credentials.email || !this.credentials.password) {

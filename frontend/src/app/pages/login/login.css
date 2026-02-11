@@ -55,11 +55,47 @@
   font-size: 0.95rem;
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 50px;
+  flex: 1;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.toggle-password:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.toggle-password:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .form-group input {
   padding: 15px;
   border: 2px solid rgba(255, 215, 0, 0.3);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -68,8 +104,19 @@
 .form-group input:focus {
   outline: none;
   border-color: var(--gold);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.7);
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus,
+.form-group input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.8) inset !important;
+  -webkit-text-fill-color: white !important;
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.8) inset !important;
+  border: 2px solid rgba(255, 215, 0, 0.3) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .form-group input:disabled {

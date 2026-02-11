@@ -1,18 +1,32 @@
 <div class="my-bookings-page">
   <div class="container">
-    <h1 class="page-title">🎟️ Mis Reservas</h1>
+    <h1 class="page-title">🎟️ {{ isAdmin ? 'Gestión de Reservas (Admin)' : 'Mis Reservas' }}</h1>
 
-    <div class="search-section">
-      <h2>Selecciona un usuario</h2>
-      <div class="search-form">
-        <select [(ngModel)]="userName" (change)="onUserChange()" class="user-select">
-          <option value="">-- Selecciona un usuario --</option>
-          @for (user of availableUsers; track user) {
-            <option [value]="user">{{ user }}</option>
+    @if (isAdmin) {
+      <div class="admin-filter-section">
+        <h2>Filtrar reservas por usuario</h2>
+        <div class="filter-form">
+          <select
+            [(ngModel)]="selectedUserEmail"
+            (change)="onUserFilterChange()"
+            class="user-select"
+          >
+            <option value="">Todos los usuarios ({{ allBookings.length }} reservas)</option>
+            @for (userEmail of uniqueUserEmails; track userEmail) {
+              <option [value]="userEmail">
+                {{ userEmail }} ({{
+                  (allBookings | filter: userEmail : 'userName').length
+                }}
+                reservas)
+              </option>
+            }
+          </select>
+          @if (selectedUserEmail) {
+            <button (click)="clearFilter()" class="btn-clear">✕ Limpiar</button>
           }
-        </select>
+        </div>
       </div>
-    </div>
+    }
 
     @if (loading) {
       <div class="loading">
@@ -21,21 +35,34 @@
       </div>
     }
 
-    @if (!loading && searched && bookings.length === 0) {
+    @if (!loading && bookings.length === 0) {
       <div class="no-bookings">
         <div class="empty-icon">🎬</div>
-        <h2>No se encontraron reservas</h2>
-        <p>El usuario "{{ userName }}" no tiene reservas</p>
-        <button [routerLink]="['/movies']" class="btn-primary">Ver Películas</button>
+        <h2>No hay reservas</h2>
+        <p>
+          {{
+            isAdmin
+              ? 'No se encontraron reservas en el sistema'
+              : 'Aún no has realizado ninguna reserva'
+          }}
+        </p>
+        @if (!isAdmin) {
+          <button [routerLink]="['/movies']" class="btn-primary">Ver Películas</button>
+        }
       </div>
     }
 
     @if (!loading && bookings.length > 0) {
       <div class="bookings-header">
         <p class="total-bookings">
-          Reservas de <strong>{{ userName }}</strong
-          >: {{ bookings.length }}
-          {{ bookings.length !== 1 ? 'reservas' : 'reserva' }}
+          @if (isAdmin && selectedUserEmail) {
+            Reservas de <strong>{{ selectedUserEmail }}</strong
+            >: {{ bookings.length }}
+          } @else if (isAdmin) {
+            Total de reservas: {{ bookings.length }}
+          } @else {
+            Tienes {{ bookings.length }} {{ bookings.length !== 1 ? 'reservas' : 'reserva' }}
+          }
         </p>
       </div>
 
@@ -51,6 +78,10 @@
 
             <div class="booking-info">
               <h3 class="movie-title">{{ booking.movieTitle }}</h3>
+
+              @if (isAdmin) {
+                <div class="user-badge">👤 {{ booking.userName }}</div>
+              }
 
               <div class="booking-details">
                 <div class="detail-row">
@@ -90,12 +121,6 @@
             </div>
           </div>
         }
-      </div>
-    }
-
-    @if (!loading && !searched) {
-      <div class="info-message">
-        <p>👆 Ingresa un nombre de usuario para buscar sus reservas</p>
       </div>
     }
   </div>

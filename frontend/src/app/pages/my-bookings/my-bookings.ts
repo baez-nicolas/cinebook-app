@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { FilterPipe } from '../../pipes/filter.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -25,43 +26,36 @@ interface Booking {
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FilterPipe],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
 export class MyBookingsComponent implements OnInit {
   bookings: Booking[] = [];
+  allBookings: Booking[] = [];
   loading = false;
-  userName = '';
-  searched = false;
-  availableUsers: string[] = ['user1', 'user2', 'user3', 'Juan', 'María', 'Pedro', 'Ana'];
+  isAdmin = false;
+  selectedUserEmail = '';
+  uniqueUserEmails: string[] = [];
 
   constructor(
     private apiService: ApiService,
-    private router: Router,
     private authService: AuthService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.userName = currentUser.email;
-      this.loadBookings();
+    this.isAdmin = this.authService.isAdmin();
+
+    if (this.isAdmin) {
+      this.loadAllBookingsForAdmin();
     } else {
-      this.router.navigate(['/login']);
+      this.loadMyBookings();
     }
   }
 
-  loadBookings(): void {
-    if (!this.authService.isAuthenticated()) {
-      this.bookings = [];
-      this.searched = false;
-      this.router.navigate(['/login']);
-      return;
-    }
-
+  loadMyBookings(): void {
     this.loading = true;
-    this.searched = true;
 
     this.apiService.getMyBookings().subscribe({
       next: (data) => {
@@ -73,11 +67,10 @@ export class MyBookingsComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar reservas:', err);
         this.loading = false;
-        this.bookings = [];
         Swal.fire({
-          title: 'No se encontraron reservas',
-          text: `No hay reservas para tu usuario`,
-          icon: 'info',
+          title: 'Error',
+          text: 'No se pudieron cargar las reservas',
+          icon: 'error',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#8B0000',
           background: '#1a1a1a',
@@ -87,15 +80,54 @@ export class MyBookingsComponent implements OnInit {
     });
   }
 
-  clearSearch(): void {
-    this.userName = '';
-    this.bookings = [];
-    this.searched = false;
-    localStorage.removeItem('userName');
+  loadAllBookingsForAdmin(): void {
+    this.loading = true;
+
+    this.apiService.getAllBookings().subscribe({
+      next: (data) => {
+        this.allBookings = data.sort(
+          (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
+        );
+
+        const emailsSet = new Set(
+          this.allBookings.map((b) => this.extractEmailFromUserName(b.userName)),
+        );
+        this.uniqueUserEmails = Array.from(emailsSet).sort();
+
+        this.bookings = this.allBookings;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar todas las reservas (admin):', err);
+        this.loading = false;
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar las reservas',
+          icon: 'error',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#8B0000',
+          background: '#1a1a1a',
+          color: '#fff',
+        });
+      },
+    });
   }
 
-  onUserChange(): void {
-    this.loadBookings();
+  private extractEmailFromUserName(userName: string): string {
+    return userName;
+  }
+
+  onUserFilterChange(): void {
+    if (!this.selectedUserEmail) {
+      this.bookings = this.allBookings;
+    } else {
+      this.bookings = this.allBookings.filter((b) => b.userName === this.selectedUserEmail);
+    }
+  }
+
+  clearFilter(): void {
+    this.selectedUserEmail = '';
+    this.bookings = this.allBookings;
   }
 
   formatDate(dateString: string): string {
@@ -122,7 +154,7 @@ export class MyBookingsComponent implements OnInit {
 
   showBookingDetails(booking: Booking): void {
     Swal.fire({
-      title: '🎟️ Detalles de tu Reserva',
+      title: '🎟️ Detalles de la Reserva',
       html: `
         <div style="text-align: center; padding: 20px;">
           <div style="background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(139,0,0,0.2) 100%); padding: 25px; border-radius: 15px; margin: 25px 0; border: 2px solid #FFD700;">

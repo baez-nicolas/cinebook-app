@@ -23,11 +23,21 @@ export class RegisterComponent {
   };
   confirmPassword = '';
   loading = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
   ) {}
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   onSubmit(): void {
     if (
