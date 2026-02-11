@@ -151,3 +151,84 @@
     font-size: 2rem;
   }
 }
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-name {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 0, 0, 0.2);
+  border: 2px solid rgba(255, 0, 0, 0.4);
+  border-radius: 25px;
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 0, 0, 0.4);
+  border-color: #ff0000;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+}
+
+.btn-register {
+  background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
+  color: black;
+  font-weight: bold;
+}
+
+.btn-register:hover {
+  background: linear-gradient(135deg, #b8860b 0%, var(--gold) 100%);
+  border-color: var(--gold);
+  box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+}
+
+.mobile-user-info {
+  padding: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.mobile-user-info .user-name {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.btn-logout-mobile {
+  width: 100%;
+  background: rgba(255, 0, 0, 0.2);
+  border: 2px solid rgba(255, 0, 0, 0.4);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-logout-mobile:hover {
+  background: rgba(255, 0, 0, 0.4);
+  border-color: #ff0000;
+}

@@ -23,11 +23,7 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
-  ) {
-    if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/movies']);
-    }
-  }
+  ) {}
 
   onSubmit(): void {
     if (!this.credentials.email || !this.credentials.password) {

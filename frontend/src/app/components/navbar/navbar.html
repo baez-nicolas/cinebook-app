@@ -2,25 +2,43 @@
   <div class="container">
     <div class="navbar-content">
       <div class="logo">
-        <a routerLink="/">
+        <a [routerLink]="authService.isAuthenticated() ? '/movies' : '/login'">
           <span class="logo-icon">🎬</span>
           <span class="logo-text">CINE<span class="logo-highlight">BOOK</span></span>
         </a>
       </div>
 
-      <!-- Menu Desktop -->
-      <div class="nav-links desktop-menu">
-        <a routerLink="/movies" routerLinkActive="active" class="nav-link">
-          <span class="nav-icon">🎥</span>
-          <span>Películas</span>
-        </a>
-        <a routerLink="/my-bookings" routerLinkActive="active" class="nav-link">
-          <span class="nav-icon">🎫</span>
-          <span>Mis Reservas</span>
-        </a>
-      </div>
+      @if (authService.isAuthenticated()) {
+        <div class="nav-links desktop-menu">
+          <a routerLink="/movies" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🎥</span>
+            <span>Películas</span>
+          </a>
+          <a routerLink="/my-bookings" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🎫</span>
+            <span>Mis Reservas</span>
+          </a>
+          <div class="user-menu">
+            <span class="user-name">👤 {{ currentUser?.firstName }}</span>
+            <button class="btn-logout" (click)="logout()">
+              <span>🚪</span>
+              <span>Salir</span>
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="nav-links desktop-menu">
+          <a routerLink="/login" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🔐</span>
+            <span>Iniciar Sesión</span>
+          </a>
+          <a routerLink="/register" routerLinkActive="active" class="nav-link btn-register">
+            <span class="nav-icon">📝</span>
+            <span>Registrarse</span>
+          </a>
+        </div>
+      }
 
-      <!-- Menu (Mobile) -->
       <button class="hamburger" (click)="toggleMenu()" [class.active]="menuOpen">
         <span></span>
         <span></span>
@@ -29,14 +47,37 @@
     </div>
 
     <div class="mobile-menu" [class.show]="menuOpen">
-      <a routerLink="/movies" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
-        <span class="nav-icon">🎥</span>
-        <span>Películas</span>
-      </a>
-      <a routerLink="/my-bookings" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
-        <span class="nav-icon">🎫</span>
-        <span>Mis Reservas</span>
-      </a>
+      @if (authService.isAuthenticated()) {
+        <div class="mobile-user-info">
+          <span class="user-name">👤 {{ currentUser?.firstName }} {{ currentUser?.lastName }}</span>
+        </div>
+        <a routerLink="/movies" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
+          <span class="nav-icon">🎥</span>
+          <span>Películas</span>
+        </a>
+        <a
+          routerLink="/my-bookings"
+          routerLinkActive="active"
+          class="nav-link"
+          (click)="toggleMenu()"
+        >
+          <span class="nav-icon">🎫</span>
+          <span>Mis Reservas</span>
+        </a>
+        <button class="nav-link btn-logout-mobile" (click)="logout()">
+          <span class="nav-icon">🚪</span>
+          <span>Cerrar Sesión</span>
+        </button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
+          <span class="nav-icon">🔐</span>
+          <span>Iniciar Sesión</span>
+        </a>
+        <a routerLink="/register" routerLinkActive="active" class="nav-link" (click)="toggleMenu()">
+          <span class="nav-icon">📝</span>
+          <span>Registrarse</span>
+        </a>
+      }
     </div>
   </div>
 </nav>
