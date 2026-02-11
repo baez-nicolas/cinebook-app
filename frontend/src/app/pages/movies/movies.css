@@ -4,8 +4,8 @@
 }
 
 .navbar {
-  background: rgba(0, 0, 0, 0.98);
-  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  background: #111111;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -34,11 +34,10 @@
 
 .nav-brand h1 {
   font-size: 1.8rem;
-  color: var(--gold);
+  color: white;
   margin: 0;
   font-weight: bold;
   letter-spacing: 2px;
-  text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
 
 .nav-links {
@@ -128,8 +127,8 @@
 
 .nav-link:hover,
 .nav-link.active {
-  color: var(--gold);
-  background: rgba(255, 215, 0, 0.15);
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .user-section {
@@ -137,13 +136,13 @@
   gap: 12px;
   align-items: center;
   padding: 8px 20px;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .user-label {
-  color: var(--gold);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -181,7 +180,8 @@
   height: 550px;
   overflow: hidden;
   margin: 30px auto 40px;
-  max-width: 38%;
+  max-width: 1300px;
+  width: 70%;
   border-radius: 12px;
 }
 
@@ -427,8 +427,9 @@
 
 @media (max-width: 1024px) and (min-width: 769px) {
   .hero-carousel {
-    max-width: 70%;
-    height: 350px;
+    max-width: 500px;
+    width: 85%;
+    height: 400px;
   }
 
   .movies-grid {
@@ -559,9 +560,11 @@
   }
 
   .hero-carousel {
-    height: 200px;
-    max-width: 85%;
+    height: 280px;
+    max-width: 100%;
+    width: 100%;
     margin: 10px auto 15px;
+    border-radius: 0;
   }
 
   .movies-section {
