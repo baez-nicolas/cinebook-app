@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { FooterComponent } from '../../components/footer/footer';
 import { Movie } from '../../models/movie.model';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -8,16 +9,22 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-movies',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FooterComponent],
   templateUrl: './movies.html',
   styleUrl: './movies.css',
 })
 export class MoviesComponent implements OnInit {
   movies: Movie[] = [];
-  featuredMovies: Movie[] = [];
   currentSlideIndex = 0;
   loading = true;
   currentUser: any = null;
+  menuOpen = false;
+
+  carouselImages = [
+    'https://upload.wikimedia.org/wikipedia/commons/2/2f/Sala_de_cine.jpg',
+    'https://cloudfront-us-east-1.images.arcpublishing.com/infobae/JAQSNZX36FHHNFEG3KJTVBB7DY.jpg',
+    'https://www.fmdos.cl/wp-content/uploads/2017/06/GettyImages-611759730-e1497662793728.jpg',
+  ];
 
   constructor(
     private apiService: ApiService,
@@ -35,7 +42,6 @@ export class MoviesComponent implements OnInit {
     this.apiService.getMovies().subscribe({
       next: (data) => {
         this.movies = data;
-        this.featuredMovies = data.slice(0, 3);
         this.loading = false;
       },
       error: (error) => {
@@ -47,21 +53,8 @@ export class MoviesComponent implements OnInit {
 
   startCarousel(): void {
     setInterval(() => {
-      this.nextSlide();
-    }, 5000);
-  }
-
-  nextSlide(): void {
-    this.currentSlideIndex = (this.currentSlideIndex + 1) % this.featuredMovies.length;
-  }
-
-  prevSlide(): void {
-    this.currentSlideIndex =
-      this.currentSlideIndex === 0 ? this.featuredMovies.length - 1 : this.currentSlideIndex - 1;
-  }
-
-  goToSlide(index: number): void {
-    this.currentSlideIndex = index;
+      this.currentSlideIndex = (this.currentSlideIndex + 1) % this.carouselImages.length;
+    }, 4000);
   }
 
   viewMovieDetails(movieId: number): void {
@@ -70,6 +63,14 @@ export class MoviesComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 
   formatDuration(minutes: number): string {

@@ -159,7 +159,6 @@
   visibility: visible;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .desktop-menu {
     display: none;

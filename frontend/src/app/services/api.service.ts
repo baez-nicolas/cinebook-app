@@ -15,7 +15,6 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  // MOVIES
   getMovies(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${this.apiUrl}/movies`);
   }
@@ -24,12 +23,10 @@ export class ApiService {
     return this.http.get<Movie>(`${this.apiUrl}/movies/${id}`);
   }
 
-  // CINEMAS
   getCinemas(): Observable<Cinema[]> {
     return this.http.get<Cinema[]>(`${this.apiUrl}/cinemas`);
   }
 
-  // SHOWTIMES
   getShowtimes(): Observable<Showtime[]> {
     return this.http.get<Showtime[]>(`${this.apiUrl}/showtimes`);
   }
@@ -42,7 +39,6 @@ export class ApiService {
     return this.http.get<Showtime>(`${this.apiUrl}/showtimes/${id}`);
   }
 
-  // SEATS
   getSeatsByShowtime(showtimeId: number): Observable<Seat[]> {
     return this.http.get<Seat[]>(`${this.apiUrl}/seats/showtime/${showtimeId}`);
   }
@@ -51,7 +47,6 @@ export class ApiService {
     return this.http.get<Seat[]>(`${this.apiUrl}/seats/showtime/${showtimeId}/available`);
   }
 
-  // BOOKINGS (ahora usa autenticación JWT, el email se extrae del token)
   createBooking(booking: BookingRequest): Observable<BookingResponse> {
     return this.http.post<BookingResponse>(`${this.apiUrl}/bookings`, booking);
   }
@@ -60,7 +55,6 @@ export class ApiService {
     return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/my-bookings`);
   }
 
-  // ADMIN ONLY
   getAllBookings(): Observable<BookingResponse[]> {
     return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings`);
   }
