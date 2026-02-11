@@ -2,13 +2,13 @@
   <div class="container">
     <div class="navbar-content">
       <div class="logo">
-        <a [routerLink]="authService.isAuthenticated() ? '/movies' : '/login'">
+        <a [routerLink]="isAuthenticated() ? '/movies' : '/login'">
           <span class="logo-icon">🎬</span>
           <span class="logo-text">CINE<span class="logo-highlight">BOOK</span></span>
         </a>
       </div>
 
-      @if (authService.isAuthenticated()) {
+      @if (isAuthenticated()) {
         <div class="nav-links desktop-menu">
           <a routerLink="/movies" routerLinkActive="active" class="nav-link">
             <span class="nav-icon">🎥</span>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="mobile-menu" [class.show]="menuOpen">
-      @if (authService.isAuthenticated()) {
+      @if (isAuthenticated()) {
         <div class="mobile-user-info">
           <span class="user-name">👤 {{ currentUser?.firstName }} {{ currentUser?.lastName }}</span>
         </div>
