@@ -1,101 +1,109 @@
 <div class="movies-page">
-  <div class="container">
-    <!-- Carousel -->
-    <section class="carousel">
-      <div class="carousel-container">
-        @for (image of carouselImages; track $index) {
-          <div
-            class="carousel-slide"
-            [class.active]="currentSlide === $index"
-            [style.background-image]="'url(' + image.url + ')'"
-          >
-            <div class="carousel-overlay">
-              <h2 class="carousel-title">{{ image.title }}</h2>
-              <p class="carousel-subtitle">{{ image.subtitle }}</p>
-            </div>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h1>🎬 CineBook</h1>
+      </div>
+      <div class="nav-links">
+        <a [routerLink]="['/movies']" class="nav-link active">Películas</a>
+        <a [routerLink]="['/my-bookings']" class="nav-link">Mis Reservas</a>
+        @if (currentUser) {
+          <div class="user-info">
+            <span class="user-name">{{ currentUser.firstName }}</span>
+            @if (currentUser.role === 'ADMIN') {
+              <span class="admin-badge">ADMIN</span>
+            }
+            <button (click)="logout()" class="btn-logout">Salir</button>
           </div>
         }
-      </div>
-      <button class="carousel-btn prev" (click)="prevSlide()">❮</button>
-      <button class="carousel-btn next" (click)="nextSlide()">❯</button>
-      <div class="carousel-dots">
-        @for (image of carouselImages; track $index) {
-          <span
-            class="dot"
-            [class.active]="currentSlide === $index"
-            (click)="goToSlide($index)"
-          ></span>
-        }
-      </div>
-    </section>
-
-    <!-- Banner nuevo -->
-    <div class="section-header">
-      <div class="new-releases-banner">
-        <span class="banner-text">¡Nuevas funciones todos los jueves!</span>
       </div>
     </div>
+  </nav>
 
-    @if (loading) {
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Cargando películas...</p>
-      </div>
-    }
-
-    @if (error) {
-      <div class="error-message">
-        <span class="error-icon">⚠️</span>
-        <p>{{ error }}</p>
-        <button class="retry-btn" (click)="loadMovies()">Reintentar</button>
-      </div>
-    }
-
-    @if (!loading && !error) {
-      <div class="movies-grid">
-        @for (movie of movies; track $index) {
-          <div class="movie-card" [routerLink]="['/movies', movie.id]">
-            <div class="movie-poster">
-              <img
-                [src]="movie.posterUrl"
-                [alt]="movie.title"
-                (error)="
-                  $any($event.target).src = 'https://via.placeholder.com/300x450?text=Sin+Imagen'
-                "
-              />
-              <div class="poster-overlay">
-                <span class="play-icon">▶️</span>
-                <p class="overlay-text">Ver Funciones</p>
-              </div>
-            </div>
-
-            <div class="movie-info">
-              <h3 class="movie-title">{{ movie.title }}</h3>
-
-              <div class="movie-meta">
-                <span class="rating-badge" [style.background-color]="getRatingColor(movie.rating)">
-                  {{ movie.rating.replace('_', '-') }}
-                </span>
-                <span class="duration">⏱️ {{ movie.duration }} min</span>
-              </div>
-
-              <p class="movie-genre">{{ movie.genre }}</p>
-
-              <div class="movie-footer">
-                <span class="footer-icon">🎬</span>
-                <span class="footer-text">Ver más</span>
+  @if (!loading && featuredMovies.length > 0) {
+    <section class="hero-carousel">
+      <div class="carousel-container">
+        @for (movie of featuredMovies; track movie.id; let i = $index) {
+          <div
+            class="carousel-slide"
+            [class.active]="i === currentSlideIndex"
+            [style.background-image]="'url(' + movie.posterUrl + ')'"
+          >
+            <div class="carousel-overlay">
+              <div class="carousel-content">
+                <h2 class="carousel-title">{{ movie.title }}</h2>
+                <p class="carousel-description">{{ movie.description }}</p>
+                <div class="carousel-meta">
+                  <span class="meta-item">⭐ {{ movie.rating }}/10</span>
+                  <span class="meta-item">🎭 {{ movie.genre }}</span>
+                  <span class="meta-item">⏱️ {{ formatDuration(movie.duration) }}</span>
+                </div>
+                <button (click)="viewMovieDetails(movie.id)" class="btn-buy-tickets">
+                  COMPRAR ENTRADAS
+                </button>
               </div>
             </div>
           </div>
         }
-      </div>
-    }
 
-    @if (!loading && !error && movies.length === 0) {
-      <div class="empty-state">
-        <span class="empty-icon">🎭</span>
-        <p>No hay películas disponibles en este momento</p>
+        <button class="carousel-control prev" (click)="prevSlide()">‹</button>
+        <button class="carousel-control next" (click)="nextSlide()">›</button>
+
+        <div class="carousel-indicators">
+          @for (movie of featuredMovies; track movie.id; let i = $index) {
+            <button
+              class="indicator"
+              [class.active]="i === currentSlideIndex"
+              (click)="goToSlide(i)"
+            ></button>
+          }
+        </div>
       </div>
-    }
-  </div>
+    </section>
+  }
+
+  <section class="movies-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">PELÍCULAS EN CARTELERA</h2>
+        <button class="btn-destacado">⭐ DESTACADO</button>
+      </div>
+
+      @if (loading) {
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Cargando películas...</p>
+        </div>
+      }
+
+      @if (!loading && movies.length === 0) {
+        <div class="no-movies">
+          <p>No hay películas disponibles</p>
+        </div>
+      }
+
+      @if (!loading && movies.length > 0) {
+        <div class="movies-grid">
+          @for (movie of movies; track movie.id) {
+            <div class="movie-card" (click)="viewMovieDetails(movie.id)">
+              <div class="movie-poster">
+                <img [src]="movie.posterUrl" [alt]="movie.title" />
+                <div class="movie-overlay">
+                  <button class="btn-comprar">🎟️ COMPRAR</button>
+                </div>
+                <div class="movie-duration">⏱️ {{ formatDuration(movie.duration) }}</div>
+              </div>
+              <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-meta">
+                  <span class="rating">⭐ {{ movie.rating }}</span>
+                  <span class="genre">{{ movie.genre }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
 </div>
