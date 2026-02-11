@@ -329,7 +329,7 @@
 
 .btn-comprar {
   background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
-  color: black;
+  color: white;
   border: none;
   padding: 15px 30px;
   border-radius: 8px;
@@ -427,9 +427,9 @@
 
 @media (max-width: 1024px) and (min-width: 769px) {
   .hero-carousel {
-    max-width: 500px;
-    width: 85%;
-    height: 400px;
+    max-width: 800px;
+    width: 80%;
+    height: 380px;
   }
 
   .movies-grid {
