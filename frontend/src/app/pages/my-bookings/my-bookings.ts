@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 interface Booking {
   bookingId: number;
@@ -38,34 +39,36 @@ export class MyBookingsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private router: Router,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
-    const savedUserName = localStorage.getItem('userName');
-    if (savedUserName) {
-      this.userName = savedUserName;
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.userName = currentUser.email;
       this.loadBookings();
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 
   loadBookings(): void {
-    if (!this.userName || this.userName === '') {
+    if (!this.authService.isAuthenticated()) {
       this.bookings = [];
       this.searched = false;
-      localStorage.removeItem('userName');
+      this.router.navigate(['/login']);
       return;
     }
 
     this.loading = true;
     this.searched = true;
 
-    this.apiService.getMyBookings(this.userName).subscribe({
+    this.apiService.getMyBookings().subscribe({
       next: (data) => {
         this.bookings = data.sort(
           (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
         );
         this.loading = false;
-        localStorage.setItem('userName', this.userName);
       },
       error: (err) => {
         console.error('Error al cargar reservas:', err);
@@ -73,7 +76,7 @@ export class MyBookingsComponent implements OnInit {
         this.bookings = [];
         Swal.fire({
           title: 'No se encontraron reservas',
-          text: `No hay reservas para el usuario "${this.userName}"`,
+          text: `No hay reservas para tu usuario`,
           icon: 'info',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#8B0000',

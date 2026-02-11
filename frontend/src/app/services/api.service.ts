@@ -51,12 +51,21 @@ export class ApiService {
     return this.http.get<Seat[]>(`${this.apiUrl}/seats/showtime/${showtimeId}/available`);
   }
 
-  // BOOKINGS
-  createBooking(userName: string, booking: BookingRequest): Observable<BookingResponse> {
-    return this.http.post<BookingResponse>(`${this.apiUrl}/bookings?userName=${userName}`, booking);
+  // BOOKINGS (ahora usa autenticación JWT, el email se extrae del token)
+  createBooking(booking: BookingRequest): Observable<BookingResponse> {
+    return this.http.post<BookingResponse>(`${this.apiUrl}/bookings`, booking);
   }
 
-  getMyBookings(userName: string): Observable<BookingResponse[]> {
-    return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/user/${userName}`);
+  getMyBookings(): Observable<BookingResponse[]> {
+    return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/my-bookings`);
+  }
+
+  // ADMIN ONLY
+  getAllBookings(): Observable<BookingResponse[]> {
+    return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings`);
+  }
+
+  getBookingsByUser(userEmail: string): Observable<BookingResponse[]> {
+    return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/user/${userEmail}`);
   }
 }

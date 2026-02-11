@@ -93,22 +93,6 @@
           <div class="summary-card">
             <h2 class="summary-title">📝 Resumen de tu Reserva</h2>
 
-            <div class="user-section">
-              <h2 class="section-title">👤 Tu Información</h2>
-              <div class="user-input-container">
-                <label for="userName">Nombre completo:</label>
-                <input
-                  id="userName"
-                  type="text"
-                  [(ngModel)]="userName"
-                  placeholder="Ingresa tu nombre"
-                  class="user-input"
-                  [disabled]="processing"
-                  required
-                />
-              </div>
-            </div>
-
             @if (selectedSeats.length > 0) {
               <div class="summary-section-item">
                 <h3 class="section-subtitle">
@@ -143,11 +127,7 @@
                 </div>
               </div>
 
-              <button
-                class="confirm-btn"
-                (click)="confirmBooking()"
-                [disabled]="processing || !userName.trim()"
-              >
+              <button class="confirm-btn" (click)="confirmBooking()" [disabled]="processing">
                 @if (processing) {
                   <span class="btn-spinner"></span>
                   <span>Procesando...</span>

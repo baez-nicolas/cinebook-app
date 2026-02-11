@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { Seat } from '../../models/seat.model';
 import { Showtime } from '../../models/showtime.model';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-booking',
@@ -19,7 +20,6 @@ export class BookingComponent implements OnInit {
   showtimeId: number = 0;
   seats: Seat[] = [];
   selectedSeats: Seat[] = [];
-  userName: string = '';
   loading = true;
   error: string | null = null;
   processing = false;
@@ -30,6 +30,7 @@ export class BookingComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -99,12 +100,28 @@ export class BookingComponent implements OnInit {
   }
 
   confirmBooking(): void {
-    if (this.processing || !this.userName.trim() || this.selectedSeats.length === 0) {
+    if (this.processing || this.selectedSeats.length === 0) {
+      return;
+    }
+
+    const userEmail = this.authService.getUserEmail();
+    if (!userEmail) {
+      Swal.fire({
+        title: 'No autenticado',
+        text: 'Debes iniciar sesión para realizar una reserva',
+        icon: 'warning',
+        confirmButtonText: 'Ir a Login',
+        confirmButtonColor: '#8B0000',
+        background: '#1a1a1a',
+        color: '#fff',
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
       return;
     }
 
     const bookingData = {
-      userName: this.userName,
+      userEmail: userEmail,
       showtimeId: this.showtimeId,
       seatIds: this.selectedSeats.map((seat) => seat.id),
       seatNumbers: this.selectedSeats.map((seat) => seat.seatNumber),
@@ -132,7 +149,7 @@ export class BookingComponent implements OnInit {
             <p style="margin: 10px 0;"><strong>📅 Fecha y Hora:</strong> ${this.formatDateForDialog(bookingData.showDateTime)}</p>
             <p style="margin: 10px 0;"><strong>🎞️ Tipo:</strong> ${this.getTypeLabel(bookingData.showtimeType)}</p>
             <p style="margin: 10px 0;"><strong>💺 Asientos:</strong> ${bookingData.seatNumbers.join(', ')}</p>
-            <p style="margin: 10px 0;"><strong>👤 Usuario:</strong> ${bookingData.userName}</p>
+            <p style="margin: 10px 0;"><strong>👤 Usuario:</strong> ${bookingData.userEmail}</p>
           </div>
 
           <hr style="margin: 20px 0; border: 1px solid #FFD700;">
@@ -182,7 +199,7 @@ export class BookingComponent implements OnInit {
     this.processing = true;
 
     console.log('🎬 DATOS DE RESERVA:', bookingData);
-    console.log('👤 Usuario:', bookingData.userName);
+    console.log('👤 Usuario:', bookingData.userEmail);
 
     Swal.fire({
       title: 'Procesando pago...',
@@ -204,7 +221,7 @@ export class BookingComponent implements OnInit {
 
       console.log('📤 ENVIANDO AL BACKEND:', request);
 
-      this.apiService.createBooking(bookingData.userName, request).subscribe({
+      this.apiService.createBooking(request).subscribe({
         next: (response) => {
           console.log('✅ RESPUESTA DEL BACKEND:', response);
           this.processing = false;
