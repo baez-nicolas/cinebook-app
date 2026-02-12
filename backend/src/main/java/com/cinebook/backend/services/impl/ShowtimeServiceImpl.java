@@ -137,7 +137,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                             movie, cinema, currentDate,
                             LocalTime.of(17, 30),
                             ShowtimeType.SPANISH_2D,
-                            new BigDecimal("3500"),
+                            new BigDecimal("5000"),
                             currentWeek.getWeekId()
                     );
                     allShowtimes.add(showtime1);
@@ -149,7 +149,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                             movie, cinema, currentDate,
                             LocalTime.of(21, 0),
                             is3D ? ShowtimeType.SPANISH_3D : ShowtimeType.SUBTITLED_2D,
-                            is3D ? new BigDecimal("4500") : new BigDecimal("3800"),
+                            is3D ? new BigDecimal("8000") : new BigDecimal("4500"),
                             currentWeek.getWeekId()
                     );
                     allShowtimes.add(showtime2);
