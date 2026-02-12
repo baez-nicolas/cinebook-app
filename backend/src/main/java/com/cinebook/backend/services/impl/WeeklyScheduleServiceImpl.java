@@ -11,6 +11,7 @@ import com.cinebook.backend.repositories.BookingRepository;
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +19,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +40,13 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
                 });
     }
 
+    @Scheduled(cron = "0 0 23 * * WED", zone = "America/Argentina/Buenos_Aires")
+    @Transactional
+    public void scheduledWeeklyReset() {
+        log.info("⏰ TAREA PROGRAMADA: Miércoles 23:00 - Iniciando reset semanal automático...");
+        checkAndResetIfNeeded();
+    }
+
     @Override
     @Transactional
     public boolean checkAndResetIfNeeded() {
@@ -57,7 +63,7 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         }
 
         if (today.isAfter(currentWeek.getWeekEndDate())) {
-            log.info("🔄 RESET SEMANAL: Pasó el miércoles, iniciando nueva semana...");
+            log.info("🔄 RESET SEMANAL: Pasó el miércoles, iniciando reset...");
             performWeeklyReset(currentWeek, currentThursday);
             return true;
         }
@@ -69,13 +75,18 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
 
     @Transactional
     protected void performWeeklyReset(WeeklySchedule oldWeek, LocalDate newThursday) {
-        log.info("🔄 RESET SEMANAL INTELIGENTE: Actualizando funciones de la semana anterior (weekId: {})...", oldWeek.getWeekId());
+        log.info("╔══════════════════════════════════════════════════════════╗");
+        log.info("║  🔄 RESET SEMANAL AUTOMÁTICO - MIÉRCOLES 23:00         ║");
+        log.info("╚══════════════════════════════════════════════════════════╝");
+        log.info("📅 Semana anterior: {} (weekId: {})", oldWeek.getWeekStartDate(), oldWeek.getWeekId());
 
         Long newWeekId = calculateWeekId(newThursday);
 
+        log.info("🗑️ [1/4] Eliminando reservas de la semana anterior...");
         bookingRepository.deleteByWeekId(oldWeek.getWeekId());
-        log.info("✅ Reservas eliminadas");
+        log.info("   ✅ Reservas eliminadas");
 
+        log.info("🔄 [2/4] Reseteando asientos a AVAILABLE...");
         List<Seat> allSeats = seatRepository.findByWeekId(oldWeek.getWeekId());
         int resettedSeats = 0;
         for (Seat seat : allSeats) {
@@ -84,30 +95,43 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
             resettedSeats++;
         }
         seatRepository.saveAll(allSeats);
-        log.info("✅ {} asientos reseteados a AVAILABLE", resettedSeats);
+        log.info("   ✅ {} asientos reseteados", resettedSeats);
 
+        log.info("📅 [3/4] Actualizando fechas de funciones (+7 días)...");
         List<Showtime> showtimes = showtimeRepository.findByWeekId(oldWeek.getWeekId());
         int updatedShowtimes = 0;
         for (Showtime showtime : showtimes) {
-            LocalDateTime newDateTime = showtime.getShowDateTime().plusWeeks(1);
+            LocalDateTime oldDateTime = showtime.getShowDateTime();
+            LocalDateTime newDateTime = oldDateTime.plusWeeks(1);
             showtime.setShowDateTime(newDateTime);
             showtime.setWeekId(newWeekId);
             updatedShowtimes++;
+
+            if (updatedShowtimes <= 3) {
+                log.info("   📽️ {} {} → {}",
+                        showtime.getMovie().getTitle(),
+                        oldDateTime,
+                        newDateTime);
+            }
         }
         showtimeRepository.saveAll(showtimes);
-        log.info("✅ {} funciones actualizadas (+7 días)", updatedShowtimes);
+        log.info("   ✅ {} funciones actualizadas", updatedShowtimes);
 
+        log.info("🔧 [4/4] Actualizando control de semanas...");
         oldWeek.setIsActive(false);
         weeklyScheduleRepository.save(oldWeek);
-        log.info("✅ Semana anterior desactivada");
 
         WeeklySchedule newWeek = createNewWeek(newThursday);
-        log.info("🎉 Nueva semana creada: {} - {} (weekId: {})",
-                newWeek.getWeekStartDate(), newWeek.getWeekEndDate(), newWeek.getWeekId());
 
-        log.info("📊 Resumen del reset:");
-        log.info("   - Asientos reseteados: {}", resettedSeats);
-        log.info("   - Funciones actualizadas: {}", updatedShowtimes);
+        log.info("╔══════════════════════════════════════════════════════════╗");
+        log.info("║  ✅ RESET COMPLETADO EXITOSAMENTE                       ║");
+        log.info("╚══════════════════════════════════════════════════════════╝");
+        log.info("📊 Resumen:");
+        log.info("   • Asientos reseteados: {}", resettedSeats);
+        log.info("   • Funciones actualizadas: {}", updatedShowtimes);
+        log.info("   • Nueva semana: {} - {} (weekId: {})",
+                newWeek.getWeekStartDate(), newWeek.getWeekEndDate(), newWeek.getWeekId());
+        log.info("🎬 Todas las funciones están disponibles de nuevo");
     }
 
     @Override
@@ -128,19 +152,17 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         newWeek.setIsActive(true);
         newWeek.setCreatedAt(LocalDate.now());
 
-        WeeklySchedule saved = weeklyScheduleRepository.save(newWeek);
-        log.info("📅 Nueva semana creada: {} a {} (weekId: {})",
-                weekStart, weekEnd, weekId);
+        weeklyScheduleRepository.save(newWeek);
+        log.info("✅ Nueva semana creada: {} - {} (weekId: {})", weekStart, weekEnd, weekId);
 
-        return saved;
+        return newWeek;
     }
 
     @Override
     public Long calculateWeekId(LocalDate date) {
-        int year = date.getYear();
-        int weekNumber = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-
-        return Long.valueOf(String.format("%d%02d", year, weekNumber));
+        long epochDay = date.toEpochDay();
+        long weekNumber = epochDay / 7;
+        return weekNumber;
     }
 
     @Override
@@ -151,17 +173,14 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
     @Override
     public LocalDate getCurrentThursday() {
         LocalDate today = LocalDate.now();
+        DayOfWeek currentDay = today.getDayOfWeek();
 
-        if (today.getDayOfWeek() == DayOfWeek.THURSDAY) {
+        if (currentDay == DayOfWeek.THURSDAY) {
             return today;
+        } else if (currentDay.getValue() < DayOfWeek.THURSDAY.getValue()) {
+            return today.with(TemporalAdjusters.previousOrSame(DayOfWeek.THURSDAY));
+        } else {
+            return today.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
         }
-
-        LocalDate thursday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.THURSDAY));
-
-        if (thursday.isAfter(today)) {
-            thursday = today.with(TemporalAdjusters.previous(DayOfWeek.THURSDAY));
-        }
-
-        return thursday;
     }
 }

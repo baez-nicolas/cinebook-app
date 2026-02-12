@@ -52,12 +52,14 @@ public class BookingServiceImpl implements IBookingService {
 
         LocalDateTime now = LocalDateTime.now();
         if (showtime.getShowDateTime().isBefore(now) || showtime.getShowDateTime().isEqual(now)) {
+            log.warn("❌ Intento de reserva de función pasada: {} (Actual: {})",
+                    showtime.getShowDateTime(), now);
             throw new RuntimeException("No se pueden reservar funciones que ya comenzaron o están en curso");
         }
 
+        long minutesUntilShowtime = java.time.temporal.ChronoUnit.MINUTES.between(now, showtime.getShowDateTime());
         log.info("✅ Función válida: {} (Faltan {} minutos)",
-                showtime.getShowDateTime(),
-                java.time.Duration.between(now, showtime.getShowDateTime()).toMinutes());
+                showtime.getShowDateTime(), minutesUntilShowtime);
 
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
 
