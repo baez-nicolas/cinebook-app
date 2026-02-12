@@ -28,8 +28,10 @@
   gap: 12px;
 }
 
-.brand-icon {
-  font-size: 2rem;
+.brand-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-brand h1 {

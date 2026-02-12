@@ -101,8 +101,10 @@
   animation: float 4s ease-in-out infinite;
 }
 
-.cinema-brand .emoji {
-  font-size: 4rem;
+.cinema-brand .brand-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
   filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
 }
 
@@ -338,8 +340,8 @@
     animation: none;
   }
 
-  .cinema-brand .emoji {
-    font-size: 2rem;
+  .cinema-brand .brand-logo {
+    height: 35px;
   }
 
   .register-container {
