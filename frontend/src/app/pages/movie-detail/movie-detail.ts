@@ -1,33 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Cinema } from '../../models/cinema.model';
 import { Movie } from '../../models/movie.model';
 import { Showtime } from '../../models/showtime.model';
 import { ApiService } from '../../services/api.service';
 
-interface ShowtimesByCinema {
-  cinemaId: number;
-  cinemaName: string;
-  showtimes: Showtime[];
-}
-
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.css',
 })
 export class MovieDetailComponent implements OnInit {
   movie: Movie | null = null;
-  allShowtimes: Showtime[] = [];
-  showtimesByCinema: ShowtimesByCinema[] = [];
   cinemas: Cinema[] = [];
-  selectedCinemaId: number = 0;
+  availableDates: { label: string; value: string }[] = [];
+  allShowtimes: Showtime[] = [];
+  filteredShowtimes: Showtime[] = [];
+
+  selectedCinemaId: number | null = null;
+  selectedDate: string = '';
+
   loading = true;
-  error: string | null = null;
+  loadingShowtimes = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,158 +34,118 @@ export class MovieDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadMovieDetail(+id);
-      this.loadCinemas();
-    }
+    const movieId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadMovieDetails(movieId);
+    this.loadCinemas();
+    this.loadAllShowtimes(movieId);
+    this.generateAvailableDates();
   }
 
-  loadMovieDetail(id: number): void {
+  loadMovieDetails(id: number): void {
     this.apiService.getMovieById(id).subscribe({
-      next: (movie) => {
-        this.movie = movie;
-        this.loadShowtimes(id);
-      },
-      error: (err) => {
-        this.error = 'Error al cargar la película';
-        this.loading = false;
-        console.error(err);
-      },
-    });
-  }
-
-  loadShowtimes(movieId: number): void {
-    this.apiService.getShowtimesByMovie(movieId).subscribe({
-      next: (showtimes) => {
-        this.allShowtimes = showtimes;
-        this.filterShowtimes();
+      next: (data) => {
+        this.movie = data;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = 'Error al cargar las funciones';
+      error: (error) => {
+        console.error('Error al cargar película:', error);
         this.loading = false;
-        console.error(err);
       },
     });
   }
 
   loadCinemas(): void {
     this.apiService.getCinemas().subscribe({
-      next: (cinemas) => {
-        this.cinemas = cinemas;
+      next: (data) => {
+        this.cinemas = data;
       },
-      error: (err) => {
-        console.error('Error al cargar cines:', err);
+      error: (error) => {
+        console.error('Error al cargar cines:', error);
       },
     });
+  }
+
+  loadAllShowtimes(movieId: number): void {
+    this.apiService.getShowtimesByMovie(movieId).subscribe({
+      next: (data) => {
+        this.allShowtimes = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar funciones:', error);
+      },
+    });
+  }
+
+  generateAvailableDates(): void {
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dayName = date.toLocaleDateString('es-AR', { weekday: 'long' });
+      const dayNumber = date.getDate();
+      const month = date.toLocaleDateString('es-AR', { month: '2-digit' });
+
+      const label = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNumber}/${month}`;
+      const value = date.toISOString().split('T')[0];
+
+      this.availableDates.push({ label, value });
+    }
+
+    this.selectedDate = this.availableDates[0].value;
+  }
+
+  onCinemaOrDateChange(): void {
+    if (this.selectedCinemaId && this.selectedDate) {
+      this.filterShowtimes();
+    } else {
+      this.filteredShowtimes = [];
+    }
   }
 
   filterShowtimes(): void {
-    const now = new Date();
-    const today = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-    );
+    this.loadingShowtimes = true;
 
-    const nextWednesday = new Date(today);
-    const daysUntilWednesday = (3 - today.getDay() + 7) % 7;
-    if (daysUntilWednesday === 0 && today.getDay() === 3) {
-      nextWednesday.setDate(today.getDate());
-    } else {
-      nextWednesday.setDate(today.getDate() + daysUntilWednesday);
-    }
-    nextWednesday.setHours(23, 59, 59, 999);
+    setTimeout(() => {
+      this.filteredShowtimes = this.allShowtimes
+        .filter((st) => {
+          const showtimeDate = new Date(st.showDateTime).toISOString().split('T')[0];
+          return st.cinemaId === this.selectedCinemaId && showtimeDate === this.selectedDate;
+        })
+        .sort((a, b) => new Date(a.showDateTime).getTime() - new Date(b.showDateTime).getTime());
 
-    console.log('📅 Ahora:', now);
-    console.log('📅 Hasta:', nextWednesday);
-
-    let filteredShowtimes = this.allShowtimes.filter((st) => {
-      const showtimeDate = new Date(st.showDateTime);
-      return showtimeDate >= now && showtimeDate <= nextWednesday;
-    });
-
-    console.log('📅 Funciones futuras en rango:', filteredShowtimes.length);
-
-    const cinemaId = Number(this.selectedCinemaId);
-
-    if (cinemaId !== 0 && !isNaN(cinemaId)) {
-      filteredShowtimes = filteredShowtimes.filter((st) => st.cinemaId === cinemaId);
-      console.log('🏢 Funciones del cine', cinemaId, ':', filteredShowtimes.length);
-    }
-
-    this.groupShowtimesByCinema(filteredShowtimes);
-
-    console.log('🎬 Cines agrupados:', this.showtimesByCinema.length);
+      this.loadingShowtimes = false;
+    }, 300);
   }
 
-  onCinemaChange(): void {
-    console.log('🔍 Cinema seleccionado:', this.selectedCinemaId);
-    console.log('🔍 Total funciones:', this.allShowtimes.length);
-    this.filterShowtimes();
+  selectShowtime(showtimeId: number): void {
+    this.router.navigate(['/booking', showtimeId]);
   }
 
-  groupShowtimesByCinema(showtimes: Showtime[]): void {
-    const grouped = new Map<number, ShowtimesByCinema>();
-
-    showtimes.forEach((showtime) => {
-      if (!grouped.has(showtime.cinemaId)) {
-        grouped.set(showtime.cinemaId, {
-          cinemaId: showtime.cinemaId,
-          cinemaName: showtime.cinemaName,
-          showtimes: [],
-        });
-      }
-      grouped.get(showtime.cinemaId)!.showtimes.push(showtime);
-    });
-
-    this.showtimesByCinema = Array.from(grouped.values());
+  formatDuration(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
+  formatTime(dateTime: string): string {
+    return new Date(dateTime).toLocaleTimeString('es-AR', {
       hour: '2-digit',
       minute: '2-digit',
-    };
-    return date.toLocaleDateString('es-AR', options);
+    });
   }
 
   getTypeLabel(type: string): string {
     const labels: { [key: string]: string } = {
       SPANISH_2D: '2D Español',
-      SUBTITLED_2D: '2D Subtitulada',
+      SUBTITLED_2D: '2D Subtitulado',
       SPANISH_3D: '3D Español',
     };
     return labels[type] || type;
   }
 
-  getAvailabilityClass(availableSeats: number, totalSeats: number): string {
-    const percentage = (availableSeats / totalSeats) * 100;
-    if (percentage > 50) return 'good';
-    if (percentage > 20) return 'medium';
-    return 'low';
-  }
-
-  isPastShowtime(showtime: Showtime): boolean {
-    const now = new Date();
-    const showtimeDate = new Date(showtime.showDateTime);
-    return showtimeDate < now;
-  }
-
   goBack(): void {
     this.router.navigate(['/movies']);
-  }
-
-  openTrailer(): void {
-    if (this.movie?.trailerUrl) {
-      window.open(this.movie.trailerUrl, '_blank');
-    }
   }
 }

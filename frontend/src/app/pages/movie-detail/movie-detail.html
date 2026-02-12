@@ -1,139 +1,114 @@
 <div class="movie-detail-page">
-  <div class="container">
-    @if (loading) {
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Cargando...</p>
-      </div>
-    }
+  @if (loading) {
+    <div class="loading-page">
+      <div class="spinner"></div>
+      <p>Cargando película...</p>
+    </div>
+  }
 
-    @if (error) {
-      <div class="error-message">
-        <span class="error-icon">⚠️</span>
-        <p>{{ error }}</p>
-        <button class="btn-primary" (click)="goBack()">Volver al inicio</button>
-      </div>
-    }
-
-    @if (movie && !loading && !error) {
-      <button class="back-btn" (click)="goBack()">
-        <span class="back-icon">←</span>
-        <span>Volver</span>
-      </button>
-
-      <div class="filter-section">
-        <div class="filter-container">
-          <label for="cinema-filter" class="filter-label">
-            <span class="filter-icon">🏢</span>
-            <span class="filter-text">Seleccioná un Cine</span>
-          </label>
-          <select
-            id="cinema-filter"
-            class="cinema-select"
-            [(ngModel)]="selectedCinemaId"
-            (change)="onCinemaChange()"
-          >
-            <option [value]="0">🎬 Todos los cines</option>
-            @for (cinema of cinemas; track cinema.id) {
-              <option [value]="cinema.id">🏢 {{ cinema.name }}</option>
-            }
-          </select>
+  @if (!loading && movie) {
+    <div class="movie-header" [style.background-image]="'url(' + movie.posterUrl + ')'">
+      <div class="header-overlay">
+        <div class="container">
+          <button (click)="goBack()" class="btn-back">← Volver</button>
         </div>
       </div>
+    </div>
 
-      <div class="movie-header">
-        <div class="poster-container">
-          <img [src]="movie.posterUrl" [alt]="movie.title" class="movie-poster" />
-          <div class="poster-overlay">
-            @if (movie.trailerUrl) {
-              <button class="trailer-btn" (click)="openTrailer()">
-                <span class="play-icon">▶️</span>
-                <span>Ver Trailer</span>
-              </button>
-            }
-          </div>
-        </div>
-
-        <div class="movie-info">
-          <h1 class="movie-title">{{ movie.title }}</h1>
-
-          <div class="movie-badges">
-            <span class="badge rating-badge">{{ movie.rating.replace('_', '-') }}</span>
-            <span class="badge duration-badge">⏱️ {{ movie.duration }} min</span>
-            <span class="badge genre-badge">{{ movie.genre }}</span>
+    <div class="movie-content">
+      <div class="container">
+        <div class="movie-main">
+          <div class="movie-poster-large">
+            <img [src]="movie.posterUrl" [alt]="movie.title" />
           </div>
 
-          <div class="movie-description">
-            <h3 class="section-title">📝 Sinopsis</h3>
-            <p>{{ movie.description }}</p>
-          </div>
+          <div class="movie-info-large">
+            <h1 class="movie-title-large">{{ movie.title }}</h1>
 
-          <div class="movie-release">
-            <span class="release-label">🗓️ Fecha de estreno:</span>
-            <span class="release-date">{{ movie.releaseDate }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="showtimes-section">
-        <h2 class="section-title">🎬 Funciones Disponibles</h2>
-
-        @if (showtimesByCinema.length === 0) {
-          <div class="no-showtimes">
-            <span class="empty-icon">😔</span>
-            <p>No hay funciones disponibles para esta película en el cine seleccionado</p>
-          </div>
-        }
-
-        @for (cinema of showtimesByCinema; track cinema.cinemaId) {
-          <div class="cinema-card">
-            <div class="cinema-header">
-              <h3 class="cinema-name">🏢 {{ cinema.cinemaName }}</h3>
-              <span class="cinema-count">{{ cinema.showtimes.length }} funciones</span>
+            <div class="movie-meta-large">
+              <span class="meta-badge">⭐ {{ movie.rating }}/10</span>
+              <span class="meta-badge">🎭 {{ movie.genre }}</span>
+              <span class="meta-badge">⏱️ {{ formatDuration(movie.duration) }}</span>
+              <span class="meta-badge">📅 {{ movie.releaseDate | date: 'dd/MM/yyyy' }}</span>
             </div>
 
-            <div class="showtimes-grid">
-              @for (showtime of cinema.showtimes; track showtime.id) {
-                <div class="showtime-card" [routerLink]="['/booking', showtime.id]">
-                  <div class="showtime-header">
-                    <span class="showtime-date">{{ formatDate(showtime.showDateTime) }}</span>
-                    <span class="showtime-type">{{ getTypeLabel(showtime.type) }}</span>
-                  </div>
+            <div class="movie-description">
+              <h3>📝 Sinopsis</h3>
+              <p>{{ movie.description }}</p>
+            </div>
 
-                  <div class="showtime-body">
-                    <div class="showtime-price">
-                      <span class="price-label">Precio</span>
-                      <span class="price-value">${{ showtime.price }}</span>
-                    </div>
+            @if (movie.trailerUrl) {
+              <a [href]="movie.trailerUrl" target="_blank" class="btn-trailer"> ▶️ Ver Trailer </a>
+            }
+          </div>
+        </div>
 
-                    <div
-                      class="showtime-seats"
-                      [class]="
-                        'seats-' +
-                        getAvailabilityClass(showtime.availableSeats, showtime.totalSeats)
-                      "
-                    >
-                      <span class="seats-icon">💺</span>
-                      <span class="seats-text"
-                        >{{ showtime.availableSeats }}/{{ showtime.totalSeats }}</span
-                      >
-                    </div>
-                  </div>
+        <div class="booking-section">
+          <h2 class="section-title">🎟️ Seleccioná Cine y Fecha</h2>
 
-                  <button
-                    class="reserve-btn"
-                    [routerLink]="['/booking', showtime.id]"
-                    [disabled]="isPastShowtime(showtime)"
-                  >
-                    <span class="btn-icon">🎫</span>
-                    <span>{{ isPastShowtime(showtime) ? 'Función pasada' : 'Reservar' }}</span>
-                  </button>
+          <div class="selection-grid">
+            <div class="form-group">
+              <label>🏢 Cine</label>
+              <select
+                [(ngModel)]="selectedCinemaId"
+                (change)="onCinemaOrDateChange()"
+                class="select-input"
+              >
+                <option [value]="null">Seleccioná un cine</option>
+                @for (cinema of cinemas; track cinema.id) {
+                  <option [value]="cinema.id">{{ cinema.name }} - {{ cinema.city }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>📅 Fecha</label>
+              <select
+                [(ngModel)]="selectedDate"
+                (change)="onCinemaOrDateChange()"
+                class="select-input"
+              >
+                @for (date of availableDates; track date.value) {
+                  <option [value]="date.value">
+                    {{ date.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (selectedCinemaId && selectedDate) {
+            <div class="showtimes-section">
+              @if (loadingShowtimes) {
+                <div class="loading-showtimes">
+                  <div class="spinner-small"></div>
+                  <p>Buscando funciones...</p>
+                </div>
+              }
+
+              @if (!loadingShowtimes && filteredShowtimes.length === 0) {
+                <div class="no-showtimes">
+                  <p>😔 No hay funciones disponibles para esta fecha y cine</p>
+                  <p class="hint">Intenta con otra combinación</p>
+                </div>
+              }
+
+              @if (!loadingShowtimes && filteredShowtimes.length > 0) {
+                <h3 class="showtimes-title">Horarios Disponibles</h3>
+                <div class="showtimes-grid">
+                  @for (showtime of filteredShowtimes; track showtime.id) {
+                    <button class="showtime-card" (click)="selectShowtime(showtime.id)">
+                      <span class="showtime-time">{{ formatTime(showtime.showDateTime) }}</span>
+                      <span class="showtime-type">{{ getTypeLabel(showtime.type) }}</span>
+                      <span class="showtime-price">${{ showtime.price }}</span>
+                    </button>
+                  }
                 </div>
               }
             </div>
-          </div>
-        }
+          }
+        </div>
       </div>
-    }
-  </div>
+    </div>
+  }
 </div>
