@@ -62,4 +62,10 @@ export class ApiService {
   getBookingsByUser(userEmail: string): Observable<BookingResponse[]> {
     return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/user/${userEmail}`);
   }
+
+  getShowtimesByFilters(movieId: number, cinemaId: number, date: string): Observable<Showtime[]> {
+    return this.http.get<Showtime[]>(
+      `${this.apiUrl}/showtimes/filter?movieId=${movieId}&cinemaId=${cinemaId}&date=${date}`,
+    );
+  }
 }

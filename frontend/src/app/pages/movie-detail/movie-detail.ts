@@ -18,7 +18,6 @@ export class MovieDetailComponent implements OnInit {
   movie: Movie | null = null;
   cinemas: Cinema[] = [];
   availableDates: { label: string; value: string }[] = [];
-  allShowtimes: Showtime[] = [];
   filteredShowtimes: Showtime[] = [];
 
   selectedCinemaId: number | null = null;
@@ -37,7 +36,6 @@ export class MovieDetailComponent implements OnInit {
     const movieId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadMovieDetails(movieId);
     this.loadCinemas();
-    this.loadAllShowtimes(movieId);
     this.generateAvailableDates();
   }
 
@@ -61,17 +59,6 @@ export class MovieDetailComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar cines:', error);
-      },
-    });
-  }
-
-  loadAllShowtimes(movieId: number): void {
-    this.apiService.getShowtimesByMovie(movieId).subscribe({
-      next: (data) => {
-        this.allShowtimes = data;
-      },
-      error: (error) => {
-        console.error('Error al cargar funciones:', error);
       },
     });
   }
@@ -105,18 +92,25 @@ export class MovieDetailComponent implements OnInit {
   }
 
   filterShowtimes(): void {
+    if (!this.movie || !this.selectedCinemaId || !this.selectedDate) {
+      return;
+    }
+
     this.loadingShowtimes = true;
 
-    setTimeout(() => {
-      this.filteredShowtimes = this.allShowtimes
-        .filter((st) => {
-          const showtimeDate = new Date(st.showDateTime).toISOString().split('T')[0];
-          return st.cinemaId === this.selectedCinemaId && showtimeDate === this.selectedDate;
-        })
-        .sort((a, b) => new Date(a.showDateTime).getTime() - new Date(b.showDateTime).getTime());
-
-      this.loadingShowtimes = false;
-    }, 300);
+    this.apiService
+      .getShowtimesByFilters(this.movie.id, this.selectedCinemaId, this.selectedDate)
+      .subscribe({
+        next: (showtimes) => {
+          this.filteredShowtimes = showtimes;
+          this.loadingShowtimes = false;
+        },
+        error: (error) => {
+          console.error('Error al filtrar funciones:', error);
+          this.filteredShowtimes = [];
+          this.loadingShowtimes = false;
+        },
+      });
   }
 
   selectShowtime(showtimeId: number): void {
