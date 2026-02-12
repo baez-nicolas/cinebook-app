@@ -21,10 +21,12 @@ export class NavbarComponent implements OnInit {
     public authService: AuthService,
     private router: Router,
   ) {
+    this.checkIfPublicRoute(this.router.url);
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.isPublicRoute = event.url === '/login' || event.url === '/register';
+        this.checkIfPublicRoute(event.url);
       });
   }
 
@@ -32,6 +34,14 @@ export class NavbarComponent implements OnInit {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
+  }
+
+  private checkIfPublicRoute(url: string): void {
+    this.isPublicRoute =
+      url === '/login' ||
+      url === '/register' ||
+      url.startsWith('/login') ||
+      url.startsWith('/register');
   }
 
   isAuthenticated(): boolean {
