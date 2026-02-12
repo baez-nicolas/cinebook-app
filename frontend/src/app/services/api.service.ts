@@ -70,10 +70,10 @@ export class ApiService {
   }
 
   getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`);
+    return this.http.get<any[]>(`${this.apiUrl}/admin/users`);
   }
 
   getUsersCount(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/users/count`);
+    return this.http.get<any>(`${this.apiUrl}/admin/users/count`);
   }
 }
