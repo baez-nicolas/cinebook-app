@@ -13,6 +13,11 @@
         <a [routerLink]="['/my-bookings']" class="nav-link active" (click)="closeMenu()"
           >📋 Mis Reservas</a
         >
+        @if (currentUser && currentUser.role === 'ADMIN') {
+          <a [routerLink]="['/users']" class="nav-link" (click)="closeMenu()"
+            >👥 Lista de Usuarios</a
+          >
+        }
         @if (currentUser) {
           <div class="user-section">
             @if (currentUser.role === 'ADMIN') {

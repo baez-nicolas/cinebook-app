@@ -68,4 +68,12 @@ export class ApiService {
       `${this.apiUrl}/showtimes/filter?movieId=${movieId}&cinemaId=${cinemaId}&date=${date}`,
     );
   }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  }
+
+  getUsersCount(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/users/count`);
+  }
 }

@@ -1,0 +1,116 @@
+<div class="users-page">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <img src="/logo.png" alt="CineBook Logo" class="brand-logo" />
+        <h1>CINEBOOK</h1>
+      </div>
+      <button class="menu-toggle" [class.open]="menuOpen" (click)="toggleMenu()">
+        <span class="hamburger"></span>
+      </button>
+      <div class="nav-links" [class.open]="menuOpen">
+        <a [routerLink]="['/movies']" class="nav-link" (click)="closeMenu()">🎥 Películas</a>
+        <a [routerLink]="['/my-bookings']" class="nav-link" (click)="closeMenu()"
+          >📋 Mis Reservas</a
+        >
+        <a [routerLink]="['/users']" class="nav-link active" (click)="closeMenu()"
+          >👥 Lista de Usuarios</a
+        >
+        @if (currentUser) {
+          <div class="user-section">
+            <span class="user-label">Admin</span>
+            <span class="admin-badge">ADMIN</span>
+            <button (click)="logout()" class="btn-logout">🚪 Salir</button>
+          </div>
+        }
+      </div>
+      <div class="overlay" [class.open]="menuOpen" (click)="closeMenu()"></div>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <div class="users-content">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">👥 Lista de Usuarios</h1>
+        <p class="page-subtitle">Gestión de usuarios registrados en CineBook</p>
+      </div>
+
+      <!-- ESTADÍSTICAS -->
+      @if (userStats) {
+        <div class="stats-grid">
+          <div class="stat-card total">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <span class="stat-label">Total Usuarios</span>
+              <span class="stat-value">{{ userStats.totalUsers }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card admins">
+            <div class="stat-icon">🛡️</div>
+            <div class="stat-info">
+              <span class="stat-label">Administradores</span>
+              <span class="stat-value">{{ userStats.totalAdmins }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card regular">
+            <div class="stat-icon">👤</div>
+            <div class="stat-info">
+              <span class="stat-label">Usuarios Regulares</span>
+              <span class="stat-value">{{ userStats.totalRegularUsers }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- TABLA DE USUARIOS -->
+      @if (loading) {
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Cargando usuarios...</p>
+        </div>
+      }
+
+      @if (!loading && users.length === 0) {
+        <div class="no-users">
+          <p>No hay usuarios registrados</p>
+        </div>
+      }
+
+      @if (!loading && users.length > 0) {
+        <div class="users-table-container">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users; track user.id) {
+                <tr>
+                  <td class="user-id">#{{ user.id }}</td>
+                  <td class="user-name">{{ user.firstName }}</td>
+                  <td class="user-name">{{ user.lastName }}</td>
+                  <td class="user-email">{{ user.email }}</td>
+                  <td>
+                    <span [class]="'role-badge ' + getRoleBadgeClass(user.role)">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div>

@@ -38,6 +38,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'users',
+    loadComponent: () => import('./pages/users/users').then((m) => m.UsersComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '**',
     redirectTo: '/login',
   },
