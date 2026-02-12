@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -28,7 +27,6 @@ public class AdminController {
     private final UserRepository userRepository;
 
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todos los usuarios", description = "Solo accesible para ADMIN")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         log.info("📊 Admin consultando lista de usuarios");
@@ -44,7 +42,6 @@ public class AdminController {
     }
 
     @GetMapping("/users/count")
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Contar usuarios registrados", description = "Solo accesible para ADMIN")
     public ResponseEntity<Map<String, Object>> countUsers() {
         log.info("📊 Admin consultando cantidad de usuarios");
