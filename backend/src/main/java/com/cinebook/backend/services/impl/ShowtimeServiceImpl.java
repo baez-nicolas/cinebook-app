@@ -124,82 +124,49 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             return;
         }
 
-        LocalTime[] showtimes2DSpanish = {
-                LocalTime.of(16, 0),
-                LocalTime.of(21, 0)
-        };
-
-        LocalTime[] showtimes2DSubtitled = {
-                LocalTime.of(18, 30)
-        };
-
-        LocalTime[] showtimes3D = {
-                LocalTime.of(15, 0),
-                LocalTime.of(22, 30)
-        };
-
-        Map<ShowtimeType, BigDecimal> prices = new EnumMap<>(ShowtimeType.class);
-        prices.put(ShowtimeType.SPANISH_2D, new BigDecimal("3500"));
-        prices.put(ShowtimeType.SUBTITLED_2D, new BigDecimal("3800"));
-        prices.put(ShowtimeType.SPANISH_3D, new BigDecimal("4500"));
-
         List<Showtime> allShowtimes = new ArrayList<>();
         int functionCount = 0;
-        Random random = new Random();
 
         for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
             LocalDate currentDate = currentWeek.getWeekStartDate().plusDays(dayOffset);
 
             for (Cinema cinema : cinemas) {
-                List<Movie> shuffledMovies = new ArrayList<>(movies);
-                Collections.shuffle(shuffledMovies, random);
+                for (Movie movie : movies) {
 
-                List<Movie> moviesForThisCinema = shuffledMovies.subList(0, Math.min(3, shuffledMovies.size()));
+                    Showtime showtime1 = createShowtime(
+                            movie, cinema, currentDate,
+                            LocalTime.of(17, 30),
+                            ShowtimeType.SPANISH_2D,
+                            new BigDecimal("3500"),
+                            currentWeek.getWeekId()
+                    );
+                    allShowtimes.add(showtime1);
+                    functionCount++;
 
-                for (Movie movie : moviesForThisCinema) {
+                    boolean is3D = (dayOffset % 2 == 0);
 
-                    for (LocalTime time : showtimes2DSpanish) {
-                        Showtime showtime = createShowtime(
-                                movie, cinema, currentDate, time,
-                                ShowtimeType.SPANISH_2D,
-                                prices.get(ShowtimeType.SPANISH_2D),
-                                currentWeek.getWeekId()
-                        );
-                        allShowtimes.add(showtime);
-                        functionCount++;
-                    }
-
-                    for (LocalTime time : showtimes2DSubtitled) {
-                        Showtime showtime = createShowtime(
-                                movie, cinema, currentDate, time,
-                                ShowtimeType.SUBTITLED_2D,
-                                prices.get(ShowtimeType.SUBTITLED_2D),
-                                currentWeek.getWeekId()
-                        );
-                        allShowtimes.add(showtime);
-                        functionCount++;
-                    }
-
-                    for (LocalTime time : showtimes3D) {
-                        Showtime showtime = createShowtime(
-                                movie, cinema, currentDate, time,
-                                ShowtimeType.SPANISH_3D,
-                                prices.get(ShowtimeType.SPANISH_3D),
-                                currentWeek.getWeekId()
-                        );
-                        allShowtimes.add(showtime);
-                        functionCount++;
-                    }
+                    Showtime showtime2 = createShowtime(
+                            movie, cinema, currentDate,
+                            LocalTime.of(21, 0),
+                            is3D ? ShowtimeType.SPANISH_3D : ShowtimeType.SUBTITLED_2D,
+                            is3D ? new BigDecimal("4500") : new BigDecimal("3800"),
+                            currentWeek.getWeekId()
+                    );
+                    allShowtimes.add(showtime2);
+                    functionCount++;
                 }
             }
         }
 
         showtimeRepository.saveAll(allShowtimes);
-        log.info("✅ {} funciones generadas exitosamente para la semana {}", functionCount, currentWeek.getWeekId());
 
-        int expectedFunctions = 3 * cinemas.size() * 7 *
-                (showtimes2DSpanish.length + showtimes2DSubtitled.length + showtimes3D.length);
-        log.info("📊 Esperadas: {} | Generadas: {}", expectedFunctions, functionCount);
+        log.info("✅ {} funciones generadas exitosamente para la semana {}", functionCount, currentWeek.getWeekId());
+        log.info("📊 Distribución:");
+        log.info("   • Películas: {}", movies.size());
+        log.info("   • Cines: {}", cinemas.size());
+        log.info("   • Días: 7");
+        log.info("   • Funciones por película/cine/día: 2");
+        log.info("   • Total esperado: {}", movies.size() * cinemas.size() * 7 * 2);
     }
 
     private Showtime createShowtime(Movie movie, Cinema cinema, LocalDate date, LocalTime time,
