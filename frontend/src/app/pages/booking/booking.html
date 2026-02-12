@@ -23,11 +23,11 @@
 
       <div class="showtime-info">
         <div class="info-content">
-          <h1 class="movie-title">🎬 {{ showtime.movieTitle }}</h1>
+          <h1 class="movie-title">{{ showtime.movieTitle }}</h1>
           <div class="info-details">
-            <span class="detail-item">📍 {{ showtime.cinemaName }}</span>
+            <span class="detail-item">{{ showtime.cinemaName }}</span>
             <span class="detail-separator">|</span>
-            <span class="detail-item">🗓️ {{ formatDate(showtime.showDateTime) }}</span>
+            <span class="detail-item">{{ formatDate(showtime.showDateTime) }}</span>
             <span class="detail-separator">|</span>
             <span class="detail-item">{{ getTypeLabel(showtime.type) }}</span>
             <span class="detail-separator">|</span>
@@ -38,7 +38,7 @@
 
       <div class="booking-content">
         <div class="seats-section">
-          <h2 class="section-title">🎭 Seleccioná tus Asientos</h2>
+          <h2 class="section-title">Seleccioná tus Asientos</h2>
 
           <div class="seats-legend">
             <div class="legend-item">
@@ -56,7 +56,7 @@
           </div>
 
           <div class="screen-container">
-            <div class="screen">🎬 PANTALLA</div>
+            <div class="screen">PANTALLA</div>
           </div>
 
           <div class="cinema-seats">
@@ -91,12 +91,11 @@
 
         <div class="summary-section">
           <div class="summary-card">
-            <h2 class="summary-title">📝 Resumen de tu Reserva</h2>
+            <h2 class="summary-title">Resumen de tu Reserva</h2>
 
             @if (selectedSeats.length > 0) {
               <div class="summary-section-item">
                 <h3 class="section-subtitle">
-                  <span class="subtitle-icon">💺</span>
                   <span>Asientos Seleccionados</span>
                 </h3>
                 <div class="selected-seats-list">
@@ -107,7 +106,6 @@
               </div>
             } @else {
               <div class="empty-selection">
-                <span class="empty-icon">👆</span>
                 <p>Seleccioná tus asientos en el mapa</p>
               </div>
             }
@@ -132,14 +130,12 @@
                   <span class="btn-spinner"></span>
                   <span>Procesando...</span>
                 } @else {
-                  <span class="btn-icon">🎫</span>
                   <span>Confirmar Reserva</span>
                 }
               </button>
             }
 
             <div class="info-box">
-              <span class="info-icon">ℹ️</span>
               <p>Tus asientos quedarán reservados por 10 minutos</p>
             </div>
           </div>
