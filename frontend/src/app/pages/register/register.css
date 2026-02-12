@@ -1,12 +1,13 @@
 .register-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 70%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .cinema-background {
@@ -17,85 +18,104 @@
   left: 0;
   overflow: hidden;
   z-index: 0;
-  opacity: 0.4;
 }
 
-.film-strip {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 400px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    transparent 100%
-  );
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  border-right: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.film-hole {
-  display: none;
-}
-
-.spotlight {
+.ambient-light {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.08;
-  animation: pulse 6s ease-in-out infinite;
+  filter: blur(120px);
+  opacity: 0.15;
   pointer-events: none;
 }
 
-.spotlight-1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  top: -100px;
-  right: 10%;
-}
-
-.spotlight-2 {
+.ambient-1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-  bottom: -150px;
-  left: 10%;
-  animation-delay: 3s;
+  background: radial-gradient(circle, rgba(100, 100, 120, 0.8) 0%, transparent 70%);
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: glow 8s ease-in-out infinite;
 }
 
-@keyframes pulse {
+.ambient-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(80, 80, 100, 0.6) 0%, transparent 70%);
+  bottom: 10%;
+  left: 10%;
+  animation: glow 10s ease-in-out infinite 2s;
+}
+
+.ambient-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(90, 90, 110, 0.5) 0%, transparent 70%);
+  bottom: 20%;
+  right: 10%;
+  animation: glow 12s ease-in-out infinite 4s;
+}
+
+@keyframes glow {
   0%,
   100% {
-    opacity: 0.08;
-    transform: scale(1);
+    opacity: 0.1;
+    transform: translateX(-50%) scale(1);
   }
   50% {
-    opacity: 0.12;
-    transform: scale(1.05);
+    opacity: 0.2;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
 .register-container {
   width: 100%;
-  max-width: 750px;
-  z-index: 1;
+  max-width: 620px;
   position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cinema-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 50px;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+  animation: float 4s ease-in-out infinite;
+}
+
+.cinema-brand .emoji {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
 }
 
 .register-card {
-  background: rgba(26, 26, 26, 0.97);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-radius: 24px;
-  padding: 50px;
-  box-shadow:
-    0 15px 50px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  background: rgba(20, 20, 22, 0.85);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  padding: 50px 45px;
   width: 100%;
-  backdrop-filter: blur(10px);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.6),
+    0 0 1px rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
 .register-header {
@@ -104,17 +124,17 @@
 }
 
 .register-header h1 {
-  font-size: 3.2rem;
-  color: #f0f0f0;
-  margin-bottom: 12px;
-  text-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
-  letter-spacing: 1px;
+  font-size: 1.8rem;
+  color: #e8e8e8;
+  margin-bottom: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .register-header p {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 1.15rem;
-  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 .register-form {
@@ -178,10 +198,10 @@
 }
 
 .form-group input {
-  padding: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.6);
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -189,9 +209,9 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(100, 100, 120, 0.15);
 }
 
 .form-group input:-webkit-autofill,
@@ -217,30 +237,27 @@
 }
 
 .btn-register {
-  margin-top: 10px;
+  margin-top: 15px;
   padding: 18px;
-  background: linear-gradient(135deg, #3a3a3a 0%, #5a5a5a 100%);
+  background: linear-gradient(135deg, #4a4a52 0%, #3a3a42 100%);
   color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: none;
   border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: 900;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   letter-spacing: 0.5px;
 }
 
 .btn-register:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
-  background: linear-gradient(135deg, #5a5a5a 0%, #6a6a6a 100%);
-  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #5a5a62 0%, #4a4a52 100%);
 }
 
 .btn-register:disabled {
@@ -266,35 +283,95 @@
 .register-footer {
   text-align: center;
   margin-top: 30px;
-  padding-top: 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .register-footer p {
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
 }
 
 .link-login {
-  color: #e0e0e0;
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
+  font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .link-login:hover {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  opacity: 0.8;
 }
 
 @media (max-width: 650px) {
+  .register-page {
+    padding: 20px 15px;
+  }
+
+  .ambient-1,
+  .ambient-2,
+  .ambient-3 {
+    opacity: 0.08;
+    filter: blur(80px);
+  }
+
+  .register-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .cinema-brand {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    margin-bottom: 0;
+    padding: 15px 20px;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    font-size: 1.6rem;
+    gap: 10px;
+    animation: none;
+  }
+
+  .cinema-brand .emoji {
+    font-size: 2rem;
+  }
+
+  .register-container {
+    padding-top: 75px;
+  }
+
   .register-card {
-    padding: 30px 20px;
+    padding: 35px 25px;
+    border-radius: 16px;
+    background: rgba(20, 20, 22, 0.95);
   }
 
   .register-header h1 {
-    font-size: 2.5rem;
+    font-size: 1.6rem;
+  }
+
+  .register-header p {
+    font-size: 0.9rem;
+  }
+
+  .form-group input {
+    padding: 15px 16px;
+    font-size: 16px;
+  }
+
+  .btn-register {
+    padding: 16px;
+    font-size: 1rem;
+  }
+
+  .link-login {
+    font-size: 0.95rem;
   }
 
   .form-row {
