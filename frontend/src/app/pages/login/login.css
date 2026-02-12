@@ -1,23 +1,101 @@
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d1b1b 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cinema-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.film-strip {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 400px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  border-right: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.film-hole {
+  display: none;
+}
+
+.spotlight {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.08;
+  animation: pulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.spotlight-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  top: -100px;
+  right: 10%;
+}
+
+.spotlight-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  bottom: -150px;
+  left: 10%;
+  animation-delay: 3s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(1.05);
+  }
 }
 
 .login-container {
   width: 100%;
-  max-width: 450px;
+  max-width: 550px;
+  z-index: 1;
+  position: relative;
 }
 
 .login-card {
-  background: rgba(26, 26, 26, 0.95);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  background: rgba(26, 26, 26, 0.97);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 24px;
+  padding: 50px;
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  width: 100%;
+  backdrop-filter: blur(10px);
 }
 
 .login-header {
@@ -26,15 +104,17 @@
 }
 
 .login-header h1 {
-  font-size: 3rem;
-  color: #e0e0e0;
-  margin-bottom: 10px;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  font-size: 3.2rem;
+  color: #f0f0f0;
+  margin-bottom: 12px;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+  letter-spacing: 1px;
 }
 
 .login-header p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.15rem;
+  font-weight: 300;
 }
 
 .login-form {
