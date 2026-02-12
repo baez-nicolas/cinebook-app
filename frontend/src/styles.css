@@ -25,6 +25,12 @@ body {
   color: var(--white);
   overflow-x: hidden;
   max-width: 100vw;
+  scroll-behavior: auto !important;
+}
+
+*:focus {
+  scroll-margin: 0 !important;
+  scroll-margin-top: 0 !important;
 }
 
 body {
@@ -170,7 +176,6 @@ button {
   }
 }
 
-/* SweetAlert2 Custom Styles */
 .swal2-popup {
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 16px !important;
@@ -181,7 +186,6 @@ button {
   border-radius: 16px !important;
 }
 
-/* SweetAlert2 Scrollbar - Verde */
 .swal2-popup::-webkit-scrollbar {
   width: 8px;
 }
@@ -218,7 +222,6 @@ button {
   background: #4ade80;
 }
 
-/* SweetAlert2 Desktop & Tablet Styles */
 @media (min-width: 769px) {
   .swal2-popup {
     min-width: 550px !important;
@@ -254,7 +257,6 @@ button {
   }
 }
 
-/* SweetAlert2 Large Desktop */
 @media (min-width: 1200px) {
   .swal2-popup {
     min-width: 600px !important;
@@ -277,7 +279,6 @@ button {
   }
 }
 
-/* SweetAlert2 Mobile Improvements */
 @media (max-width: 768px) {
   .swal2-popup {
     width: 95% !important;

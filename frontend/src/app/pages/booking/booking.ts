@@ -114,6 +114,8 @@ export class BookingComponent implements OnInit {
         confirmButtonColor: '#22c55e',
         background: '#0a0a0a',
         color: '#fff',
+        scrollbarPadding: false,
+        heightAuto: false,
       }).then(() => {
         this.router.navigate(['/login']);
       });
@@ -172,6 +174,8 @@ export class BookingComponent implements OnInit {
       background: '#0a0a0a',
       color: '#fff',
       width: 'auto',
+      scrollbarPadding: false,
+      heightAuto: false,
       customClass: {
         popup: 'custom-swal-popup',
         title: 'custom-swal-title',
@@ -190,6 +194,8 @@ export class BookingComponent implements OnInit {
           confirmButtonColor: '#22c55e',
           background: '#0a0a0a',
           color: '#fff',
+          scrollbarPadding: false,
+          heightAuto: false,
         });
       }
     });
@@ -208,6 +214,8 @@ export class BookingComponent implements OnInit {
       showConfirmButton: false,
       background: '#0a0a0a',
       color: '#fff',
+      scrollbarPadding: false,
+      heightAuto: false,
       didOpen: () => {
         Swal.showLoading();
       },
@@ -242,6 +250,8 @@ export class BookingComponent implements OnInit {
             confirmButtonColor: '#22c55e',
             background: '#0a0a0a',
             color: '#fff',
+            scrollbarPadding: false,
+            heightAuto: false,
           });
         },
       });
@@ -280,6 +290,8 @@ export class BookingComponent implements OnInit {
       background: '#0a0a0a',
       color: '#fff',
       width: 'auto',
+      scrollbarPadding: false,
+      heightAuto: false,
       customClass: {
         popup: 'custom-swal-popup',
         confirmButton: 'custom-swal-confirm',

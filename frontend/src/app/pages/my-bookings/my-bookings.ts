@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { FooterComponent } from '../../components/footer/footer';
 import { FilterPipe } from '../../pipes/filter.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -26,7 +27,7 @@ interface Booking {
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, FilterPipe],
+  imports: [CommonModule, RouterModule, FormsModule, FilterPipe, FooterComponent],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
@@ -37,6 +38,8 @@ export class MyBookingsComponent implements OnInit {
   isAdmin = false;
   selectedUserEmail = '';
   uniqueUserEmails: string[] = [];
+  currentUser: any = null;
+  menuOpen = false;
 
   constructor(
     private apiService: ApiService,
@@ -45,6 +48,7 @@ export class MyBookingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
     this.isAdmin = this.authService.isAdmin();
 
     if (this.isAdmin) {
@@ -152,44 +156,78 @@ export class MyBookingsComponent implements OnInit {
     return labels[type] || type;
   }
 
-  showBookingDetails(booking: Booking): void {
+  showBookingDetails(booking: Booking, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const scrollPos = window.scrollY;
+
+    document.body.style.top = `-${scrollPos}px`;
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
     Swal.fire({
-      title: '🎟️ Detalles de la Reserva',
+      title: 'Detalles de la Reserva',
       html: `
-        <div style="text-align: center; padding: 20px;">
-          <div style="background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(139,0,0,0.2) 100%); padding: 25px; border-radius: 15px; margin: 25px 0; border: 2px solid #FFD700;">
-            <p style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">Código de Confirmación:</p>
-            <p style="font-size: 2.5rem; color: #FFD700; font-weight: bold; letter-spacing: 2px; margin: 10px 0;">
+        <div style="text-align: center; padding: 10px;">
+          <div style="background: rgba(34, 197, 94, 0.1); padding: 20px; border-radius: 12px; margin: 15px 0; border: 2px solid #22c55e;">
+            <p style="font-size: 0.9rem; margin-bottom: 8px; color: #a3a3a3;">Código de Confirmación</p>
+            <p style="font-size: clamp(1.5rem, 5vw, 2rem); color: #4ade80; font-weight: bold; letter-spacing: 2px; margin: 5px 0; word-break: break-all;">
               ${booking.confirmationCode}
             </p>
           </div>
 
-          <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; text-align: left; margin: 20px 0;">
-            <p style="margin: 12px 0;"><strong>🎬 Película:</strong> ${booking.movieTitle}</p>
-            <p style="margin: 12px 0;"><strong>🏢 Cine:</strong> ${booking.cinemaName}</p>
-            <p style="margin: 12px 0;"><strong>📍 Dirección:</strong> ${booking.cinemaAddress}</p>
-            <p style="margin: 12px 0;"><strong>📅 Función:</strong> ${this.formatDate(booking.showDateTime)}</p>
-            <p style="margin: 12px 0;"><strong>🎞️ Tipo:</strong> ${this.getTypeLabel(booking.showtimeType)}</p>
-            <p style="margin: 12px 0;"><strong>💺 Asientos:</strong> ${booking.seatNumbers.join(', ')}</p>
-            <p style="margin: 12px 0;"><strong>👤 Usuario:</strong> ${booking.userName}</p>
-            <p style="margin: 12px 0; font-size: 1.3rem; color: #FFD700;"><strong>💰 Total:</strong> $${booking.totalPrice.toLocaleString('es-AR')}</p>
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: left; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Película:</strong> ${booking.movieTitle}</p>
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Cine:</strong> ${booking.cinemaName}</p>
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Dirección:</strong> ${booking.cinemaAddress}</p>
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Función:</strong> ${this.formatDate(booking.showDateTime)}</p>
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Formato:</strong> ${this.getTypeLabel(booking.showtimeType)}</p>
+            <p style="margin: 10px 0; color: #e5e5e5; font-size: clamp(0.85rem, 3vw, 0.95rem);"><strong style="color: #fff;">Asientos:</strong> ${booking.seatNumbers.join(', ')}</p>
+            <p style="margin: 10px 0; font-size: clamp(1rem, 3.5vw, 1.2rem); color: #4ade80;"><strong>Total:</strong> $${booking.totalPrice.toLocaleString('es-AR')}</p>
           </div>
 
-          <p style="margin-top: 25px; color: #ccc; font-size: 1rem;">
-            📱 Presenta este código en el cine para retirar tus entradas
+          <p style="margin-top: 15px; color: #a3a3a3; font-size: clamp(0.8rem, 2.5vw, 0.9rem);">
+            Presenta este código en el cine para retirar tus entradas
           </p>
         </div>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#8B0000',
-      background: '#1a1a1a',
+      confirmButtonColor: '#22c55e',
+      background: '#0a0a0a',
       color: '#fff',
-      width: '650px',
+      width: 'auto',
+      scrollbarPadding: false,
+      heightAuto: false,
+      focusConfirm: false,
+      returnFocus: false,
+      didClose: () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollPos);
+      },
     });
   }
 
   isPastShowtime(dateString: string): boolean {
     return new Date(dateString) < new Date();
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
