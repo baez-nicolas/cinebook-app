@@ -17,6 +17,7 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
     List<Showtime> findByCinemaId(Long cinemaId);
     List<Showtime> findByCinemaIdAndMovieId(Long cinemaId, Long movieId);
     List<Showtime> findByShowDateTimeBetween(LocalDateTime start, LocalDateTime end);
+    List<Showtime> findByMovieIdAndCinemaId(Long movieId, Long cinemaId);
 
     @Modifying
     @Query("DELETE FROM Showtime s WHERE s.weekId = :weekId")

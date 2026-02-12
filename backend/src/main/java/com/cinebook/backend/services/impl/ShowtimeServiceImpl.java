@@ -197,4 +197,26 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         dto.setTotalSeats(showtime.getTotalSeats());
         return dto;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ShowtimeDTO> getShowtimesByFilters(Long movieId, Long cinemaId, LocalDate date) {
+        log.info("Filtrando funciones: película {}, cine {}, fecha {}", movieId, cinemaId, date);
+
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        LocalDateTime now = LocalDateTime.now();
+
+        return showtimeRepository.findByMovieIdAndCinemaId(movieId, cinemaId)
+                .stream()
+                .filter(showtime -> {
+                    LocalDateTime showDateTime = showtime.getShowDateTime();
+                    return showDateTime.isAfter(now) &&
+                           showDateTime.isAfter(startOfDay) &&
+                           showDateTime.isBefore(endOfDay);
+                })
+                .map(this::convertToDTO)
+                .sorted((a, b) -> a.getShowDateTime().compareTo(b.getShowDateTime()))
+                .collect(Collectors.toList());
+    }
 }

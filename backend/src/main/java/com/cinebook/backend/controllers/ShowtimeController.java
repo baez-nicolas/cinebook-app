@@ -6,9 +6,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -60,6 +62,22 @@ public class ShowtimeController {
             @PathVariable Long movieId) {
         log.info("GET /api/showtimes/cinema/{}/movie/{} - Obteniendo funciones", cinemaId, movieId);
         List<ShowtimeDTO> showtimes = showtimeService.getShowtimesByCinemaAndMovie(cinemaId, movieId);
+        return ResponseEntity.ok(showtimes);
+    }
+
+    @GetMapping("/filter")
+    @Operation(summary = "Obtener funciones por película, cine y fecha")
+    public ResponseEntity<List<ShowtimeDTO>> getShowtimesByFilters(
+            @RequestParam Long movieId,
+            @RequestParam Long cinemaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        log.info("📊 Buscando funciones: Película {}, Cine {}, Fecha {}", movieId, cinemaId, date);
+
+        List<ShowtimeDTO> showtimes = showtimeService.getShowtimesByFilters(movieId, cinemaId, date);
+
+        log.info("✅ Encontradas {} funciones", showtimes.size());
+
         return ResponseEntity.ok(showtimes);
     }
 }
