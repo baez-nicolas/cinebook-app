@@ -337,6 +337,7 @@
 
 .bookings-header {
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .total-bookings {
@@ -657,60 +658,87 @@
   }
 
   .bookings-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .booking-card {
+    border-radius: 8px;
   }
 
   .booking-poster {
-    height: 180px;
+    height: auto;
+    aspect-ratio: 2/3;
+  }
+
+  .booking-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .past-badge {
+    top: 5px;
+    right: 5px;
+    padding: 3px 6px;
+    font-size: 0.6rem;
   }
 
   .booking-info {
-    padding: 20px;
-    gap: 15px;
+    padding: 8px;
+    gap: 6px;
   }
 
   .movie-title {
-    font-size: 1.2rem;
+    font-size: 0.7rem;
+    line-height: 1.2;
+  }
+
+  .booking-details,
+  .confirmation-code,
+  .user-badge {
+    display: none;
+  }
+
+  .btn-details {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    border-radius: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .nav-container {
-    padding: 0 15px;
+    padding: 0 10px;
   }
 
   .container {
-    padding: 0 15px;
+    padding: 0 10px;
   }
 
   .section-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   .section-header {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+  }
+
+  .bookings-grid {
+    gap: 6px;
   }
 
   .booking-info {
-    padding: 18px;
-  }
-
-  .detail-row {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 6px;
     gap: 4px;
   }
 
-  .detail-value {
-    text-align: left;
-  }
-
-  .code-value {
-    font-size: 1rem;
+  .movie-title {
+    font-size: 0.65rem;
   }
 
   .btn-details {
-    padding: 12px 20px;
+    padding: 5px 8px;
+    font-size: 0.65rem;
   }
 }
