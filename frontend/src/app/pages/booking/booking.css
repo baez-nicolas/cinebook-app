@@ -630,95 +630,189 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 20px;
+    padding: 0 15px;
   }
 
   .back-btn {
-    padding: 14px 30px;
+    padding: 14px 35px;
     font-size: 1.1rem;
-    width: 100%;
+    width: auto;
+    margin: 0 auto 30px;
+    display: flex;
     justify-content: center;
   }
 
+  .showtime-info {
+    text-align: center;
+    padding: 25px 20px;
+  }
+
   .movie-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
+    text-align: center;
   }
 
   .info-details {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
   }
 
+  .section-title {
+    font-size: 1.3rem;
+  }
+
   .seats-section {
-    padding: 25px 15px;
+    padding: 20px 10px;
   }
 
   .cinema-seats {
     max-width: 100%;
-    padding: 15px 10px;
+    padding: 15px 5px;
   }
 
   .seat {
-    width: 38px;
-    height: 38px;
-    font-size: 0.7rem;
+    width: 26px;
+    height: 26px;
+    font-size: 0.55rem;
+    border-width: 1px;
+  }
+
+  .seat.selected {
+    transform: scale(1.05) translateY(-2px);
   }
 
   .aisle {
-    width: 20px;
+    width: 8px;
+    height: 26px;
   }
 
   .row-label {
-    width: 25px;
-    font-size: 0.95rem;
+    width: 18px;
+    font-size: 0.7rem;
+  }
+
+  .row-seats {
+    gap: 3px;
+  }
+
+  .seat-row {
+    gap: 4px;
   }
 
   .screen {
-    padding: 15px 50px;
-    font-size: 1.1rem;
+    padding: 12px 40px;
+    font-size: 0.9rem;
+  }
+
+  .screen-container {
+    margin: 25px 0;
   }
 
   .seats-legend {
-    gap: 20px;
+    gap: 15px;
+    margin-bottom: 25px;
   }
 
   .legend-seat {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
   }
 
   .legend-item {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+
+  .summary-card {
+    text-align: center;
+  }
+
+  .summary-title {
+    font-size: 1.3rem;
+  }
+
+  .section-subtitle {
+    justify-content: center;
+  }
+
+  .selected-seats-list {
+    justify-content: center;
+  }
+
+  .empty-selection {
+    padding: 25px 15px;
+  }
+
+  .confirm-btn {
+    font-size: 1.1rem;
+    padding: 16px;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .back-btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+
+  .movie-title {
+    font-size: 1.3rem;
+  }
+
   .seat {
-    width: 32px;
-    height: 32px;
-    font-size: 0.6rem;
+    width: 22px;
+    height: 22px;
+    font-size: 0.5rem;
+    border-radius: 4px 4px 0 0;
   }
 
   .row-label {
-    font-size: 0.8rem;
-    width: 20px;
+    font-size: 0.6rem;
+    width: 14px;
   }
 
   .row-seats {
-    gap: 5px;
+    gap: 2px;
+  }
+
+  .seat-row {
+    gap: 3px;
   }
 
   .aisle {
-    width: 12px;
+    width: 6px;
+    height: 22px;
   }
 
   .screen {
-    padding: 12px 30px;
-    font-size: 0.95rem;
+    padding: 10px 25px;
+    font-size: 0.8rem;
+  }
+
+  .legend-seat {
+    width: 18px;
+    height: 18px;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+  }
+
+  .seats-legend {
+    gap: 12px;
   }
 
   .summary-card {
-    padding: 20px;
+    padding: 18px 15px;
+  }
+
+  .detail-item {
+    padding: 6px 12px;
+    font-size: 0.85rem;
   }
 }
