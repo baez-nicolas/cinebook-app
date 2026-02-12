@@ -1,6 +1,9 @@
 package com.cinebook.backend.services.impl;
 
+import com.cinebook.backend.entities.Seat;
+import com.cinebook.backend.entities.Showtime;
 import com.cinebook.backend.entities.WeeklySchedule;
+import com.cinebook.backend.entities.enums.SeatStatus;
 import com.cinebook.backend.repositories.WeeklyScheduleRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.repositories.SeatRepository;
@@ -13,9 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -65,24 +69,45 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
 
     @Transactional
     protected void performWeeklyReset(WeeklySchedule oldWeek, LocalDate newThursday) {
-        log.info("🗑️ Eliminando datos de la semana anterior (weekId: {})...", oldWeek.getWeekId());
+        log.info("🔄 RESET SEMANAL INTELIGENTE: Actualizando funciones de la semana anterior (weekId: {})...", oldWeek.getWeekId());
+
+        Long newWeekId = calculateWeekId(newThursday);
 
         bookingRepository.deleteByWeekId(oldWeek.getWeekId());
         log.info("✅ Reservas eliminadas");
 
-        seatRepository.deleteByWeekId(oldWeek.getWeekId());
-        log.info("✅ Asientos eliminados");
+        List<Seat> allSeats = seatRepository.findByWeekId(oldWeek.getWeekId());
+        int resettedSeats = 0;
+        for (Seat seat : allSeats) {
+            seat.setStatus(SeatStatus.AVAILABLE);
+            seat.setWeekId(newWeekId);
+            resettedSeats++;
+        }
+        seatRepository.saveAll(allSeats);
+        log.info("✅ {} asientos reseteados a AVAILABLE", resettedSeats);
 
-        showtimeRepository.deleteByWeekId(oldWeek.getWeekId());
-        log.info("✅ Funciones eliminadas");
+        List<Showtime> showtimes = showtimeRepository.findByWeekId(oldWeek.getWeekId());
+        int updatedShowtimes = 0;
+        for (Showtime showtime : showtimes) {
+            LocalDateTime newDateTime = showtime.getShowDateTime().plusWeeks(1);
+            showtime.setShowDateTime(newDateTime);
+            showtime.setWeekId(newWeekId);
+            updatedShowtimes++;
+        }
+        showtimeRepository.saveAll(showtimes);
+        log.info("✅ {} funciones actualizadas (+7 días)", updatedShowtimes);
 
         oldWeek.setIsActive(false);
         weeklyScheduleRepository.save(oldWeek);
         log.info("✅ Semana anterior desactivada");
 
         WeeklySchedule newWeek = createNewWeek(newThursday);
-        log.info("🎉 Nueva semana creada: {} (weekId: {})",
-                newWeek.getWeekStartDate(), newWeek.getWeekId());
+        log.info("🎉 Nueva semana creada: {} - {} (weekId: {})",
+                newWeek.getWeekStartDate(), newWeek.getWeekEndDate(), newWeek.getWeekId());
+
+        log.info("📊 Resumen del reset:");
+        log.info("   - Asientos reseteados: {}", resettedSeats);
+        log.info("   - Funciones actualizadas: {}", updatedShowtimes);
     }
 
     @Override

@@ -50,9 +50,14 @@ public class BookingServiceImpl implements IBookingService {
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + request.getShowtimeId()));
 
-        if (showtime.getShowDateTime().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("No se pueden reservar funciones pasadas");
+        LocalDateTime now = LocalDateTime.now();
+        if (showtime.getShowDateTime().isBefore(now) || showtime.getShowDateTime().isEqual(now)) {
+            throw new RuntimeException("No se pueden reservar funciones que ya comenzaron o están en curso");
         }
+
+        log.info("✅ Función válida: {} (Faltan {} minutos)",
+                showtime.getShowDateTime(),
+                java.time.Duration.between(now, showtime.getShowDateTime()).toMinutes());
 
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
 
