@@ -169,3 +169,158 @@ button {
     transform: rotate(360deg);
   }
 }
+
+/* SweetAlert2 Custom Styles */
+.swal2-popup {
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 16px !important;
+}
+
+.custom-swal-popup {
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 16px !important;
+}
+
+/* SweetAlert2 Scrollbar - Verde */
+.swal2-popup::-webkit-scrollbar {
+  width: 8px;
+}
+
+.swal2-popup::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.swal2-popup::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 4px;
+}
+
+.swal2-popup::-webkit-scrollbar-thumb:hover {
+  background: #4ade80;
+}
+
+.swal2-html-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.swal2-html-container::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.swal2-html-container::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 4px;
+}
+
+.swal2-html-container::-webkit-scrollbar-thumb:hover {
+  background: #4ade80;
+}
+
+/* SweetAlert2 Desktop & Tablet Styles */
+@media (min-width: 769px) {
+  .swal2-popup {
+    min-width: 550px !important;
+    max-width: 650px !important;
+    padding: 30px !important;
+  }
+
+  .swal2-title {
+    font-size: 1.8rem !important;
+    padding: 15px 25px !important;
+  }
+
+  .swal2-html-container {
+    padding: 10px 25px !important;
+    font-size: 1rem !important;
+  }
+
+  .swal2-html-container h3,
+  .swal2-html-container p {
+    font-size: 1.05rem !important;
+  }
+
+  .swal2-actions {
+    padding: 20px 25px !important;
+    gap: 15px !important;
+  }
+
+  .swal2-confirm,
+  .swal2-cancel {
+    padding: 14px 35px !important;
+    font-size: 1.1rem !important;
+    min-width: 160px !important;
+  }
+}
+
+/* SweetAlert2 Large Desktop */
+@media (min-width: 1200px) {
+  .swal2-popup {
+    min-width: 600px !important;
+    max-width: 700px !important;
+    padding: 35px !important;
+  }
+
+  .swal2-title {
+    font-size: 2rem !important;
+  }
+
+  .swal2-html-container {
+    font-size: 1.05rem !important;
+  }
+
+  .swal2-confirm,
+  .swal2-cancel {
+    padding: 16px 40px !important;
+    font-size: 1.15rem !important;
+  }
+}
+
+/* SweetAlert2 Mobile Improvements */
+@media (max-width: 768px) {
+  .swal2-popup {
+    width: 95% !important;
+    max-width: 95vw !important;
+    padding: 15px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .swal2-title {
+    font-size: 1.3rem !important;
+    padding: 10px 15px !important;
+  }
+
+  .swal2-html-container {
+    padding: 0 10px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .swal2-html-container div {
+    padding: 10px !important;
+  }
+
+  .swal2-html-container h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 15px !important;
+  }
+
+  .swal2-html-container p {
+    font-size: 0.85rem !important;
+    margin: 8px 0 !important;
+  }
+
+  .swal2-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 15px !important;
+  }
+
+  .swal2-confirm,
+  .swal2-cancel {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px 20px !important;
+    font-size: 1rem !important;
+  }
+}

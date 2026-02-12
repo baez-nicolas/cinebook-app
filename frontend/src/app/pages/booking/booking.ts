@@ -111,8 +111,8 @@ export class BookingComponent implements OnInit {
         text: 'Debes iniciar sesión para realizar una reserva',
         icon: 'warning',
         confirmButtonText: 'Ir a Login',
-        confirmButtonColor: '#8B0000',
-        background: '#1a1a1a',
+        confirmButtonColor: '#22c55e',
+        background: '#0a0a0a',
         color: '#fff',
       }).then(() => {
         this.router.navigate(['/login']);
@@ -138,40 +138,40 @@ export class BookingComponent implements OnInit {
 
   showPaymentDialog(bookingData: any): void {
     Swal.fire({
-      title: '💳 Confirmar Pago',
+      title: 'Confirmar Pago',
       html: `
-        <div style="text-align: left; padding: 20px;">
-          <h3 style="color: #FFD700; margin-bottom: 20px; text-align: center;">📋 Resumen de tu Reserva</h3>
+        <div style="text-align: center; padding: 10px;">
+          <h3 style="color: #4ade80; margin-bottom: 15px; font-size: clamp(1rem, 4vw, 1.2rem);">Resumen de tu Reserva</h3>
 
-          <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
-            <p style="margin: 10px 0;"><strong>🎬 Película:</strong> ${bookingData.movieTitle}</p>
-            <p style="margin: 10px 0;"><strong>🏢 Cine:</strong> ${bookingData.cinemaName}</p>
-            <p style="margin: 10px 0;"><strong>📅 Fecha y Hora:</strong> ${this.formatDateForDialog(bookingData.showDateTime)}</p>
-            <p style="margin: 10px 0;"><strong>🎞️ Tipo:</strong> ${this.getTypeLabel(bookingData.showtimeType)}</p>
-            <p style="margin: 10px 0;"><strong>💺 Asientos:</strong> ${bookingData.seatNumbers.join(', ')}</p>
-            <p style="margin: 10px 0;"><strong>👤 Usuario:</strong> ${bookingData.userEmail}</p>
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: left;">
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.95rem); word-break: break-word;"><strong style="color: #fff;">Película:</strong> ${bookingData.movieTitle}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.95rem);"><strong style="color: #fff;">Cine:</strong> ${bookingData.cinemaName}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.95rem); word-break: break-word;"><strong style="color: #fff;">Fecha:</strong> ${this.formatDateForDialog(bookingData.showDateTime)}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.95rem);"><strong style="color: #fff;">Tipo:</strong> ${this.getTypeLabel(bookingData.showtimeType)}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.95rem);"><strong style="color: #fff;">Asientos:</strong> ${bookingData.seatNumbers.join(', ')}</p>
           </div>
 
-          <hr style="margin: 20px 0; border: 1px solid #FFD700;">
+          <div style="background: rgba(34, 197, 94, 0.1); padding: 15px; border-radius: 12px; border: 1px solid #22c55e; margin: 15px 0;">
+            <p style="font-size: clamp(1.2rem, 5vw, 1.6rem); color: #4ade80; font-weight: bold; margin: 0;">
+              $${bookingData.totalPrice.toLocaleString('es-AR')}
+            </p>
+            <p style="color: #a3a3a3; font-size: 0.75rem; margin-top: 5px;">Total a pagar</p>
+          </div>
 
-          <p style="font-size: 1.8rem; color: #FFD700; text-align: center; font-weight: bold; margin: 20px 0;">
-            💰 Total a Pagar: $${bookingData.totalPrice.toLocaleString('es-AR')}
-          </p>
-
-          <p style="text-align: center; color: #ccc; font-size: 0.9rem; margin-top: 15px;">
-            ⚠️ Esta es una simulación de pago. No se realizará ningún cargo real.
+          <p style="color: #a3a3a3; font-size: clamp(0.7rem, 2.5vw, 0.8rem); margin-top: 10px;">
+            Simulación de pago - Sin cargo real
           </p>
         </div>
       `,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: '✅ Confirmar Pago',
-      cancelButtonText: '❌ Cancelar',
-      confirmButtonColor: '#8B0000',
-      cancelButtonColor: '#666',
-      background: '#1a1a1a',
+      confirmButtonText: 'Confirmar Pago',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#22c55e',
+      cancelButtonColor: '#404040',
+      background: '#0a0a0a',
       color: '#fff',
-      width: '600px',
+      width: 'auto',
       customClass: {
         popup: 'custom-swal-popup',
         title: 'custom-swal-title',
@@ -187,8 +187,8 @@ export class BookingComponent implements OnInit {
           text: 'Tu reserva no fue procesada. Los asientos no fueron reservados.',
           icon: 'info',
           confirmButtonText: 'Entendido',
-          confirmButtonColor: '#8B0000',
-          background: '#1a1a1a',
+          confirmButtonColor: '#22c55e',
+          background: '#0a0a0a',
           color: '#fff',
         });
       }
@@ -203,10 +203,10 @@ export class BookingComponent implements OnInit {
 
     Swal.fire({
       title: 'Procesando pago...',
-      html: '<div style="text-align: center;"><div class="custom-spinner"></div><p style="margin-top: 20px; color: #FFD700;">Por favor, espera un momento</p></div>',
+      html: '<div style="text-align: center;"><p style="margin-top: 20px; color: #a3a3a3;">Por favor, espera un momento</p></div>',
       allowOutsideClick: false,
       showConfirmButton: false,
-      background: '#1a1a1a',
+      background: '#0a0a0a',
       color: '#fff',
       didOpen: () => {
         Swal.showLoading();
@@ -239,8 +239,8 @@ export class BookingComponent implements OnInit {
               (err.error?.message || err.message || 'Error desconocido'),
             icon: 'error',
             confirmButtonText: 'Entendido',
-            confirmButtonColor: '#8B0000',
-            background: '#1a1a1a',
+            confirmButtonColor: '#22c55e',
+            background: '#0a0a0a',
             color: '#fff',
           });
         },
@@ -250,38 +250,36 @@ export class BookingComponent implements OnInit {
 
   showSuccessMessage(booking: any): void {
     Swal.fire({
-      title: '🎉 ¡Pago Exitoso!',
+      title: '¡Pago Exitoso!',
       html: `
-        <div style="text-align: center; padding: 20px;">
-          <h2 style="color: #FFD700; margin-bottom: 25px;">¡Tu reserva fue confirmada!</h2>
+        <div style="text-align: center; padding: 10px;">
+          <p style="color: #4ade80; margin-bottom: 15px; font-size: clamp(0.95rem, 4vw, 1.1rem);">¡Tu reserva fue confirmada!</p>
 
-          <div style="background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(139,0,0,0.2) 100%); padding: 25px; border-radius: 15px; margin: 25px 0; border: 2px solid #FFD700;">
-            <p style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">Código de Confirmación:</p>
-            <p style="font-size: 2.5rem; color: #FFD700; font-weight: bold; letter-spacing: 2px; margin: 10px 0;">
+          <div style="background: rgba(34, 197, 94, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0; border: 2px solid #22c55e;">
+            <p style="font-size: clamp(0.8rem, 3vw, 0.9rem); margin-bottom: 5px; color: #a3a3a3;">Código de Confirmación</p>
+            <p style="font-size: clamp(1.5rem, 6vw, 2.2rem); color: #4ade80; font-weight: bold; letter-spacing: 2px; margin: 5px 0; word-break: break-all;">
               ${booking.confirmationCode}
             </p>
           </div>
 
-          <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; text-align: left; margin: 20px 0;">
-            <p style="margin: 12px 0;"><strong>🎬</strong> ${booking.movieTitle}</p>
-            <p style="margin: 12px 0;"><strong>🏢</strong> ${booking.cinemaName}</p>
-            <p style="margin: 12px 0;"><strong>📅</strong> ${this.formatDateForDialog(booking.showDateTime)}</p>
-            <p style="margin: 12px 0;"><strong>💺</strong> ${booking.seatNumbers.join(', ')}</p>
-            <p style="margin: 12px 0;"><strong>👤</strong> ${booking.userName}</p>
-            <p style="margin: 12px 0; font-size: 1.3rem; color: #FFD700;"><strong>💰</strong> $${booking.totalPrice.toLocaleString('es-AR')}</p>
+          <div style="background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; text-align: left; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.9rem); word-break: break-word;"><strong style="color: #fff;">Película:</strong> ${booking.movieTitle}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.9rem);"><strong style="color: #fff;">Cine:</strong> ${booking.cinemaName}</p>
+            <p style="margin: 8px 0; color: #e5e5e5; font-size: clamp(0.8rem, 3vw, 0.9rem);"><strong style="color: #fff;">Asientos:</strong> ${booking.seatNumbers.join(', ')}</p>
+            <p style="margin: 8px 0; color: #4ade80; font-size: clamp(0.9rem, 3.5vw, 1.1rem);"><strong>Total:</strong> $${booking.totalPrice.toLocaleString('es-AR')}</p>
           </div>
 
-          <p style="margin-top: 25px; color: #ccc; font-size: 1rem;">
-            📱 Guarda este código para retirar tus entradas en el cine
+          <p style="color: #a3a3a3; font-size: clamp(0.75rem, 2.5vw, 0.85rem); margin-top: 10px;">
+            Guarda este código para retirar tus entradas
           </p>
         </div>
       `,
       icon: 'success',
-      confirmButtonText: '🏠 Volver al Inicio',
-      confirmButtonColor: '#8B0000',
-      background: '#1a1a1a',
+      confirmButtonText: 'Volver al Inicio',
+      confirmButtonColor: '#22c55e',
+      background: '#0a0a0a',
       color: '#fff',
-      width: '650px',
+      width: 'auto',
       customClass: {
         popup: 'custom-swal-popup',
         confirmButton: 'custom-swal-confirm',
