@@ -116,13 +116,31 @@ export class MovieDetailComponent implements OnInit {
       return;
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    console.log('Fecha de hoy:', today);
+
     const uniqueDates = new Set<string>();
+
     this.allShowtimes.forEach((showtime) => {
-      const date = new Date(showtime.showDateTime).toISOString().split('T')[0];
-      uniqueDates.add(date);
+      const showtimeDate = new Date(showtime.showDateTime);
+      showtimeDate.setHours(0, 0, 0, 0);
+
+      console.log('Comparando fecha de funcion:', showtimeDate, 'con hoy:', today);
+
+      if (showtimeDate >= today) {
+        const dateStr = new Date(showtime.showDateTime).toISOString().split('T')[0];
+        uniqueDates.add(dateStr);
+        console.log('Fecha agregada:', dateStr);
+      } else {
+        console.log('Fecha descartada (pasada):', showtimeDate);
+      }
     });
 
     const sortedDates = Array.from(uniqueDates).sort();
+
+    console.log('Fechas unicas encontradas:', sortedDates);
 
     this.availableDates = sortedDates.map((dateStr) => {
       const date = new Date(dateStr + 'T12:00:00');
@@ -135,7 +153,7 @@ export class MovieDetailComponent implements OnInit {
       return { label, value: dateStr };
     });
 
-    console.log('Fechas disponibles:', this.availableDates);
+    console.log('Fechas disponibles para el combo box:', this.availableDates);
   }
 
   onDateChange(): void {
