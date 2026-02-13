@@ -86,7 +86,7 @@ public class BookingController {
     @GetMapping("/search")
     @Operation(summary = "Buscar reservas por película, cine o usuario (solo ADMIN)")
     public ResponseEntity<List<BookingResponseDTO>> searchBookings(@RequestParam(required = false) String q) {
-        log.info("🔍 Admin buscando reservas: {}", q);
+        log.info("Admin buscando reservas: {}", q);
         return ResponseEntity.ok(bookingService.searchBookings(q));
     }
 }

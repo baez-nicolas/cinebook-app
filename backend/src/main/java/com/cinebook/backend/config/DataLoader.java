@@ -32,32 +32,32 @@ public class DataLoader implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        log.info("🚀 Iniciando carga de datos...");
+        log.info("Iniciando carga de datos...");
 
         weeklyScheduleService.checkAndResetIfNeeded();
 
         if (movieRepository.count() == 0) {
             loadMovies();
         } else {
-            log.info("✅ Las películas ya están cargadas");
+            log.info("Las películas ya están cargadas");
         }
 
         if (cinemaRepository.count() == 0) {
             loadCinemas();
         } else {
-            log.info("✅ Los cines ya están cargados");
+            log.info("Los cines ya están cargados");
         }
 
         showtimeService.generateShowtimesForCurrentWeek();
 
-        log.info("🎬 Generando asientos para todas las funciones...");
+        log.info("Generando asientos para todas las funciones...");
         seatService.generateSeatsForAllShowtimes();
 
-        log.info("✅ Carga de datos completada exitosamente");
+        log.info("Carga de datos completada exitosamente");
     }
 
     private void loadMovies() {
-        log.info("📽️ Cargando películas...");
+        log.info("Cargando películas...");
 
         Movie movie1 = new Movie();
         movie1.setTitle("Avengers: Endgame");
@@ -204,11 +204,11 @@ public class DataLoader implements CommandLineRunner {
         movieRepository.save(movie11);
         movieRepository.save(movie12);
 
-        log.info("✅ 12 películas cargadas exitosamente");
+        log.info("12 películas cargadas exitosamente");
     }
 
     private void loadCinemas() {
-        log.info("🏢 Cargando cines...");
+        log.info("Cargando cines...");
 
         Cinema cinema1 = new Cinema();
         cinema1.setName("Cine Nuevo Centro");
@@ -259,6 +259,6 @@ public class DataLoader implements CommandLineRunner {
         cinemaRepository.save(cinema5);
         cinemaRepository.save(cinema6);
 
-        log.info("✅ 6 cines cargados exitosamente");
+        log.info("6 cines cargados exitosamente");
     }
 }

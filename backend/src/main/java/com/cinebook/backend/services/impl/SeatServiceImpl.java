@@ -53,7 +53,7 @@ public class SeatServiceImpl implements ISeatService {
             return;
         }
 
-        log.info("🎭 Generando 120 asientos para función {} ({} - {})",
+        log.info("Generando 120 asientos para función {} ({} - {})",
                 showtime.getId(),
                 showtime.getMovie().getTitle(),
                 showtime.getCinema().getName());
@@ -74,7 +74,7 @@ public class SeatServiceImpl implements ISeatService {
         }
 
         seatRepository.saveAll(seats);
-        log.info("✅ 120 asientos generados para función {}", showtime.getId());
+        log.info("120 asientos generados para función {}", showtime.getId());
 
         occupyRandomSeats(showtime.getId());
     }
@@ -102,7 +102,7 @@ public class SeatServiceImpl implements ISeatService {
         showtime.setAvailableSeats(availableSeats);
         showtimeRepository.save(showtime);
 
-        log.info("✅ {} asientos fueron ocupados, {} asientos disponibles", seatsToOccupy, availableSeats);
+        log.info("{} asientos fueron ocupados, {} asientos disponibles", seatsToOccupy, availableSeats);
     }
 
     @Override
@@ -112,11 +112,11 @@ public class SeatServiceImpl implements ISeatService {
         List<Showtime> showtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId());
 
         if (showtimes.isEmpty()) {
-            log.warn("⚠️ No hay funciones en la semana actual. No se pueden generar asientos.");
+            log.warn("No hay funciones en la semana actual. No se pueden generar asientos.");
             return;
         }
 
-        log.info("💺 Generando asientos para {} funciones de la semana actual", showtimes.size());
+        log.info("Generando asientos para {} funciones de la semana actual", showtimes.size());
 
         int generatedCount = 0;
         for (Showtime showtime : showtimes) {
@@ -124,7 +124,7 @@ public class SeatServiceImpl implements ISeatService {
             generatedCount++;
         }
 
-        log.info("✅ Se generaron asientos para {} funciones", generatedCount);
+        log.info("Se generaron asientos para {} funciones", generatedCount);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class SeatServiceImpl implements ISeatService {
             throw new RuntimeException("Debe seleccionar al menos un asiento");
         }
 
-        log.info("🎫 Reservando {} asientos: {}", seatIds.size(), seatIds);
+        log.info("Reservando {} asientos: {}", seatIds.size(), seatIds);
 
         List<Seat> seats = seatRepository.findAllById(seatIds);
 
@@ -159,7 +159,7 @@ public class SeatServiceImpl implements ISeatService {
         showtime.setAvailableSeats(currentAvailable - seats.size());
         showtimeRepository.save(showtime);
 
-        log.info("✅ Asientos reservados exitosamente");
+        log.info("Asientos reservados exitosamente");
     }
 
     @Override

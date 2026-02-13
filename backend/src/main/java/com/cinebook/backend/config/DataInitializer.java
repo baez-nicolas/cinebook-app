@@ -30,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
         String adminEmail = "admin@cinebook.com";
 
         if (userRepository.existsByEmail(adminEmail)) {
-            log.info("👤 Usuario admin ya existe");
+            log.info("Usuario admin ya existe");
             return;
         }
 
@@ -46,9 +46,9 @@ public class DataInitializer implements CommandLineRunner {
 
         userRepository.save(admin);
 
-        log.info("✅ Usuario ADMIN creado exitosamente");
-        log.info("📧 Email: {}", adminEmail);
-        log.info("🔑 Password: admin");
+        log.info("Usuario ADMIN creado exitosamente");
+        log.info("Email: {}", adminEmail);
+        log.info("Password: admin");
     }
 }
 

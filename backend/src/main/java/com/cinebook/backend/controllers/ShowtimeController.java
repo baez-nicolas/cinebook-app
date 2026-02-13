@@ -72,11 +72,11 @@ public class ShowtimeController {
             @RequestParam Long cinemaId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        log.info("📊 Buscando funciones: Película {}, Cine {}, Fecha {}", movieId, cinemaId, date);
+        log.info("Buscando funciones: Película {}, Cine {}, Fecha {}", movieId, cinemaId, date);
 
         List<ShowtimeDTO> showtimes = showtimeService.getShowtimesByFilters(movieId, cinemaId, date);
 
-        log.info("✅ Encontradas {} funciones", showtimes.size());
+        log.info("Encontradas {} funciones", showtimes.size());
 
         return ResponseEntity.ok(showtimes);
     }

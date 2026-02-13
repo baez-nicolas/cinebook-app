@@ -28,7 +28,7 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     @Transactional
     public AuthResponseDTO register(RegisterRequestDTO request) {
-        log.info("📝 Registrando nuevo usuario: {}", request.getEmail());
+        log.info("Registrando nuevo usuario: {}", request.getEmail());
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
@@ -48,7 +48,7 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        log.info("✅ Usuario registrado exitosamente: {}", user.getEmail());
+        log.info("Usuario registrado exitosamente: {}", user.getEmail());
 
         return new AuthResponseDTO(
                 token,
@@ -61,7 +61,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO request) {
-        log.info("🔐 Intentando login: {}", request.getEmail());
+        log.info("Intentando login: {}", request.getEmail());
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email o contraseña incorrectos"));
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        log.info("✅ Login exitoso: {} - Role: {}", user.getEmail(), user.getRole());
+        log.info("Login exitoso: {} - Role: {}", user.getEmail(), user.getRole());
 
         return new AuthResponseDTO(
                 token,

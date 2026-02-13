@@ -29,14 +29,14 @@ public class AdminController {
     @GetMapping("/users")
     @Operation(summary = "Listar todos los usuarios", description = "Solo accesible para ADMIN")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        log.info("📊 Admin consultando lista de usuarios");
+        log.info("Admin consultando lista de usuarios");
 
         List<UserDTO> users = userRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        log.info("✅ Total de usuarios: {}", users.size());
+        log.info("Total de usuarios: {}", users.size());
 
         return ResponseEntity.ok(users);
     }
@@ -44,7 +44,7 @@ public class AdminController {
     @GetMapping("/users/count")
     @Operation(summary = "Contar usuarios registrados", description = "Solo accesible para ADMIN")
     public ResponseEntity<Map<String, Object>> countUsers() {
-        log.info("📊 Admin consultando cantidad de usuarios");
+        log.info("Admin consultando cantidad de usuarios");
 
         long totalUsers = userRepository.count();
         long totalAdmins = userRepository.findByRole(UserRole.ADMIN).size();
@@ -55,7 +55,7 @@ public class AdminController {
         response.put("totalAdmins", totalAdmins);
         response.put("totalRegularUsers", totalRegularUsers);
 
-        log.info("✅ Usuarios: {} (Admins: {}, Users: {})", totalUsers, totalAdmins, totalRegularUsers);
+        log.info("Usuarios: {} (Admins: {}, Users: {})", totalUsers, totalAdmins, totalRegularUsers);
 
         return ResponseEntity.ok(response);
     }

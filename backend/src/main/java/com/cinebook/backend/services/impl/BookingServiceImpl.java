@@ -42,7 +42,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @Transactional
     public BookingResponseDTO createBooking(String userEmail, BookingRequestDTO request) {
-        log.info("🎫 Procesando reserva para usuario: {}", userEmail);
+        log.info("Procesando reserva para usuario: {}", userEmail);
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + userEmail));
@@ -52,13 +52,13 @@ public class BookingServiceImpl implements IBookingService {
 
         LocalDateTime now = LocalDateTime.now();
         if (showtime.getShowDateTime().isBefore(now) || showtime.getShowDateTime().isEqual(now)) {
-            log.warn("❌ Intento de reserva de función pasada: {} (Actual: {})",
+            log.warn("Intento de reserva de función pasada: {} (Actual: {})",
                     showtime.getShowDateTime(), now);
             throw new RuntimeException("No se pueden reservar funciones que ya comenzaron o están en curso");
         }
 
         long minutesUntilShowtime = java.time.temporal.ChronoUnit.MINUTES.between(now, showtime.getShowDateTime());
-        log.info("✅ Función válida: {} (Faltan {} minutos)",
+        log.info("Función válida: {} (Faltan {} minutos)",
                 showtime.getShowDateTime(), minutesUntilShowtime);
 
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
@@ -76,7 +76,7 @@ public class BookingServiceImpl implements IBookingService {
         BigDecimal pricePerSeat = showtime.getPrice();
         BigDecimal totalPrice = pricePerSeat.multiply(BigDecimal.valueOf(seats.size()));
 
-        log.info("💰 Precio total: ${} ({} asientos × ${})", totalPrice, seats.size(), pricePerSeat);
+        log.info("Precio total: ${} ({} asientos x ${})", totalPrice, seats.size(), pricePerSeat);
 
         seatService.reserveSeats(request.getSeatIds());
 
@@ -94,7 +94,7 @@ public class BookingServiceImpl implements IBookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        log.info("✅ Reserva creada: ID {} - Código: {}", savedBooking.getId(), savedBooking.getConfirmationCode());
+        log.info("Reserva creada: ID {} - Código: {}", savedBooking.getId(), savedBooking.getConfirmationCode());
 
         return convertToDTO(savedBooking);
     }
@@ -182,7 +182,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponseDTO> searchBookings(String searchTerm) {
-        log.info("🔍 Buscando reservas con término: {}", searchTerm);
+        log.info("Buscando reservas con término: {}", searchTerm);
 
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return getAllBookings();

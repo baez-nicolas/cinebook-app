@@ -51,7 +51,7 @@ public class AdminMovieController {
         response.put("maxMovies", MAX_MOVIES);
         response.put("canAddMore", activeCount < MAX_MOVIES);
 
-        log.info("📊 Películas activas: {}/{}", activeCount, MAX_MOVIES);
+        log.info("Películas activas: {}/{}", activeCount, MAX_MOVIES);
 
         return ResponseEntity.ok(response);
     }
@@ -60,11 +60,11 @@ public class AdminMovieController {
     @Transactional
     @Operation(summary = "Crear nueva película (requiere validación de límite)")
     public ResponseEntity<?> createMovie(@RequestBody CreateMovieRequest request) {
-        log.info("🎬 Admin intentando crear película: {}", request.getTitle());
+        log.info("Admin intentando crear película: {}", request.getTitle());
 
         long activeCount = movieRepository.countByIsActiveTrue();
         if (activeCount >= MAX_MOVIES) {
-            log.warn("⚠️ Límite alcanzado: {}/{} películas activas", activeCount, MAX_MOVIES);
+            log.warn("Límite alcanzado: {}/{} películas activas", activeCount, MAX_MOVIES);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "error", "Límite alcanzado",
@@ -86,7 +86,7 @@ public class AdminMovieController {
 
         movieRepository.save(movie);
 
-        log.info("✅ Película creada: {} (ID: {})", movie.getTitle(), movie.getId());
+        log.info("Película creada: {} (ID: {})", movie.getTitle(), movie.getId());
 
         long orphanCount = countOrphanShowtimes();
 
@@ -102,7 +102,7 @@ public class AdminMovieController {
     @Transactional
     @Operation(summary = "Actualizar película existente")
     public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody CreateMovieRequest request) {
-        log.info("✏️ Admin actualizando película ID: {}", id);
+        log.info("Admin actualizando película ID: {}", id);
 
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Película no encontrada con ID: " + id));
@@ -118,7 +118,7 @@ public class AdminMovieController {
 
         movieRepository.save(movie);
 
-        log.info("✅ Película actualizada: {}", movie.getTitle());
+        log.info("Película actualizada: {}", movie.getTitle());
 
         return ResponseEntity.ok(Map.of(
                 "movie", convertToDTO(movie),
@@ -130,7 +130,7 @@ public class AdminMovieController {
     @Transactional
     @Operation(summary = "Eliminar película, funciones y reservas")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
-        log.info("🗑️ Admin eliminando película ID: {}", id);
+        log.info("Admin eliminando película ID: {}", id);
 
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Película no encontrada con ID: " + id));
@@ -153,7 +153,7 @@ public class AdminMovieController {
         movie.setIsActive(false);
         movieRepository.save(movie);
 
-        log.info("✅ Película eliminada: {} ({} funciones, {} reservas eliminadas)",
+        log.info("Película eliminada: {} ({} funciones, {} reservas eliminadas)",
             movie.getTitle(), showtimes.size(), deletedBookings);
 
         return ResponseEntity.ok(Map.of(
@@ -169,7 +169,7 @@ public class AdminMovieController {
     public ResponseEntity<Map<String, Object>> getOrphanShowtimesCount() {
         long orphanCount = countOrphanShowtimes();
 
-        log.info("📊 Funciones huérfanas: {}", orphanCount);
+        log.info("Funciones huérfanas: {}", orphanCount);
 
         return ResponseEntity.ok(Map.of(
                 "orphanShowtimes", orphanCount,
@@ -181,7 +181,7 @@ public class AdminMovieController {
     @Transactional
     @Operation(summary = "Reasignar funciones huérfanas a una película nueva")
     public ResponseEntity<?> reassignShowtimes(@RequestBody ReassignShowtimesRequest request) {
-        log.info("🔄 Reasignando funciones a película ID: {}", request.getMovieId());
+        log.info("Reasignando funciones a película ID: {}", request.getMovieId());
 
         Movie newMovie = movieRepository.findById(request.getMovieId())
                 .orElseThrow(() -> new RuntimeException("Película no encontrada"));
@@ -210,7 +210,7 @@ public class AdminMovieController {
 
         long remainingOrphans = countOrphanShowtimes();
 
-        log.info("✅ {} funciones reasignadas a '{}'", orphanShowtimes.size(), newMovie.getTitle());
+        log.info("{} funciones reasignadas a '{}'", orphanShowtimes.size(), newMovie.getTitle());
 
         return ResponseEntity.ok(Map.of(
                 "message", orphanShowtimes.size() + " funciones reasignadas exitosamente",

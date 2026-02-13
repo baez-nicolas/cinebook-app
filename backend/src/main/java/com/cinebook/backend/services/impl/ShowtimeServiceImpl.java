@@ -113,7 +113,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         LocalDate today = LocalDate.now();
         LocalDate endDate = today.plusDays(6);
 
-        log.info("🎬 Generando funciones desde {} hasta {}", today, endDate);
+        log.info("Generando funciones desde {} hasta {}", today, endDate);
 
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
 
@@ -121,12 +121,12 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
 
         if (activeMovies.isEmpty()) {
-            log.warn("⚠️ No hay películas activas");
+            log.warn("No hay películas activas");
             return;
         }
 
         if (cinemas.isEmpty()) {
-            log.warn("⚠️ No hay cines disponibles");
+            log.warn("No hay cines disponibles");
             return;
         }
 
@@ -152,14 +152,14 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             }
         }
 
-        log.info("✅ {} funciones generadas para {} películas en {} cines",
+        log.info("{} funciones generadas para {} películas en {} cines",
             totalGenerated, activeMovies.size(), cinemas.size());
     }
 
     @Override
     @Transactional
     public void generateShowtimesForDate(LocalDate date) {
-        log.info("🎬 Generando funciones para la fecha: {}", date);
+        log.info("Generando funciones para la fecha: {}", date);
 
         WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
 
@@ -167,12 +167,12 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
 
         if (activeMovies.isEmpty()) {
-            log.warn("⚠️ No hay películas activas");
+            log.warn("No hay películas activas");
             return;
         }
 
         if (cinemas.isEmpty()) {
-            log.warn("⚠️ No hay cines disponibles");
+            log.warn("No hay cines disponibles");
             return;
         }
 
@@ -194,7 +194,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             }
         }
 
-        log.info("✅ {} funciones generadas para {} películas en {} cines para la fecha {}",
+        log.info("{} funciones generadas para {} películas en {} cines para la fecha {}",
             totalGenerated, activeMovies.size(), cinemas.size(), date);
     }
 
@@ -263,11 +263,11 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         LocalDateTime now = LocalDateTime.now();
 
-        log.info("⏰ Rango de búsqueda: {} a {}", startOfDay, endOfDay);
-        log.info("⏰ Hora actual: {}", now);
+        log.info("Rango de búsqueda: {} a {}", startOfDay, endOfDay);
+        log.info("Hora actual: {}", now);
 
         List<Showtime> allShowtimes = showtimeRepository.findByCinemaIdAndMovieId(cinemaId, movieId);
-        log.info("📊 Total funciones en BD para cine {} y película {}: {}", cinemaId, movieId, allShowtimes.size());
+        log.info("Total funciones en BD para cine {} y película {}: {}", cinemaId, movieId, allShowtimes.size());
 
         List<ShowtimeDTO> result = allShowtimes.stream()
                 .filter(showtime -> {
@@ -285,7 +285,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                 .sorted((a, b) -> a.getShowDateTime().compareTo(b.getShowDateTime()))
                 .collect(Collectors.toList());
 
-        log.info("✅ Funciones válidas encontradas: {}", result.size());
+        log.info("Funciones válidas encontradas: {}", result.size());
 
         return result;
     }
