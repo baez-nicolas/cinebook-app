@@ -26,6 +26,7 @@ export class AdminMoviesComponent implements OnInit {
   activeMoviesCount = 0;
   maxMovies = 12;
   orphanShowtimesCount = 0;
+  moviesWithShowtimes: Set<number> = new Set();
 
   showForm = false;
   isEditing = false;
@@ -62,6 +63,21 @@ export class AdminMoviesComponent implements OnInit {
   loadData(): void {
     this.loadMovies();
     this.loadCounts();
+    this.loadShowtimesMap();
+  }
+
+  loadShowtimesMap(): void {
+    this.apiService.getShowtimes().subscribe({
+      next: (showtimes) => {
+        this.moviesWithShowtimes = new Set(
+          showtimes.filter((s) => s.movieId).map((s) => s.movieId),
+        );
+      },
+    });
+  }
+
+  hasShowtimes(movieId: number): boolean {
+    return this.moviesWithShowtimes.has(movieId);
   }
 
   loadMovies(): void {
@@ -370,6 +386,35 @@ export class AdminMoviesComponent implements OnInit {
           window.scrollTo(0, scrollPos);
         });
       },
+    });
+  }
+
+  openAssignShowtimes(movie: any, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const scrollPos = window.scrollY;
+    Swal.fire({
+      title: `Asignar funciones a "${movie.title}"`,
+      html: `
+        <p>Hay <strong>${this.orphanShowtimesCount}</strong> funciones disponibles.</p>
+        <p>¿Deseas asignarlas a esta película?</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#d4af37',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, asignar',
+      cancelButtonText: 'Cancelar',
+      scrollbarPadding: false,
+      heightAuto: false,
+      returnFocus: false,
+    }).then((result) => {
+      window.scrollTo(0, scrollPos);
+      if (result.isConfirmed) {
+        this.reassignShowtimes(movie.id, movie.title);
+      }
     });
   }
 

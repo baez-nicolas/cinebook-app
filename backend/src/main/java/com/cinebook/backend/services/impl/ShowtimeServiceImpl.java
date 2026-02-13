@@ -11,14 +11,12 @@ import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.repositories.WeeklyScheduleRepository;
 import com.cinebook.backend.services.interfaces.IShowtimeService;
-import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,12 +32,11 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     private final MovieRepository movieRepository;
     private final CinemaRepository cinemaRepository;
     private final WeeklyScheduleRepository weeklyScheduleRepository;
-    private final IWeeklyScheduleService weeklyScheduleService;
 
     @Override
     @Transactional(readOnly = true)
     public List<ShowtimeDTO> getCurrentWeekShowtimes() {
-        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+        WeeklySchedule currentWeek = getCurrentActiveWeek();
         log.info("Obteniendo funciones de la semana actual (weekId: {})", currentWeek.getWeekId());
 
         LocalDateTime now = LocalDateTime.now();
@@ -50,6 +47,13 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                 .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private WeeklySchedule getCurrentActiveWeek() {
+        return weeklyScheduleRepository.findAll().stream()
+                .filter(WeeklySchedule::getIsActive)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No hay semana activa"));
     }
 
     @Override
@@ -115,7 +119,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
 
         log.info("Generando funciones desde {} hasta {}", today, endDate);
 
-        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+        WeeklySchedule currentWeek = getCurrentActiveWeek();
 
         List<Movie> activeMovies = movieRepository.findByIsActiveTrueOrderByIdAsc();
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
@@ -161,7 +165,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     public void generateShowtimesForDate(LocalDate date) {
         log.info("Generando funciones para la fecha: {}", date);
 
-        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+        WeeklySchedule currentWeek = getCurrentActiveWeek();
 
         List<Movie> activeMovies = movieRepository.findByIsActiveTrueOrderByIdAsc();
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();

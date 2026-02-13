@@ -9,8 +9,8 @@ import com.cinebook.backend.repositories.SeatRepository;
 import com.cinebook.backend.repositories.BookingRepository;
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import com.cinebook.backend.services.interfaces.IShowtimeService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
 
@@ -30,6 +29,20 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
     private final SeatRepository seatRepository;
     private final BookingRepository bookingRepository;
     private final IShowtimeService showtimeService;
+
+    public WeeklyScheduleServiceImpl(
+            WeeklyScheduleRepository weeklyScheduleRepository,
+            ShowtimeRepository showtimeRepository,
+            SeatRepository seatRepository,
+            BookingRepository bookingRepository,
+            @Lazy IShowtimeService showtimeService
+    ) {
+        this.weeklyScheduleRepository = weeklyScheduleRepository;
+        this.showtimeRepository = showtimeRepository;
+        this.seatRepository = seatRepository;
+        this.bookingRepository = bookingRepository;
+        this.showtimeService = showtimeService;
+    }
 
     @Override
     @Transactional
