@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -44,9 +44,10 @@ export class MovieDetailComponent implements OnInit {
       next: (data) => {
         this.movie = data;
         this.loading = false;
+        console.log('Pelicula cargada:', this.movie);
       },
       error: (error) => {
-        console.error('Error al cargar película:', error);
+        console.error('Error al cargar pelicula:', error);
         this.loading = false;
       },
     });
@@ -56,6 +57,7 @@ export class MovieDetailComponent implements OnInit {
     this.apiService.getCinemas().subscribe({
       next: (data) => {
         this.cinemas = data;
+        console.log('Cines cargados:', this.cinemas.length);
       },
       error: (error) => {
         console.error('Error al cargar cines:', error);
@@ -81,10 +83,13 @@ export class MovieDetailComponent implements OnInit {
     }
 
     this.selectedDate = this.availableDates[0].value;
+    console.log('Fechas generadas:', this.availableDates);
   }
 
   onCinemaOrDateChange(): void {
-    if (this.selectedCinemaId && this.selectedDate) {
+    console.log('Cambio detectado - Cine:', this.selectedCinemaId, 'Fecha:', this.selectedDate);
+
+    if (this.selectedCinemaId && this.selectedDate && this.movie) {
       this.filterShowtimes();
     } else {
       this.filteredShowtimes = [];
@@ -93,10 +98,17 @@ export class MovieDetailComponent implements OnInit {
 
   filterShowtimes(): void {
     if (!this.movie || !this.selectedCinemaId || !this.selectedDate) {
+      console.warn('Faltan datos para filtrar');
       return;
     }
 
     this.loadingShowtimes = true;
+
+    console.log('Filtrando funciones:', {
+      movieId: this.movie.id,
+      cinemaId: this.selectedCinemaId,
+      date: this.selectedDate,
+    });
 
     this.apiService
       .getShowtimesByFilters(this.movie.id, this.selectedCinemaId, this.selectedDate)
@@ -104,9 +116,13 @@ export class MovieDetailComponent implements OnInit {
         next: (showtimes) => {
           this.filteredShowtimes = showtimes;
           this.loadingShowtimes = false;
+          console.log('Funciones encontradas:', showtimes.length);
+          console.log('Funciones:', showtimes);
         },
         error: (error) => {
           console.error('Error al filtrar funciones:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
           this.filteredShowtimes = [];
           this.loadingShowtimes = false;
         },
@@ -114,6 +130,7 @@ export class MovieDetailComponent implements OnInit {
   }
 
   selectShowtime(showtimeId: number): void {
+    console.log('Seleccionando funcion:', showtimeId);
     this.router.navigate(['/booking', showtimeId]);
   }
 
@@ -132,9 +149,9 @@ export class MovieDetailComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     const labels: { [key: string]: string } = {
-      SPANISH_2D: '2D Español',
+      SPANISH_2D: '2D Espanol',
       SUBTITLED_2D: '2D Subtitulado',
-      SPANISH_3D: '3D Español',
+      SPANISH_3D: '3D Espanol',
     };
     return labels[type] || type;
   }

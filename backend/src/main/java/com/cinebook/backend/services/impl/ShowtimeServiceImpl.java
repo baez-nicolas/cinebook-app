@@ -212,17 +212,30 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         LocalDateTime now = LocalDateTime.now();
 
-        return showtimeRepository.findByMovieIdAndCinemaId(movieId, cinemaId)
-                .stream()
+        log.info("⏰ Rango de búsqueda: {} a {}", startOfDay, endOfDay);
+        log.info("⏰ Hora actual: {}", now);
+
+        List<Showtime> allShowtimes = showtimeRepository.findByCinemaIdAndMovieId(cinemaId, movieId);
+        log.info("📊 Total funciones en BD para cine {} y película {}: {}", cinemaId, movieId, allShowtimes.size());
+
+        List<ShowtimeDTO> result = allShowtimes.stream()
                 .filter(showtime -> {
                     LocalDateTime showDateTime = showtime.getShowDateTime();
-                    return showDateTime.isAfter(now) &&
-                           showDateTime.isAfter(startOfDay) &&
-                           showDateTime.isBefore(endOfDay);
+                    boolean isInDateRange = showDateTime.isAfter(startOfDay) && showDateTime.isBefore(endOfDay);
+                    boolean isFuture = showDateTime.isAfter(now);
+                    boolean isActive = showtime.getMovie() != null && showtime.getMovie().getIsActive();
+
+                    log.debug("  Showtime {}: dateTime={}, inRange={}, future={}, active={}",
+                            showtime.getId(), showDateTime, isInDateRange, isFuture, isActive);
+
+                    return isInDateRange && isFuture && isActive;
                 })
-                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .sorted((a, b) -> a.getShowDateTime().compareTo(b.getShowDateTime()))
                 .collect(Collectors.toList());
+
+        log.info("✅ Funciones válidas encontradas: {}", result.size());
+
+        return result;
     }
 }

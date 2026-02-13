@@ -64,9 +64,10 @@ export class ApiService {
   }
 
   getShowtimesByFilters(movieId: number, cinemaId: number, date: string): Observable<Showtime[]> {
-    return this.http.get<Showtime[]>(
-      `${this.apiUrl}/showtimes/filter?movieId=${movieId}&cinemaId=${cinemaId}&date=${date}`,
-    );
+    const url = `${this.apiUrl}/showtimes/filter?movieId=${movieId}&cinemaId=${cinemaId}&date=${date}`;
+    console.log('API Service - Llamando a:', url);
+    console.log('Parametros:', { movieId, cinemaId, date });
+    return this.http.get<Showtime[]>(url);
   }
 
   getAllUsers(): Observable<any[]> {
