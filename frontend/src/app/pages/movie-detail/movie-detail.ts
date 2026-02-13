@@ -140,7 +140,11 @@ export class MovieDetailComponent implements OnInit {
 
   onDateChange(): void {
     console.log('Cambio de fecha detectado:', this.selectedDate);
-    this.filterShowtimesByDate();
+    this.loadingShowtimes = true;
+    setTimeout(() => {
+      this.filterShowtimesByDate();
+      this.loadingShowtimes = false;
+    }, 1000);
   }
 
   filterShowtimesByDate(): void {
