@@ -14,5 +14,6 @@ public interface IBookingService {
     List<BookingResponseDTO> getAllBookings();
     String generateConfirmationCode();
     BookingResponseDTO convertToDTO(Booking booking);
+    List<BookingResponseDTO> searchBookings(String searchTerm);
 }
 

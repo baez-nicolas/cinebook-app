@@ -7,6 +7,7 @@ import com.cinebook.backend.entities.Movie;
 import com.cinebook.backend.entities.Showtime;
 import com.cinebook.backend.entities.enums.MovieRating;
 import com.cinebook.backend.entities.enums.ShowtimeType;
+import com.cinebook.backend.repositories.BookingRepository;
 import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,7 @@ public class AdminMovieController {
 
     private final MovieRepository movieRepository;
     private final ShowtimeRepository showtimeRepository;
+    private final BookingRepository bookingRepository;
 
     private static final int MAX_MOVIES = 12;
 
@@ -126,7 +128,7 @@ public class AdminMovieController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    @Operation(summary = "Eliminar película (marca como inactiva, no borra físicamente)")
+    @Operation(summary = "Eliminar película, funciones y reservas")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
         log.info("🗑️ Admin eliminando película ID: {}", id);
 
@@ -138,17 +140,27 @@ public class AdminMovieController {
                     .body(Map.of("error", "La película ya está eliminada"));
         }
 
+        List<Showtime> showtimes = showtimeRepository.findByMovieId(id);
+        List<Long> showtimeIds = showtimes.stream()
+                .map(Showtime::getId)
+                .collect(Collectors.toList());
+
+        int deletedBookings = 0;
+        if (!showtimeIds.isEmpty()) {
+            deletedBookings = bookingRepository.deleteByShowtimeIdIn(showtimeIds);
+        }
+
         movie.setIsActive(false);
         movieRepository.save(movie);
 
-        long orphanShowtimes = showtimeRepository.findByMovieId(id).size();
-
-        log.info("✅ Película eliminada: {} ({} funciones ahora huérfanas)", movie.getTitle(), orphanShowtimes);
+        log.info("✅ Película eliminada: {} ({} funciones, {} reservas eliminadas)",
+            movie.getTitle(), showtimes.size(), deletedBookings);
 
         return ResponseEntity.ok(Map.of(
                 "message", "Película eliminada exitosamente",
                 "movieTitle", movie.getTitle(),
-                "orphanShowtimes", orphanShowtimes
+                "orphanShowtimes", showtimes.size(),
+                "deletedBookings", deletedBookings
         ));
     }
 

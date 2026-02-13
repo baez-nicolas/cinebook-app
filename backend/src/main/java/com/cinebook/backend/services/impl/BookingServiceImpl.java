@@ -178,4 +178,20 @@ public class BookingServiceImpl implements IBookingService {
 
         return dto;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> searchBookings(String searchTerm) {
+        log.info("🔍 Buscando reservas con término: {}", searchTerm);
+
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllBookings();
+        }
+
+        return bookingRepository.searchBookings(searchTerm.trim())
+                .stream()
+                .map(this::convertToDTO)
+                .sorted((a, b) -> b.getBookingDateTime().compareTo(a.getBookingDateTime()))
+                .collect(Collectors.toList());
+    }
 }
