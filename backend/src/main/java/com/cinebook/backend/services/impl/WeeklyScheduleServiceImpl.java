@@ -32,12 +32,28 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
     private final BookingRepository bookingRepository;
 
     @Override
+    @Transactional
     public WeeklySchedule getCurrentWeek() {
-        return weeklyScheduleRepository.findByIsActiveTrue()
-                .orElseGet(() -> {
-                    log.info("No hay semana activa, creando una nueva...");
-                    return createNewWeek(getCurrentThursday());
-                });
+        List<WeeklySchedule> activeWeeks = weeklyScheduleRepository.findAll().stream()
+                .filter(WeeklySchedule::getIsActive)
+                .toList();
+
+        if (activeWeeks.isEmpty()) {
+            log.info("No hay semana activa, creando una nueva...");
+            return createNewWeek(getCurrentThursday());
+        }
+
+        if (activeWeeks.size() > 1) {
+            log.warn("⚠️ Hay {} semanas activas, limpiando y dejando solo una...", activeWeeks.size());
+            WeeklySchedule keepWeek = activeWeeks.get(0);
+            for (int i = 1; i < activeWeeks.size(); i++) {
+                activeWeeks.get(i).setIsActive(false);
+            }
+            weeklyScheduleRepository.saveAll(activeWeeks);
+            return keepWeek;
+        }
+
+        return activeWeeks.get(0);
     }
 
     @Scheduled(cron = "0 0 23 * * WED", zone = "America/Argentina/Buenos_Aires")
@@ -53,14 +69,25 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         LocalDate today = LocalDate.now();
         LocalDate currentThursday = getCurrentThursday();
 
-        WeeklySchedule currentWeek = weeklyScheduleRepository.findByIsActiveTrue()
-                .orElse(null);
+        List<WeeklySchedule> activeWeeks = weeklyScheduleRepository.findAll().stream()
+                .filter(WeeklySchedule::getIsActive)
+                .toList();
 
-        if (currentWeek == null) {
+        if (activeWeeks.isEmpty()) {
             log.info("No existe semana activa. Creando nueva semana...");
             createNewWeek(currentThursday);
             return true;
         }
+
+        if (activeWeeks.size() > 1) {
+            log.warn("⚠️ Limpiando {} semanas activas duplicadas...", activeWeeks.size());
+            for (int i = 1; i < activeWeeks.size(); i++) {
+                activeWeeks.get(i).setIsActive(false);
+            }
+            weeklyScheduleRepository.saveAll(activeWeeks);
+        }
+
+        WeeklySchedule currentWeek = activeWeeks.get(0);
 
         if (today.isAfter(currentWeek.getWeekEndDate())) {
             log.info("🔄 RESET SEMANAL: Pasó el miércoles, iniciando reset...");
@@ -144,6 +171,16 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         LocalDate weekStart = thursdayDate;
         LocalDate weekEnd = thursdayDate.plusDays(6);
         Long weekId = calculateWeekId(thursdayDate);
+
+        List<WeeklySchedule> activeWeeks = weeklyScheduleRepository.findAll().stream()
+                .filter(WeeklySchedule::getIsActive)
+                .toList();
+
+        if (!activeWeeks.isEmpty()) {
+            log.info("Desactivando {} semanas activas existentes", activeWeeks.size());
+            activeWeeks.forEach(week -> week.setIsActive(false));
+            weeklyScheduleRepository.saveAll(activeWeeks);
+        }
 
         WeeklySchedule newWeek = new WeeklySchedule();
         newWeek.setWeekId(weekId);

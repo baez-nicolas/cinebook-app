@@ -9,6 +9,7 @@ import com.cinebook.backend.entities.enums.ShowtimeType;
 import com.cinebook.backend.repositories.CinemaRepository;
 import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
+import com.cinebook.backend.repositories.WeeklyScheduleRepository;
 import com.cinebook.backend.services.interfaces.IShowtimeService;
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final MovieRepository movieRepository;
     private final CinemaRepository cinemaRepository;
+    private final WeeklyScheduleRepository weeklyScheduleRepository;
     private final IWeeklyScheduleService weeklyScheduleService;
 
     @Override
@@ -108,70 +110,95 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     @Override
     @Transactional
     public void generateShowtimesForCurrentWeek() {
-        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+        LocalDate today = LocalDate.now();
+        LocalDate endDate = today.plusDays(6);
 
-        List<Showtime> existingShowtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId());
-        if (!existingShowtimes.isEmpty()) {
-            log.info("Las funciones ya fueron generadas para la semana actual (weekId: {})", currentWeek.getWeekId());
-            return;
-        }
+        log.info("🎬 Generando funciones desde {} hasta {}", today, endDate);
 
-        log.info("🎬 Generando funciones para la semana {} ({} - {})",
-                currentWeek.getWeekId(),
-                currentWeek.getWeekStartDate(),
-                currentWeek.getWeekEndDate());
+        WeeklySchedule currentWeek = getOrCreateWeek(today, endDate);
 
-        List<Movie> movies = movieRepository.findByIsActiveTrue();
+        List<Movie> activeMovies = movieRepository.findByIsActiveTrueOrderByIdAsc();
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
 
-        if (movies.isEmpty() || cinemas.isEmpty()) {
-            log.warn("No hay películas o cines activos para generar funciones");
+        if (activeMovies.isEmpty()) {
+            log.warn("⚠️ No hay películas activas");
             return;
         }
 
-        List<Showtime> allShowtimes = new ArrayList<>();
-        int functionCount = 0;
+        if (cinemas.isEmpty()) {
+            log.warn("⚠️ No hay cines disponibles");
+            return;
+        }
 
-        for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
-            LocalDate currentDate = currentWeek.getWeekStartDate().plusDays(dayOffset);
+        int totalGenerated = 0;
 
+        for (Movie movie : activeMovies) {
             for (Cinema cinema : cinemas) {
-                for (Movie movie : movies) {
+                for (LocalDate date = today; !date.isAfter(endDate); date = date.plusDays(1)) {
+                    final LocalDate currentDate = date;
 
-                    Showtime showtime1 = createShowtime(
-                            movie, cinema, currentDate,
-                            LocalTime.of(17, 30),
-                            ShowtimeType.SPANISH_2D,
-                            new BigDecimal("5000"),
-                            currentWeek.getWeekId()
-                    );
-                    allShowtimes.add(showtime1);
-                    functionCount++;
+                    List<Showtime> existing = showtimeRepository.findAll().stream()
+                        .filter(s -> s.getMovie().getId().equals(movie.getId()))
+                        .filter(s -> s.getCinema().getId().equals(cinema.getId()))
+                        .filter(s -> s.getShowDateTime().toLocalDate().equals(currentDate))
+                        .collect(Collectors.toList());
 
-                    boolean is3D = (dayOffset % 2 == 0);
-
-                    Showtime showtime2 = createShowtime(
-                            movie, cinema, currentDate,
-                            LocalTime.of(21, 0),
-                            is3D ? ShowtimeType.SPANISH_3D : ShowtimeType.SUBTITLED_2D,
-                            is3D ? new BigDecimal("8000") : new BigDecimal("4500"),
-                            currentWeek.getWeekId()
-                    );
-                    allShowtimes.add(showtime2);
-                    functionCount++;
+                    if (existing.isEmpty()) {
+                        List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, currentDate, currentWeek);
+                        showtimeRepository.saveAll(dailyShowtimes);
+                        totalGenerated += dailyShowtimes.size();
+                    }
                 }
             }
         }
 
-        showtimeRepository.saveAll(allShowtimes);
+        log.info("✅ {} funciones generadas para {} películas en {} cines",
+            totalGenerated, activeMovies.size(), cinemas.size());
+    }
 
-        log.info("✅ {} funciones generadas exitosamente para la semana {}", functionCount, currentWeek.getWeekId());
-        log.info("📊 Distribución:");
-        log.info("   • Películas: {}", movies.size());
-        log.info("   • Cines: {}", cinemas.size());
-        log.info("   • Días: 7");
-        log.info("   • Funciones por película/cine/día: 2");
-        log.info("   • Total esperado: {}", movies.size() * cinemas.size() * 7 * 2);
+    private WeeklySchedule getOrCreateWeek(LocalDate startDate, LocalDate endDate) {
+        return weeklyScheduleRepository.findByWeekStartDateAndWeekEndDate(startDate, endDate)
+                .orElseGet(() -> {
+                    WeeklySchedule week = new WeeklySchedule();
+                    week.setWeekStartDate(startDate);
+                    week.setWeekEndDate(endDate);
+                    week.setIsActive(true);
+                    week.setCreatedAt(LocalDate.now());
+                    Long weekId = calculateWeekId(startDate);
+                    week.setWeekId(weekId);
+                    return weeklyScheduleRepository.save(week);
+                });
+    }
+
+    private Long calculateWeekId(LocalDate date) {
+        long epochDay = date.toEpochDay();
+        return epochDay / 7;
+    }
+
+    private List<Showtime> generateDailyShowtimes(Movie movie, Cinema cinema, LocalDate date, WeeklySchedule week) {
+        List<Showtime> showtimes = new ArrayList<>();
+
+        Showtime showtime1 = createShowtime(
+                movie, cinema, date,
+                LocalTime.of(17, 30),
+                ShowtimeType.SPANISH_2D,
+                new BigDecimal("5000"),
+                week.getWeekId()
+        );
+        showtimes.add(showtime1);
+
+        boolean is3D = (date.getDayOfMonth() % 2 == 0);
+
+        Showtime showtime2 = createShowtime(
+                movie, cinema, date,
+                LocalTime.of(21, 0),
+                is3D ? ShowtimeType.SPANISH_3D : ShowtimeType.SUBTITLED_2D,
+                is3D ? new BigDecimal("8000") : new BigDecimal("4500"),
+                week.getWeekId()
+        );
+        showtimes.add(showtime2);
+
+        return showtimes;
     }
 
     private Showtime createShowtime(Movie movie, Cinema cinema, LocalDate date, LocalTime time,
