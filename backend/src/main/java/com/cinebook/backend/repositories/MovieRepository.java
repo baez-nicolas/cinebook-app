@@ -10,4 +10,6 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByIsActiveTrue();
     List<Movie> findByGenre(String genre);
+    long countByIsActiveTrue();
+    List<Movie> findByIsActiveTrueOrderByIdAsc();
 }

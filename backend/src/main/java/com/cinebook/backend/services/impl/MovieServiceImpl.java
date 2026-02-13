@@ -52,10 +52,11 @@ public class MovieServiceImpl implements IMovieService {
         dto.setDescription(movie.getDescription());
         dto.setDuration(movie.getDuration());
         dto.setGenre(movie.getGenre());
-        dto.setRating(movie.getRating());
+        dto.setRating(movie.getRating() != null ? movie.getRating().name() : null);
         dto.setPosterUrl(movie.getPosterUrl());
         dto.setTrailerUrl(movie.getTrailerUrl());
         dto.setReleaseDate(movie.getReleaseDate());
+        dto.setIsActive(movie.getIsActive());
         return dto;
     }
 }
