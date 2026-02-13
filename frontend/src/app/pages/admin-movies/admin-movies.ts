@@ -3,13 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import { FooterComponent } from '../../components/footer/footer';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-movies',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FooterComponent],
   templateUrl: './admin-movies.html',
   styleUrls: ['./admin-movies.css'],
 })
@@ -17,6 +18,7 @@ export class AdminMoviesComponent implements OnInit {
   currentUser: any = null;
   movies: any[] = [];
   loading = true;
+  menuOpen = false;
 
   activeMoviesCount = 0;
   maxMovies = 12;
@@ -279,6 +281,14 @@ export class AdminMoviesComponent implements OnInit {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 
   logout(): void {

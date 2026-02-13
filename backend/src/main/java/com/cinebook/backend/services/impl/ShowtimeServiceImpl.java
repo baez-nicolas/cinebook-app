@@ -45,6 +45,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         return showtimeRepository.findByWeekId(currentWeek.getWeekId())
                 .stream()
                 .filter(showtime -> showtime.getShowDateTime().isAfter(now))
+                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -59,6 +60,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         return showtimeRepository.findByMovieId(movieId)
                 .stream()
                 .filter(showtime -> showtime.getShowDateTime().isAfter(now))
+                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -73,6 +75,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         return showtimeRepository.findByCinemaId(cinemaId)
                 .stream()
                 .filter(showtime -> showtime.getShowDateTime().isAfter(now))
+                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -87,7 +90,9 @@ public class ShowtimeServiceImpl implements IShowtimeService {
         return showtimeRepository.findByCinemaIdAndMovieId(cinemaId, movieId)
                 .stream()
                 .filter(showtime -> showtime.getShowDateTime().isAfter(now))
+                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
+                .sorted((a, b) -> a.getShowDateTime().compareTo(b.getShowDateTime()))
                 .collect(Collectors.toList());
     }
 
@@ -215,6 +220,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                            showDateTime.isAfter(startOfDay) &&
                            showDateTime.isBefore(endOfDay);
                 })
+                .filter(showtime -> showtime.getMovie().getIsActive())
                 .map(this::convertToDTO)
                 .sorted((a, b) -> a.getShowDateTime().compareTo(b.getShowDateTime()))
                 .collect(Collectors.toList());

@@ -2,14 +2,21 @@
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-brand">
-        <span class="brand-icon">🎬</span>
+        <img src="/logo.png" alt="CineBook Logo" class="brand-logo" />
         <h1>CINEBOOK</h1>
       </div>
-      <div class="nav-links">
-        <a [routerLink]="['/movies']" class="nav-link"> 🎥 Películas </a>
-        <a [routerLink]="['/my-bookings']" class="nav-link"> 📋 Mis Reservas </a>
-        <a [routerLink]="['/users']" class="nav-link"> 👥 Lista de Usuarios </a>
-        <a [routerLink]="['/admin/movies']" class="nav-link active"> 🎬 Gestionar Películas </a>
+      <button class="menu-toggle" [class.open]="menuOpen" (click)="toggleMenu()">
+        <span class="hamburger"></span>
+      </button>
+      <div class="nav-links" [class.open]="menuOpen">
+        <a [routerLink]="['/movies']" class="nav-link" (click)="closeMenu()">🎥 Películas</a>
+        <a [routerLink]="['/my-bookings']" class="nav-link" (click)="closeMenu()"
+          >📋 Mis Reservas</a
+        >
+        <a [routerLink]="['/users']" class="nav-link" (click)="closeMenu()">👥 Lista de Usuarios</a>
+        <a [routerLink]="['/admin/movies']" class="nav-link active" (click)="closeMenu()"
+          >🎬 Gestionar Películas</a
+        >
         @if (currentUser) {
           <div class="user-section">
             <span class="user-label">Admin</span>
@@ -18,13 +25,14 @@
           </div>
         }
       </div>
+      <div class="overlay" [class.open]="menuOpen" (click)="closeMenu()"></div>
     </div>
   </nav>
 
   <div class="admin-content">
     <div class="container">
       <div class="page-header">
-        <h1 class="page-title">🎬 Gestión de Películas</h1>
+        <h1 class="page-title">Gestión de Películas</h1>
         <p class="page-subtitle">Agregar, editar y eliminar películas del sistema</p>
       </div>
 
@@ -182,4 +190,6 @@
       </div>
     </div>
   }
+
+  <app-footer></app-footer>
 </div>

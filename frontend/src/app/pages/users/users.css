@@ -179,6 +179,7 @@
 
 .users-content {
   padding: 60px 0 80px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .container {
