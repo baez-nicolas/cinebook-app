@@ -76,4 +76,28 @@ export class ApiService {
   getUsersCount(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/admin/users/count`);
   }
+
+  getActiveMoviesCount(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/movies/count`);
+  }
+
+  createMovie(movieData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admin/movies`, movieData);
+  }
+
+  updateMovie(id: number, movieData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/admin/movies/${id}`, movieData);
+  }
+
+  deleteMovie(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/admin/movies/${id}`);
+  }
+
+  getOrphanShowtimesCount(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/movies/orphan-showtimes/count`);
+  }
+
+  reassignShowtimes(movieId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admin/movies/showtimes/reassign`, { movieId });
+  }
 }

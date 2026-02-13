@@ -1,0 +1,185 @@
+<div class="admin-movies-page">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-icon">🎬</span>
+        <h1>CINEBOOK</h1>
+      </div>
+      <div class="nav-links">
+        <a [routerLink]="['/movies']" class="nav-link"> 🎥 Películas </a>
+        <a [routerLink]="['/my-bookings']" class="nav-link"> 📋 Mis Reservas </a>
+        <a [routerLink]="['/users']" class="nav-link"> 👥 Lista de Usuarios </a>
+        <a [routerLink]="['/admin/movies']" class="nav-link active"> 🎬 Gestionar Películas </a>
+        @if (currentUser) {
+          <div class="user-section">
+            <span class="user-label">Admin</span>
+            <span class="admin-badge">ADMIN</span>
+            <button (click)="logout()" class="btn-logout">🚪 Salir</button>
+          </div>
+        }
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-content">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">🎬 Gestión de Películas</h1>
+        <p class="page-subtitle">Agregar, editar y eliminar películas del sistema</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">🎥</div>
+          <div class="stat-info">
+            <span class="stat-label">Películas Activas</span>
+            <span class="stat-value">{{ activeMoviesCount }}/{{ maxMovies }}</span>
+          </div>
+        </div>
+
+        @if (orphanShowtimesCount > 0) {
+          <div class="stat-card warning">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-info">
+              <span class="stat-label">Funciones Huérfanas</span>
+              <span class="stat-value">{{ orphanShowtimesCount }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="actions-bar">
+        <button (click)="openAddForm()" class="btn-add">➕ Agregar Película</button>
+      </div>
+
+      @if (loading) {
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Cargando películas...</p>
+        </div>
+      }
+
+      @if (!loading && movies.length > 0) {
+        <div class="movies-table-container">
+          <table class="movies-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Poster</th>
+                <th>Título</th>
+                <th>Género</th>
+                <th>Duración</th>
+                <th>Rating</th>
+                <th>Fecha de Estreno</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (movie of movies; track movie.id) {
+                <tr>
+                  <td class="movie-id">#{{ movie.id }}</td>
+                  <td class="movie-poster-cell">
+                    <img [src]="movie.posterUrl" [alt]="movie.title" class="poster-thumbnail" />
+                  </td>
+                  <td class="movie-title-cell">{{ movie.title }}</td>
+                  <td>{{ movie.genre }}</td>
+                  <td>{{ formatDuration(movie.duration) }}</td>
+                  <td>
+                    <span class="rating-badge">{{ movie.rating }}</span>
+                  </td>
+                  <td>{{ movie.releaseDate | date: 'dd/MM/yyyy' }}</td>
+                  <td class="actions-cell">
+                    <button (click)="openEditForm(movie)" class="btn-action edit">✏️</button>
+                    <button (click)="deleteMovie(movie)" class="btn-action delete">🗑️</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showForm) {
+    <div class="modal-overlay" (click)="closeForm()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isEditing ? '✏️ Editar Película' : '➕ Agregar Película' }}</h2>
+          <button (click)="closeForm()" class="btn-close">✖</button>
+        </div>
+
+        <div class="modal-body">
+          <form (ngSubmit)="saveMovie()">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Título *</label>
+                <input type="text" [(ngModel)]="movieForm.title" name="title" required />
+              </div>
+
+              <div class="form-group">
+                <label>Género *</label>
+                <input type="text" [(ngModel)]="movieForm.genre" name="genre" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Descripción *</label>
+              <textarea
+                [(ngModel)]="movieForm.description"
+                name="description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Duración (minutos) *</label>
+                <input type="number" [(ngModel)]="movieForm.duration" name="duration" required />
+              </div>
+
+              <div class="form-group">
+                <label>Rating *</label>
+                <select [(ngModel)]="movieForm.rating" name="rating" required>
+                  <option value="">Seleccionar</option>
+                  <option value="G">G</option>
+                  <option value="PG">PG</option>
+                  <option value="PG_13">PG-13</option>
+                  <option value="R">R</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Fecha de Estreno *</label>
+                <input
+                  type="date"
+                  [(ngModel)]="movieForm.releaseDate"
+                  name="releaseDate"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>URL del Poster *</label>
+              <input type="url" [(ngModel)]="movieForm.posterUrl" name="posterUrl" required />
+            </div>
+
+            <div class="form-group">
+              <label>URL del Trailer</label>
+              <input type="url" [(ngModel)]="movieForm.trailerUrl" name="trailerUrl" />
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" (click)="closeForm()" class="btn-cancel">Cancelar</button>
+              <button type="submit" class="btn-save">
+                {{ isEditing ? 'Actualizar' : 'Crear' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>
