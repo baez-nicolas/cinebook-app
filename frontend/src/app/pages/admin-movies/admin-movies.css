@@ -106,6 +106,10 @@
   transform: rotate(-45deg);
 }
 
+.close-menu {
+  display: none;
+}
+
 .overlay {
   display: none;
 }
@@ -606,6 +610,16 @@
 }
 
 @media (max-width: 768px) {
+  .nav-container {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.4rem;
+  }
+
   .menu-toggle {
     display: block;
   }
@@ -613,35 +627,77 @@
   .nav-links {
     position: fixed;
     top: 0;
-    right: -100%;
-    height: 100vh;
+    right: -280px;
     width: 280px;
+    height: 100vh;
     background: #111111;
     flex-direction: column;
-    padding: 80px 20px 30px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 80px 30px 30px;
+    gap: 15px;
     transition: right 0.3s ease;
     z-index: 1001;
-    gap: 10px;
-    align-items: stretch;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .nav-links.open {
     right: 0;
   }
 
+  .close-menu {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 5px 10px;
+  }
+
   .nav-link {
-    padding: 15px 20px;
-    border-radius: 10px;
-    justify-content: flex-start;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    width: 100%;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .user-section {
-    margin-top: auto;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 15px;
+    width: 100%;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .user-section .user-label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .user-section .btn-logout {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.85);
+    width: 100%;
+  }
+
+  .user-section .btn-logout:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
   }
 
   .overlay {
@@ -651,7 +707,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -685,78 +741,6 @@
   }
 
   .container {
-    padding: 0 20px;
+    padding: 0 15px;
   }
-}
-
-/* SweetAlert2 Dark Theme */
-.swal2-popup {
-  background: #1a1a1a !important;
-  color: #e0e0e0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-}
-
-.swal2-title {
-  color: #ffffff !important;
-}
-
-.swal2-html-container,
-.swal2-content {
-  color: #b0b0b0 !important;
-}
-
-.swal2-confirm {
-  background: #333333 !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 8px !important;
-  padding: 10px 24px !important;
-  font-weight: 600 !important;
-}
-
-.swal2-confirm:hover {
-  background: #444444 !important;
-}
-
-.swal2-cancel {
-  background: #2a2a2a !important;
-  color: #b0b0b0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  padding: 10px 24px !important;
-}
-
-.swal2-cancel:hover {
-  background: #383838 !important;
-}
-
-.swal2-icon {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.swal2-icon.swal2-warning {
-  border-color: #f0ad4e !important;
-  color: #f0ad4e !important;
-}
-
-.swal2-icon.swal2-success {
-  border-color: #5cb85c !important;
-}
-
-.swal2-icon.swal2-success .swal2-success-ring {
-  border-color: rgba(92, 184, 92, 0.3) !important;
-}
-
-.swal2-icon.swal2-success [class^='swal2-success-line'] {
-  background-color: #5cb85c !important;
-}
-
-.swal2-icon.swal2-error {
-  border-color: #d9534f !important;
-}
-
-.swal2-icon.swal2-error .swal2-x-mark-line-left,
-.swal2-icon.swal2-error .swal2-x-mark-line-right {
-  background-color: #d9534f !important;
 }
