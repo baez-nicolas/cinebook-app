@@ -72,7 +72,6 @@
           <table class="movies-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Poster</th>
                 <th>Título</th>
                 <th>Género</th>
@@ -85,7 +84,6 @@
             <tbody>
               @for (movie of movies; track movie.id) {
                 <tr>
-                  <td class="movie-id">#{{ movie.id }}</td>
                   <td class="movie-poster-cell">
                     <img [src]="movie.posterUrl" [alt]="movie.title" class="poster-thumbnail" />
                   </td>

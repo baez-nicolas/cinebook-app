@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,7 @@ public class DataLoader implements CommandLineRunner {
     private final ISeatService seatService;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         log.info("🚀 Iniciando carga de datos...");
 
@@ -48,6 +50,7 @@ public class DataLoader implements CommandLineRunner {
 
         showtimeService.generateShowtimesForCurrentWeek();
 
+        log.info("🎬 Generando asientos para todas las funciones...");
         seatService.generateSeatsForAllShowtimes();
 
         log.info("✅ Carga de datos completada exitosamente");
