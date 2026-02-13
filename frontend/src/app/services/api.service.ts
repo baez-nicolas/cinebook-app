@@ -70,6 +70,12 @@ export class ApiService {
     return this.http.get<Showtime[]>(url);
   }
 
+  getShowtimesByCinemaAndMovie(cinemaId: number, movieId: number): Observable<any[]> {
+    const url = `${this.apiUrl}/showtimes/cinema/${cinemaId}/movie/${movieId}`;
+    console.log('API Service - Llamando a:', url);
+    return this.http.get<any[]>(url);
+  }
+
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/admin/users`);
   }

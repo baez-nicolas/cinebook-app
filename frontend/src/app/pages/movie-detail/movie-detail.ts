@@ -2,9 +2,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Cinema } from '../../models/cinema.model';
-import { Movie } from '../../models/movie.model';
-import { Showtime } from '../../models/showtime.model';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -15,10 +12,11 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './movie-detail.css',
 })
 export class MovieDetailComponent implements OnInit {
-  movie: Movie | null = null;
-  cinemas: Cinema[] = [];
+  movie: any = null;
+  cinemas: any[] = [];
   availableDates: { label: string; value: string }[] = [];
-  filteredShowtimes: Showtime[] = [];
+  allShowtimes: any[] = [];
+  filteredShowtimes: any[] = [];
 
   selectedCinemaId: number | null = null;
   selectedDate: string = '';
@@ -36,7 +34,6 @@ export class MovieDetailComponent implements OnInit {
     const movieId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadMovieDetails(movieId);
     this.loadCinemas();
-    this.generateAvailableDates();
   }
 
   loadMovieDetails(id: number): void {
@@ -65,68 +62,105 @@ export class MovieDetailComponent implements OnInit {
     });
   }
 
-  generateAvailableDates(): void {
-    const today = new Date();
+  onCinemaChange(): void {
+    console.log('Cambio de cine detectado:', this.selectedCinemaId);
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+    if (!this.selectedCinemaId || !this.movie) {
+      this.availableDates = [];
+      this.filteredShowtimes = [];
+      return;
+    }
 
+    this.loadShowtimesForCinema();
+  }
+
+  loadShowtimesForCinema(): void {
+    if (!this.movie || !this.selectedCinemaId) return;
+
+    this.loadingShowtimes = true;
+    console.log('Cargando funciones para cine:', this.selectedCinemaId, 'pelicula:', this.movie.id);
+
+    setTimeout(() => {
+      this.apiService
+        .getShowtimesByCinemaAndMovie(this.selectedCinemaId!, this.movie.id)
+        .subscribe({
+          next: (showtimes) => {
+            this.allShowtimes = showtimes;
+            console.log('Funciones cargadas:', showtimes.length);
+
+            this.generateAvailableDatesFromShowtimes();
+
+            if (this.availableDates.length > 0) {
+              this.selectedDate = this.availableDates[0].value;
+              this.filterShowtimesByDate();
+            } else {
+              this.filteredShowtimes = [];
+            }
+
+            this.loadingShowtimes = false;
+          },
+          error: (error) => {
+            console.error('Error al cargar funciones:', error);
+            this.allShowtimes = [];
+            this.availableDates = [];
+            this.filteredShowtimes = [];
+            this.loadingShowtimes = false;
+          },
+        });
+    }, 1500);
+  }
+
+  generateAvailableDatesFromShowtimes(): void {
+    if (this.allShowtimes.length === 0) {
+      this.availableDates = [];
+      return;
+    }
+
+    const uniqueDates = new Set<string>();
+    this.allShowtimes.forEach((showtime) => {
+      const date = new Date(showtime.showDateTime).toISOString().split('T')[0];
+      uniqueDates.add(date);
+    });
+
+    const sortedDates = Array.from(uniqueDates).sort();
+
+    this.availableDates = sortedDates.map((dateStr) => {
+      const date = new Date(dateStr + 'T12:00:00');
       const dayName = date.toLocaleDateString('es-AR', { weekday: 'long' });
       const dayNumber = date.getDate();
       const month = date.toLocaleDateString('es-AR', { month: '2-digit' });
 
       const label = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNumber}/${month}`;
-      const value = date.toISOString().split('T')[0];
 
-      this.availableDates.push({ label, value });
-    }
+      return { label, value: dateStr };
+    });
 
-    this.selectedDate = this.availableDates[0].value;
-    console.log('Fechas generadas:', this.availableDates);
+    console.log('Fechas disponibles:', this.availableDates);
   }
 
-  onCinemaOrDateChange(): void {
-    console.log('Cambio detectado - Cine:', this.selectedCinemaId, 'Fecha:', this.selectedDate);
+  onDateChange(): void {
+    console.log('Cambio de fecha detectado:', this.selectedDate);
+    this.filterShowtimesByDate();
+  }
 
-    if (this.selectedCinemaId && this.selectedDate && this.movie) {
-      this.filterShowtimes();
-    } else {
+  filterShowtimesByDate(): void {
+    if (!this.selectedDate) {
       this.filteredShowtimes = [];
-    }
-  }
-
-  filterShowtimes(): void {
-    if (!this.movie || !this.selectedCinemaId || !this.selectedDate) {
-      console.warn('Faltan datos para filtrar');
       return;
     }
 
-    this.loadingShowtimes = true;
+    console.log('Filtrando funciones para fecha:', this.selectedDate);
 
-    console.log('Filtrando funciones:', {
-      movieId: this.movie.id,
-      cinemaId: this.selectedCinemaId,
-      date: this.selectedDate,
-    });
-
-    this.apiService
-      .getShowtimesByFilters(this.movie.id, this.selectedCinemaId, this.selectedDate)
-      .subscribe({
-        next: (showtimes) => {
-          this.filteredShowtimes = showtimes;
-          this.loadingShowtimes = false;
-          console.log('Funciones encontradas:', showtimes.length);
-          console.log('Funciones:', showtimes);
-        },
-        error: (error) => {
-          console.error('Error al filtrar funciones:', error);
-          console.error('Status:', error.status);
-          console.error('Message:', error.message);
-          this.filteredShowtimes = [];
-          this.loadingShowtimes = false;
-        },
+    this.filteredShowtimes = this.allShowtimes
+      .filter((showtime) => {
+        const showtimeDate = new Date(showtime.showDateTime).toISOString().split('T')[0];
+        return showtimeDate === this.selectedDate;
+      })
+      .sort((a, b) => {
+        return new Date(a.showDateTime).getTime() - new Date(b.showDateTime).getTime();
       });
+
+    console.log('Funciones filtradas:', this.filteredShowtimes.length);
   }
 
   selectShowtime(showtimeId: number): void {
@@ -144,14 +178,15 @@ export class MovieDetailComponent implements OnInit {
     return new Date(dateTime).toLocaleTimeString('es-AR', {
       hour: '2-digit',
       minute: '2-digit',
+      hour12: false,
     });
   }
 
   getTypeLabel(type: string): string {
     const labels: { [key: string]: string } = {
-      SPANISH_2D: '2D Espanol',
+      SPANISH_2D: '2D Castellano',
       SUBTITLED_2D: '2D Subtitulado',
-      SPANISH_3D: '3D Espanol',
+      SPANISH_3D: '3D Castellano',
     };
     return labels[type] || type;
   }

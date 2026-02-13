@@ -52,7 +52,7 @@
               <label>Cine</label>
               <select
                 [(ngModel)]="selectedCinemaId"
-                (change)="onCinemaOrDateChange()"
+                (change)="onCinemaChange()"
                 class="select-input"
               >
                 <option [value]="null">Seleccioná un cine</option>
@@ -66,9 +66,17 @@
               <label>Fecha</label>
               <select
                 [(ngModel)]="selectedDate"
-                (change)="onCinemaOrDateChange()"
+                (change)="onDateChange()"
                 class="select-input"
+                [disabled]="availableDates.length === 0"
               >
+                <option value="">
+                  {{
+                    availableDates.length === 0
+                      ? 'Primero seleccioná un cine'
+                      : 'Seleccioná una fecha'
+                  }}
+                </option>
                 @for (date of availableDates; track date.value) {
                   <option [value]="date.value">
                     {{ date.label }}

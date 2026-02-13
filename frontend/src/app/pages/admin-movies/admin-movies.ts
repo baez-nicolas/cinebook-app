@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, RouterModule, FormsModule, FooterComponent],
   templateUrl: './admin-movies.html',
   styleUrls: ['./admin-movies.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AdminMoviesComponent implements OnInit {
   currentUser: any = null;
