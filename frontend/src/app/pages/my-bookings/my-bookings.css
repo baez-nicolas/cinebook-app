@@ -205,57 +205,33 @@
 }
 
 .admin-filter-section {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 25px 30px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
-.filter-form {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+.search-container {
+  width: 100%;
 }
 
-.user-select {
-  flex: 1;
-  min-width: 300px;
-  max-width: 500px;
-  padding: 14px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+.search-input {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.user-select:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.user-select option {
-  background: #1a1a1a;
-  color: white;
-  padding: 10px;
-}
-
-.btn-clear {
-  padding: 14px 25px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
-  color: #ef4444;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
+  color: white;
   transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #e50914;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
 }
 
 .btn-clear:hover {

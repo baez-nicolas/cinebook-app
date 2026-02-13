@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { FooterComponent } from '../../components/footer/footer';
-import { FilterPipe } from '../../pipes/filter.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -27,17 +26,17 @@ interface Booking {
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, FilterPipe, FooterComponent],
+  imports: [CommonModule, RouterModule, FormsModule, FooterComponent],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
 export class MyBookingsComponent implements OnInit {
   bookings: Booking[] = [];
   allBookings: Booking[] = [];
+  filteredBookings: Booking[] = [];
+  searchTerm = '';
   loading = false;
   isAdmin = false;
-  selectedUserEmail = '';
-  uniqueUserEmails: string[] = [];
   currentUser: any = null;
   menuOpen = false;
 
@@ -96,12 +95,8 @@ export class MyBookingsComponent implements OnInit {
           (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
         );
 
-        const emailsSet = new Set(
-          this.allBookings.map((b) => this.extractEmailFromUserName(b.userName)),
-        );
-        this.uniqueUserEmails = Array.from(emailsSet).sort();
-
         this.bookings = this.allBookings;
+        this.filteredBookings = [...this.allBookings];
         this.loading = false;
       },
       error: (err) => {
@@ -127,17 +122,40 @@ export class MyBookingsComponent implements OnInit {
     return userName;
   }
 
-  onUserFilterChange(): void {
-    if (!this.selectedUserEmail) {
-      this.bookings = this.allBookings;
-    } else {
-      this.bookings = this.allBookings.filter((b) => b.userName === this.selectedUserEmail);
-    }
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .replace(/,/g, '')
+      .replace(/\./g, '')
+      .replace(/ de /g, ' ')
+      .replace(/ del /g, ' ')
+      .replace(/ a las /g, ' ')
+      .replace(/ las /g, ' ')
+      .replace(/ los /g, ' ')
+      .replace(/ el /g, ' ')
+      .replace(/ la /g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
-  clearFilter(): void {
-    this.selectedUserEmail = '';
-    this.bookings = this.allBookings;
+  filterBookings(): void {
+    const term = this.normalizeText(this.searchTerm);
+    if (!term) {
+      this.filteredBookings = [...this.allBookings];
+      return;
+    }
+    this.filteredBookings = this.allBookings.filter(
+      (booking) =>
+        this.normalizeText(booking.userName || '').includes(term) ||
+        this.normalizeText(booking.movieTitle || '').includes(term) ||
+        this.normalizeText(booking.cinemaName || '').includes(term) ||
+        this.normalizeText(booking.showDateTime || '').includes(term) ||
+        this.normalizeText(this.formatDate(booking.showDateTime)).includes(term) ||
+        this.normalizeText(booking.showtimeType || '').includes(term) ||
+        this.normalizeText(this.getTypeLabel(booking.showtimeType)).includes(term) ||
+        this.normalizeText(booking.confirmationCode || '').includes(term) ||
+        booking.totalPrice?.toString().includes(term),
+    );
   }
 
   formatDate(dateString: string): string {

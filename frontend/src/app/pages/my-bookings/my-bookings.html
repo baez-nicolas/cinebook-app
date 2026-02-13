@@ -45,23 +45,14 @@
 
       @if (isAdmin) {
         <div class="admin-filter-section">
-          <div class="filter-form">
-            <select
-              [(ngModel)]="selectedUserEmail"
-              (change)="onUserFilterChange()"
-              class="user-select"
-            >
-              <option value="">Todos los usuarios ({{ allBookings.length }} reservas)</option>
-              @for (userEmail of uniqueUserEmails; track userEmail) {
-                <option [value]="userEmail">
-                  {{ userEmail }} ({{ (allBookings | filter: userEmail : 'userName').length }}
-                  reservas)
-                </option>
-              }
-            </select>
-            @if (selectedUserEmail) {
-              <button (click)="clearFilter()" class="btn-clear">Limpiar filtro</button>
-            }
+          <div class="search-container">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Buscar por email, nombre, película, cine, fecha, formato, código o total..."
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="filterBookings()"
+            />
           </div>
         </div>
       }
@@ -115,11 +106,8 @@
       @if (!loading && bookings.length > 0) {
         <div class="bookings-header">
           <p class="total-bookings">
-            @if (isAdmin && selectedUserEmail) {
-              Reservas de <strong>{{ selectedUserEmail }}</strong
-              >: {{ bookings.length }}
-            } @else if (isAdmin) {
-              Total de reservas: {{ bookings.length }}
+            @if (isAdmin) {
+              Total de reservas: {{ filteredBookings.length }}
             } @else {
               Tienes {{ bookings.length }} {{ bookings.length !== 1 ? 'reservas' : 'reserva' }}
             }
@@ -127,7 +115,7 @@
         </div>
 
         <div class="bookings-grid">
-          @for (booking of bookings; track booking.bookingId) {
+          @for (booking of isAdmin ? filteredBookings : bookings; track booking.bookingId) {
             <div class="booking-card" [class.past]="isPastShowtime(booking.showDateTime)">
               <div class="booking-poster">
                 <img [src]="booking.moviePosterUrl" [alt]="booking.movieTitle" />
