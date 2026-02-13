@@ -101,6 +101,38 @@ button {
   color: var(--primary-gray);
 }
 
+/* Prevenir que SweetAlert2 manipule el scroll - SOLUCIÓN DEFINITIVA */
+html.swal2-shown {
+  overflow: hidden !important;
+}
+
+body.swal2-shown {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding-right: 0 !important;
+}
+
+.swal2-container {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+}
+
+body.swal2-height-auto {
+  height: 100% !important;
+}
+
+/* Prevenir scroll en focus */
+.swal2-popup:focus {
+  outline: none;
+}
+
+.swal2-popup *:focus {
+  scroll-margin: 0 !important;
+}
+
 .custom-swal-popup {
   border: 3px solid #ffd700 !important;
   border-radius: 20px !important;

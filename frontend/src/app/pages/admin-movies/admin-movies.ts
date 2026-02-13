@@ -27,6 +27,7 @@ export class AdminMoviesComponent implements OnInit {
 
   showForm = false;
   isEditing = false;
+  private savedScrollPos = 0;
   movieForm: any = {
     id: null,
     title: '',
@@ -96,12 +97,17 @@ export class AdminMoviesComponent implements OnInit {
         title: 'Límite alcanzado',
         text: `Ya hay ${this.maxMovies} películas activas. Elimina una antes de agregar otra.`,
         confirmButtonColor: '#d4af37',
+        scrollbarPadding: false,
+        heightAuto: false,
+        returnFocus: false,
       });
       return;
     }
 
     this.isEditing = false;
     this.resetForm();
+    this.savedScrollPos = window.scrollY;
+    document.body.style.overflow = 'hidden';
     this.showForm = true;
   }
 
@@ -118,11 +124,15 @@ export class AdminMoviesComponent implements OnInit {
       trailerUrl: movie.trailerUrl,
       releaseDate: movie.releaseDate,
     };
+    this.savedScrollPos = window.scrollY;
+    document.body.style.overflow = 'hidden';
     this.showForm = true;
   }
 
   closeForm(): void {
     this.showForm = false;
+    document.body.style.overflow = '';
+    window.scrollTo(0, this.savedScrollPos);
     this.resetForm();
   }
 
@@ -149,6 +159,7 @@ export class AdminMoviesComponent implements OnInit {
   }
 
   createMovie(): void {
+    const scrollPos = window.scrollY;
     this.apiService.createMovie(this.movieForm).subscribe({
       next: (response) => {
         Swal.fire({
@@ -156,7 +167,11 @@ export class AdminMoviesComponent implements OnInit {
           title: 'Película creada',
           text: response.message,
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
         }).then(() => {
+          window.scrollTo(0, scrollPos);
           if (response.orphanShowtimesAvailable > 0) {
             this.askToReassignShowtimes(response.movie);
           }
@@ -170,12 +185,16 @@ export class AdminMoviesComponent implements OnInit {
           title: 'Error',
           text: error.error.message || 'No se pudo crear la película',
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
         });
       },
     });
   }
 
   updateMovie(): void {
+    const scrollPos = window.scrollY;
     this.apiService.updateMovie(this.movieForm.id, this.movieForm).subscribe({
       next: (response) => {
         Swal.fire({
@@ -183,6 +202,11 @@ export class AdminMoviesComponent implements OnInit {
           title: 'Película actualizada',
           text: response.message,
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
+        }).then(() => {
+          window.scrollTo(0, scrollPos);
         });
         this.closeForm();
         this.loadData();
@@ -193,12 +217,22 @@ export class AdminMoviesComponent implements OnInit {
           title: 'Error',
           text: 'No se pudo actualizar la película',
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
         });
       },
     });
   }
 
-  deleteMovie(movie: any): void {
+  deleteMovie(movie: any, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const scrollPos = window.scrollY;
+    document.body.style.top = `-${scrollPos}px`;
+
     Swal.fire({
       title: '¿Eliminar película?',
       text: `Se eliminará "${movie.title}". Las funciones quedarán disponibles para reasignar.`,
@@ -208,8 +242,19 @@ export class AdminMoviesComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
+      scrollbarPadding: false,
+      heightAuto: false,
+      returnFocus: false,
+      focusConfirm: false,
+      focusCancel: false,
+      allowOutsideClick: false,
+      didClose: () => {
+        document.body.style.top = '';
+        window.scrollTo(0, scrollPos);
+      },
     }).then((result) => {
       if (result.isConfirmed) {
+        document.body.style.top = `-${scrollPos}px`;
         this.apiService.deleteMovie(movie.id).subscribe({
           next: (response) => {
             Swal.fire({
@@ -217,15 +262,31 @@ export class AdminMoviesComponent implements OnInit {
               title: 'Película eliminada',
               text: `${response.orphanShowtimes} funciones disponibles para reasignar`,
               confirmButtonColor: '#d4af37',
+              scrollbarPadding: false,
+              heightAuto: false,
+              returnFocus: false,
+              focusConfirm: false,
+              didClose: () => {
+                document.body.style.top = '';
+                window.scrollTo(0, scrollPos);
+              },
             });
             this.loadData();
           },
-          error: (error) => {
+          error: () => {
             Swal.fire({
               icon: 'error',
               title: 'Error',
               text: 'No se pudo eliminar la película',
               confirmButtonColor: '#d4af37',
+              scrollbarPadding: false,
+              heightAuto: false,
+              returnFocus: false,
+              focusConfirm: false,
+              didClose: () => {
+                document.body.style.top = '';
+                window.scrollTo(0, scrollPos);
+              },
             });
           },
         });
@@ -234,6 +295,7 @@ export class AdminMoviesComponent implements OnInit {
   }
 
   askToReassignShowtimes(movie: any): void {
+    const scrollPos = window.scrollY;
     Swal.fire({
       title: `Película "${movie.title}" creada`,
       html: `
@@ -246,7 +308,11 @@ export class AdminMoviesComponent implements OnInit {
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, asignar',
       cancelButtonText: 'No, después',
+      scrollbarPadding: false,
+      heightAuto: false,
+      returnFocus: false,
     }).then((result) => {
+      window.scrollTo(0, scrollPos);
       if (result.isConfirmed) {
         this.reassignShowtimes(movie.id, movie.title);
       }
@@ -254,6 +320,7 @@ export class AdminMoviesComponent implements OnInit {
   }
 
   reassignShowtimes(movieId: number, movieTitle: string): void {
+    const scrollPos = window.scrollY;
     this.apiService.reassignShowtimes(movieId).subscribe({
       next: (response) => {
         Swal.fire({
@@ -264,6 +331,11 @@ export class AdminMoviesComponent implements OnInit {
             <p>Funciones huérfanas restantes: <strong>${response.remainingOrphanShowtimes}</strong></p>
           `,
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
+        }).then(() => {
+          window.scrollTo(0, scrollPos);
         });
         this.loadData();
       },
@@ -273,6 +345,11 @@ export class AdminMoviesComponent implements OnInit {
           title: 'Error',
           text: error.error.error || 'No se pudieron reasignar las funciones',
           confirmButtonColor: '#d4af37',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
+        }).then(() => {
+          window.scrollTo(0, scrollPos);
         });
       },
     });

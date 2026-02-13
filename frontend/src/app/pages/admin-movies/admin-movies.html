@@ -95,8 +95,22 @@
                   </td>
                   <td>{{ movie.releaseDate | date: 'dd/MM/yyyy' }}</td>
                   <td class="actions-cell">
-                    <button (click)="openEditForm(movie)" class="btn-action edit">✏️</button>
-                    <button (click)="deleteMovie(movie)" class="btn-action delete">🗑️</button>
+                    <button
+                      type="button"
+                      tabindex="-1"
+                      (click)="openEditForm(movie)"
+                      class="btn-action edit"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      type="button"
+                      tabindex="-1"
+                      (click)="deleteMovie(movie, $event)"
+                      class="btn-action delete"
+                    >
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               }
@@ -108,15 +122,15 @@
   </div>
 
   @if (showForm) {
-    <div class="modal-overlay" (click)="closeForm()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-overlay">
+      <div class="modal-content">
         <div class="modal-header">
           <h2>{{ isEditing ? '✏️ Editar Película' : '➕ Agregar Película' }}</h2>
           <button (click)="closeForm()" class="btn-close">✖</button>
         </div>
 
         <div class="modal-body">
-          <form (ngSubmit)="saveMovie()">
+          <form (ngSubmit)="saveMovie()" #movieFormRef="ngForm">
             <div class="form-row">
               <div class="form-group">
                 <label>Título *</label>
@@ -179,7 +193,7 @@
 
             <div class="modal-actions">
               <button type="button" (click)="closeForm()" class="btn-cancel">Cancelar</button>
-              <button type="submit" class="btn-save">
+              <button type="submit" class="btn-save" [disabled]="movieFormRef.invalid">
                 {{ isEditing ? 'Actualizar' : 'Crear' }}
               </button>
             </div>

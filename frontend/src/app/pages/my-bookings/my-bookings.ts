@@ -79,6 +79,9 @@ export class MyBookingsComponent implements OnInit {
           confirmButtonColor: '#8B0000',
           background: '#1a1a1a',
           color: '#fff',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
         });
       },
     });
@@ -112,6 +115,9 @@ export class MyBookingsComponent implements OnInit {
           confirmButtonColor: '#8B0000',
           background: '#1a1a1a',
           color: '#fff',
+          scrollbarPadding: false,
+          heightAuto: false,
+          returnFocus: false,
         });
       },
     });
@@ -162,11 +168,7 @@ export class MyBookingsComponent implements OnInit {
     (event.target as HTMLElement)?.blur();
 
     const scrollPos = window.scrollY;
-
     document.body.style.top = `-${scrollPos}px`;
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
 
     Swal.fire({
       title: 'Detalles de la Reserva',
@@ -205,10 +207,7 @@ export class MyBookingsComponent implements OnInit {
       focusConfirm: false,
       returnFocus: false,
       didClose: () => {
-        document.body.style.position = '';
         document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
         window.scrollTo(0, scrollPos);
       },
     });
