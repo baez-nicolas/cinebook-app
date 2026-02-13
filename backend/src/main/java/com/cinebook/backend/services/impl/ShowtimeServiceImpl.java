@@ -156,6 +156,48 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             totalGenerated, activeMovies.size(), cinemas.size());
     }
 
+    @Override
+    @Transactional
+    public void generateShowtimesForDate(LocalDate date) {
+        log.info("🎬 Generando funciones para la fecha: {}", date);
+
+        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
+
+        List<Movie> activeMovies = movieRepository.findByIsActiveTrueOrderByIdAsc();
+        List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
+
+        if (activeMovies.isEmpty()) {
+            log.warn("⚠️ No hay películas activas");
+            return;
+        }
+
+        if (cinemas.isEmpty()) {
+            log.warn("⚠️ No hay cines disponibles");
+            return;
+        }
+
+        int totalGenerated = 0;
+
+        for (Movie movie : activeMovies) {
+            for (Cinema cinema : cinemas) {
+                List<Showtime> existing = showtimeRepository.findAll().stream()
+                    .filter(s -> s.getMovie().getId().equals(movie.getId()))
+                    .filter(s -> s.getCinema().getId().equals(cinema.getId()))
+                    .filter(s -> s.getShowDateTime().toLocalDate().equals(date))
+                    .collect(Collectors.toList());
+
+                if (existing.isEmpty()) {
+                    List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, date, currentWeek);
+                    showtimeRepository.saveAll(dailyShowtimes);
+                    totalGenerated += dailyShowtimes.size();
+                }
+            }
+        }
+
+        log.info("✅ {} funciones generadas para {} películas en {} cines para la fecha {}",
+            totalGenerated, activeMovies.size(), cinemas.size(), date);
+    }
+
 
     private List<Showtime> generateDailyShowtimes(Movie movie, Cinema cinema, LocalDate date, WeeklySchedule week) {
         List<Showtime> showtimes = new ArrayList<>();

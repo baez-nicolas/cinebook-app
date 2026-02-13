@@ -13,6 +13,7 @@ public interface IShowtimeService {
     List<ShowtimeDTO> getShowtimesByCinemaAndMovie(Long cinemaId, Long movieId);
     ShowtimeDTO getShowtimeById(Long id);
     void generateShowtimesForCurrentWeek();
+    void generateShowtimesForDate(LocalDate date);
     ShowtimeDTO convertToDTO(Showtime showtime);
     List<ShowtimeDTO> getShowtimesByFilters(Long movieId, Long cinemaId, LocalDate date);
 }
