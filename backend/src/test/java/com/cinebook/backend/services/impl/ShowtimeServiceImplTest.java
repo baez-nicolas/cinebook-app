@@ -7,7 +7,6 @@ import com.cinebook.backend.repositories.CinemaRepository;
 import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.repositories.WeeklyScheduleRepository;
-import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,8 +44,6 @@ class ShowtimeServiceImplTest {
     @Mock
     private WeeklyScheduleRepository weeklyScheduleRepository;
 
-    @Mock
-    private IWeeklyScheduleService weeklyScheduleService;
 
     @InjectMocks
     private ShowtimeServiceImpl showtimeService;
@@ -74,6 +71,7 @@ class ShowtimeServiceImplTest {
         mockWeeklySchedule.setWeekId(1L);
         mockWeeklySchedule.setWeekStartDate(LocalDate.now());
         mockWeeklySchedule.setWeekEndDate(LocalDate.now().plusDays(6));
+        mockWeeklySchedule.setIsActive(true);
 
         mockShowtime1 = createShowtime(1L, mockMovie, mockCinema,
             LocalDateTime.now().plusDays(1).withHour(17).withMinute(30),
@@ -102,7 +100,7 @@ class ShowtimeServiceImplTest {
     @Test
     @DisplayName("getCurrentWeekShowtimes - Retorna funciones de la semana actual")
     void getCurrentWeekShowtimes_ReturnsCurrentWeekShowtimes() {
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(showtimeRepository.findByWeekId(1L)).thenReturn(Arrays.asList(mockShowtime1, mockShowtime2));
 
         List<ShowtimeDTO> result = showtimeService.getCurrentWeekShowtimes();
@@ -110,7 +108,7 @@ class ShowtimeServiceImplTest {
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
+        verify(weeklyScheduleRepository, times(1)).findAll();
         verify(showtimeRepository, times(1)).findByWeekId(1L);
     }
 
@@ -121,7 +119,7 @@ class ShowtimeServiceImplTest {
             LocalDateTime.now().minusHours(1),
             ShowtimeType.SPANISH_2D, new BigDecimal("5000"), 1L);
 
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(showtimeRepository.findByWeekId(1L)).thenReturn(Arrays.asList(mockShowtime1, pastShowtime));
 
         List<ShowtimeDTO> result = showtimeService.getCurrentWeekShowtimes();
@@ -130,7 +128,7 @@ class ShowtimeServiceImplTest {
         assertEquals(1, result.size());
         assertTrue(result.get(0).getShowDateTime().isAfter(LocalDateTime.now()));
 
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
+        verify(weeklyScheduleRepository, times(1)).findAll();
     }
 
     @Test
@@ -145,7 +143,7 @@ class ShowtimeServiceImplTest {
             LocalDateTime.now().plusDays(1),
             ShowtimeType.SPANISH_2D, new BigDecimal("5000"), 1L);
 
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(showtimeRepository.findByWeekId(1L)).thenReturn(Arrays.asList(mockShowtime1, showtimeWithInactiveMovie));
 
         List<ShowtimeDTO> result = showtimeService.getCurrentWeekShowtimes();
@@ -154,7 +152,7 @@ class ShowtimeServiceImplTest {
         assertEquals(1, result.size());
         assertEquals("Test Movie", result.get(0).getMovieTitle());
 
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
+        verify(weeklyScheduleRepository, times(1)).findAll();
     }
 
     @Test
@@ -242,7 +240,7 @@ class ShowtimeServiceImplTest {
     @Test
     @DisplayName("generateShowtimesForCurrentWeek - Genera funciones correctamente")
     void generateShowtimesForCurrentWeek_GeneratesShowtimes() {
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Arrays.asList(mockMovie));
         when(cinemaRepository.findByIsActiveTrue()).thenReturn(Arrays.asList(mockCinema));
         when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
@@ -250,7 +248,7 @@ class ShowtimeServiceImplTest {
 
         showtimeService.generateShowtimesForCurrentWeek();
 
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
+        verify(weeklyScheduleRepository, times(1)).findAll();
         verify(movieRepository, times(1)).findByIsActiveTrueOrderByIdAsc();
         verify(cinemaRepository, times(1)).findByIsActiveTrue();
         verify(showtimeRepository, atLeast(1)).saveAll(anyList());
@@ -259,7 +257,7 @@ class ShowtimeServiceImplTest {
     @Test
     @DisplayName("generateShowtimesForCurrentWeek - No genera cuando no hay películas")
     void generateShowtimesForCurrentWeek_DoesNotGenerate_WhenNoMovies() {
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Collections.emptyList());
 
         showtimeService.generateShowtimesForCurrentWeek();
@@ -271,7 +269,7 @@ class ShowtimeServiceImplTest {
     @Test
     @DisplayName("generateShowtimesForCurrentWeek - No genera cuando no hay cines")
     void generateShowtimesForCurrentWeek_DoesNotGenerate_WhenNoCinemas() {
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Arrays.asList(mockMovie));
         when(cinemaRepository.findByIsActiveTrue()).thenReturn(Collections.emptyList());
 
@@ -287,7 +285,7 @@ class ShowtimeServiceImplTest {
     void generateShowtimesForDate_GeneratesShowtimesForSpecificDate() {
         LocalDate targetDate = LocalDate.now().plusDays(7);
 
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
+        when(weeklyScheduleRepository.findAll()).thenReturn(Arrays.asList(mockWeeklySchedule));
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Arrays.asList(mockMovie));
         when(cinemaRepository.findByIsActiveTrue()).thenReturn(Arrays.asList(mockCinema));
         when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
@@ -295,7 +293,7 @@ class ShowtimeServiceImplTest {
 
         showtimeService.generateShowtimesForDate(targetDate);
 
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
+        verify(weeklyScheduleRepository, times(1)).findAll();
         verify(movieRepository, times(1)).findByIsActiveTrueOrderByIdAsc();
         verify(cinemaRepository, times(1)).findByIsActiveTrue();
         verify(showtimeRepository, times(1)).saveAll(anyList());

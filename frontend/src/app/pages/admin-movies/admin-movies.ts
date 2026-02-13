@@ -26,7 +26,6 @@ export class AdminMoviesComponent implements OnInit {
   activeMoviesCount = 0;
   maxMovies = 12;
   orphanShowtimesCount = 0;
-  moviesWithShowtimes: Set<number> = new Set();
 
   showForm = false;
   isEditing = false;
@@ -63,21 +62,6 @@ export class AdminMoviesComponent implements OnInit {
   loadData(): void {
     this.loadMovies();
     this.loadCounts();
-    this.loadShowtimesMap();
-  }
-
-  loadShowtimesMap(): void {
-    this.apiService.getShowtimes().subscribe({
-      next: (showtimes) => {
-        this.moviesWithShowtimes = new Set(
-          showtimes.filter((s) => s.movieId).map((s) => s.movieId),
-        );
-      },
-    });
-  }
-
-  hasShowtimes(movieId: number): boolean {
-    return this.moviesWithShowtimes.has(movieId);
   }
 
   loadMovies(): void {
@@ -196,22 +180,55 @@ export class AdminMoviesComponent implements OnInit {
     const scrollPos = window.scrollY;
     this.apiService.createMovie(this.movieForm).subscribe({
       next: (response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Película creada',
-          text: response.message,
-          confirmButtonColor: '#d4af37',
-          scrollbarPadding: false,
-          heightAuto: false,
-          returnFocus: false,
-        }).then(() => {
-          window.scrollTo(0, scrollPos);
-          if (response.orphanShowtimesAvailable > 0) {
-            this.askToReassignShowtimes(response.movie);
-          }
-          this.closeForm();
+        this.closeForm();
+
+        // Si hay funciones huérfanas, asignarlas automáticamente
+        if (response.orphanShowtimesAvailable > 0) {
+          this.apiService.reassignShowtimes(response.movie.id).subscribe({
+            next: (reassignResponse) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Película creada',
+                html: `
+                  <p>"${response.movie.title}" creada exitosamente.</p>
+                  <p><strong>${reassignResponse.reassignedCount}</strong> funciones asignadas automáticamente.</p>
+                `,
+                confirmButtonColor: '#d4af37',
+                scrollbarPadding: false,
+                heightAuto: false,
+                returnFocus: false,
+              }).then(() => {
+                window.scrollTo(0, scrollPos);
+              });
+              this.loadData();
+            },
+            error: () => {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Película creada',
+                text: 'Pero hubo un error al asignar funciones.',
+                confirmButtonColor: '#d4af37',
+                scrollbarPadding: false,
+                heightAuto: false,
+                returnFocus: false,
+              });
+              this.loadData();
+            },
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Película creada',
+            text: response.message,
+            confirmButtonColor: '#d4af37',
+            scrollbarPadding: false,
+            heightAuto: false,
+            returnFocus: false,
+          }).then(() => {
+            window.scrollTo(0, scrollPos);
+          });
           this.loadData();
-        });
+        }
       },
       error: (error) => {
         Swal.fire({
@@ -324,96 +341,6 @@ export class AdminMoviesComponent implements OnInit {
             });
           },
         });
-      }
-    });
-  }
-
-  askToReassignShowtimes(movie: any): void {
-    const scrollPos = window.scrollY;
-    Swal.fire({
-      title: `Película "${movie.title}" creada`,
-      html: `
-        <p>Se encontraron <strong>${this.orphanShowtimesCount}</strong> funciones disponibles.</p>
-        <p>¿Deseas asignar funciones automáticamente a esta película?</p>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#d4af37',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Sí, asignar',
-      cancelButtonText: 'No, después',
-      scrollbarPadding: false,
-      heightAuto: false,
-      returnFocus: false,
-    }).then((result) => {
-      window.scrollTo(0, scrollPos);
-      if (result.isConfirmed) {
-        this.reassignShowtimes(movie.id, movie.title);
-      }
-    });
-  }
-
-  reassignShowtimes(movieId: number, movieTitle: string): void {
-    const scrollPos = window.scrollY;
-    this.apiService.reassignShowtimes(movieId).subscribe({
-      next: (response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Funciones asignadas',
-          html: `
-            <p><strong>${response.reassignedCount}</strong> funciones asignadas a "${movieTitle}"</p>
-            <p>Funciones huérfanas restantes: <strong>${response.remainingOrphanShowtimes}</strong></p>
-          `,
-          confirmButtonColor: '#d4af37',
-          scrollbarPadding: false,
-          heightAuto: false,
-          returnFocus: false,
-        }).then(() => {
-          window.scrollTo(0, scrollPos);
-        });
-        this.loadData();
-      },
-      error: (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.error.error || 'No se pudieron reasignar las funciones',
-          confirmButtonColor: '#d4af37',
-          scrollbarPadding: false,
-          heightAuto: false,
-          returnFocus: false,
-        }).then(() => {
-          window.scrollTo(0, scrollPos);
-        });
-      },
-    });
-  }
-
-  openAssignShowtimes(movie: any, event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-
-    const scrollPos = window.scrollY;
-    Swal.fire({
-      title: `Asignar funciones a "${movie.title}"`,
-      html: `
-        <p>Hay <strong>${this.orphanShowtimesCount}</strong> funciones disponibles.</p>
-        <p>¿Deseas asignarlas a esta película?</p>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#d4af37',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Sí, asignar',
-      cancelButtonText: 'Cancelar',
-      scrollbarPadding: false,
-      heightAuto: false,
-      returnFocus: false,
-    }).then((result) => {
-      window.scrollTo(0, scrollPos);
-      if (result.isConfirmed) {
-        this.reassignShowtimes(movie.id, movie.title);
       }
     });
   }

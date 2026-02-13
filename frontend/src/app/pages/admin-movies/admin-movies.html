@@ -104,17 +104,6 @@
                   </td>
                   <td>{{ movie.releaseDate | date: 'dd/MM/yyyy' }}</td>
                   <td class="actions-cell">
-                    @if (!hasShowtimes(movie.id) && orphanShowtimesCount > 0) {
-                      <button
-                        type="button"
-                        tabindex="-1"
-                        (click)="openAssignShowtimes(movie, $event)"
-                        class="btn-action assign"
-                        title="Asignar funciones"
-                      >
-                        📅
-                      </button>
-                    }
                     <button
                       type="button"
                       tabindex="-1"
