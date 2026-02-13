@@ -17,6 +17,9 @@
           <a [routerLink]="['/users']" class="nav-link" (click)="closeMenu()"
             >👥 Lista de Usuarios</a
           >
+          <a [routerLink]="['/admin/movies']" class="nav-link" (click)="closeMenu()"
+            >🎬 Gestionar Películas</a
+          >
         }
         @if (currentUser) {
           <div class="user-section">

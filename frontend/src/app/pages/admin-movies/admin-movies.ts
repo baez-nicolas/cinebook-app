@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './admin-movies.html',
-  styleUrl: './admin-movies.css',
+  styleUrls: ['./admin-movies.css'],
 })
 export class AdminMoviesComponent implements OnInit {
   currentUser: any = null;

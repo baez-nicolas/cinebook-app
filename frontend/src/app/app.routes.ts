@@ -43,6 +43,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'admin/movies',
+    loadComponent: () =>
+      import('./pages/admin-movies/admin-movies').then((m) => m.AdminMoviesComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '**',
     redirectTo: '/login',
   },
