@@ -185,14 +185,22 @@
 }
 
 .page-header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-content {
+  text-align: left;
 }
 
 .page-title {
   font-size: 3rem;
   color: white;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
@@ -251,12 +259,6 @@
   font-weight: bold;
 }
 
-.actions-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 30px;
-}
-
 .btn-add {
   background: linear-gradient(135deg, #ffffff 0%, #c0c0c0 100%);
   color: black;
@@ -272,6 +274,33 @@
 .btn-add:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Buscador */
+.search-container {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #e50914;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
 }
 
 .movies-table-container {
@@ -638,8 +667,13 @@
     font-size: 2rem;
   }
 
-  .actions-bar {
-    justify-content: center;
+  .page-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-content {
+    text-align: center;
   }
 
   .form-row {

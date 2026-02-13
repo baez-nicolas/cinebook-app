@@ -18,6 +18,8 @@ import { AuthService } from '../../services/auth.service';
 export class AdminMoviesComponent implements OnInit {
   currentUser: any = null;
   movies: any[] = [];
+  filteredMovies: any[] = [];
+  searchTerm = '';
   loading = true;
   menuOpen = false;
 
@@ -66,6 +68,7 @@ export class AdminMoviesComponent implements OnInit {
     this.apiService.getMovies().subscribe({
       next: (data) => {
         this.movies = data;
+        this.filteredMovies = [...this.movies];
         this.loading = false;
       },
       error: (error) => {
@@ -73,6 +76,21 @@ export class AdminMoviesComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  filterMovies(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredMovies = [...this.movies];
+      return;
+    }
+    this.filteredMovies = this.movies.filter(
+      (movie) =>
+        movie.title?.toLowerCase().includes(term) ||
+        movie.genre?.toLowerCase().includes(term) ||
+        movie.rating?.toLowerCase().includes(term) ||
+        movie.releaseDate?.includes(term),
+    );
   }
 
   loadCounts(): void {

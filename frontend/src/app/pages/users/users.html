@@ -83,11 +83,20 @@
       }
 
       @if (!loading && users.length > 0) {
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por nombre, apellido, email o rol..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filterUsers()"
+          />
+        </div>
+
         <div class="users-table-container">
           <table class="users-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Email</th>
@@ -95,9 +104,8 @@
               </tr>
             </thead>
             <tbody>
-              @for (user of users; track user.id) {
+              @for (user of filteredUsers; track user.id) {
                 <tr>
-                  <td class="user-id">#{{ user.id }}</td>
                   <td class="user-name">{{ user.firstName }}</td>
                   <td class="user-name">{{ user.lastName }}</td>
                   <td class="user-email">{{ user.email }}</td>

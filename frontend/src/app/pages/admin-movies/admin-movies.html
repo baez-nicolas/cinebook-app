@@ -32,8 +32,11 @@
   <div class="admin-content">
     <div class="container">
       <div class="page-header">
-        <h1 class="page-title">Gestión de Películas</h1>
-        <p class="page-subtitle">Agregar, editar y eliminar películas del sistema</p>
+        <div class="header-content">
+          <h1 class="page-title">Gestión de Películas</h1>
+          <p class="page-subtitle">Agregar, editar y eliminar películas del sistema</p>
+        </div>
+        <button (click)="openAddForm()" class="btn-add">➕ Agregar Película</button>
       </div>
 
       <div class="stats-row">
@@ -56,10 +59,6 @@
         }
       </div>
 
-      <div class="actions-bar">
-        <button (click)="openAddForm()" class="btn-add">➕ Agregar Película</button>
-      </div>
-
       @if (loading) {
         <div class="loading">
           <div class="spinner"></div>
@@ -68,6 +67,16 @@
       }
 
       @if (!loading && movies.length > 0) {
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar por título, género, rating o fecha..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filterMovies()"
+          />
+        </div>
+
         <div class="movies-table-container">
           <table class="movies-table">
             <thead>
@@ -82,7 +91,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (movie of movies; track movie.id) {
+              @for (movie of filteredMovies; track movie.id) {
                 <tr>
                   <td class="movie-poster-cell">
                     <img [src]="movie.posterUrl" [alt]="movie.title" class="poster-thumbnail" />

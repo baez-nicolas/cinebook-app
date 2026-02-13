@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer';
 import { ApiService } from '../../services/api.service';
@@ -16,12 +17,14 @@ interface User {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, FormsModule],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
+  filteredUsers: User[] = [];
+  searchTerm = '';
   userStats: any = null;
   loading = true;
   currentUser: any = null;
@@ -53,6 +56,7 @@ export class UsersComponent implements OnInit {
           if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
           return a.id - b.id;
         });
+        this.filteredUsers = [...this.users];
         this.loading = false;
       },
       error: (error) => {
@@ -60,6 +64,21 @@ export class UsersComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  filterUsers(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredUsers = [...this.users];
+      return;
+    }
+    this.filteredUsers = this.users.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(term) ||
+        user.lastName.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        this.getRoleLabel(user.role).toLowerCase().includes(term),
+    );
   }
 
   loadUsersCount(): void {
