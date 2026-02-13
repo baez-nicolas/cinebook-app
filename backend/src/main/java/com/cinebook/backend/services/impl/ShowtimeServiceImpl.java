@@ -115,7 +115,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
 
         log.info("🎬 Generando funciones desde {} hasta {}", today, endDate);
 
-        WeeklySchedule currentWeek = getOrCreateWeek(today, endDate);
+        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
 
         List<Movie> activeMovies = movieRepository.findByIsActiveTrueOrderByIdAsc();
         List<Cinema> cinemas = cinemaRepository.findByIsActiveTrue();
@@ -156,24 +156,6 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             totalGenerated, activeMovies.size(), cinemas.size());
     }
 
-    private WeeklySchedule getOrCreateWeek(LocalDate startDate, LocalDate endDate) {
-        return weeklyScheduleRepository.findByWeekStartDateAndWeekEndDate(startDate, endDate)
-                .orElseGet(() -> {
-                    WeeklySchedule week = new WeeklySchedule();
-                    week.setWeekStartDate(startDate);
-                    week.setWeekEndDate(endDate);
-                    week.setIsActive(true);
-                    week.setCreatedAt(LocalDate.now());
-                    Long weekId = calculateWeekId(startDate);
-                    week.setWeekId(weekId);
-                    return weeklyScheduleRepository.save(week);
-                });
-    }
-
-    private Long calculateWeekId(LocalDate date) {
-        long epochDay = date.toEpochDay();
-        return epochDay / 7;
-    }
 
     private List<Showtime> generateDailyShowtimes(Movie movie, Cinema cinema, LocalDate date, WeeklySchedule week) {
         List<Showtime> showtimes = new ArrayList<>();
