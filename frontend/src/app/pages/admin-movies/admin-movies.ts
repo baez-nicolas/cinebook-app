@@ -24,7 +24,6 @@ export class AdminMoviesComponent implements OnInit {
 
   activeMoviesCount = 0;
   maxMovies = 12;
-  orphanShowtimesCount = 0;
 
   showForm = false;
   isEditing = false;
@@ -97,12 +96,6 @@ export class AdminMoviesComponent implements OnInit {
       next: (data) => {
         this.activeMoviesCount = data.activeMovies;
         this.maxMovies = data.maxMovies;
-      },
-    });
-
-    this.apiService.getOrphanShowtimesCount().subscribe({
-      next: (data) => {
-        this.orphanShowtimesCount = data.orphanShowtimes;
       },
     });
   }

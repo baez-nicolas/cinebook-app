@@ -209,12 +209,24 @@ body.swal2-height-auto {
 }
 
 .swal2-popup {
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: #1a1a1a !important;
+  color: #e0e0e0 !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
   border-radius: 16px !important;
 }
 
+.swal2-title {
+  color: #ffd700 !important;
+}
+
+.swal2-html-container {
+  color: #e0e0e0 !important;
+}
+
 .custom-swal-popup {
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: #1a1a1a !important;
+  color: #e0e0e0 !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
   border-radius: 16px !important;
 }
 

@@ -47,16 +47,6 @@
             <span class="stat-value">{{ activeMoviesCount }}/{{ maxMovies }}</span>
           </div>
         </div>
-
-        @if (orphanShowtimesCount > 0) {
-          <div class="stat-card warning">
-            <div class="stat-icon">⚠️</div>
-            <div class="stat-info">
-              <span class="stat-label">Funciones Huérfanas</span>
-              <span class="stat-value">{{ orphanShowtimesCount }}</span>
-            </div>
-          </div>
-        }
       </div>
 
       @if (loading) {
