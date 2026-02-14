@@ -21,11 +21,11 @@ FROM nginx:alpine
 # Copiar archivos compilados de Angular al directorio de Nginx
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 
-# Copiar configuración personalizada de Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copiar configuración personalizada de Nginx (como template)
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Exponer puerto 80
-EXPOSE 80
+# Exponer el puerto que Railway asigna dinámicamente
+EXPOSE $PORT
 
-# Comando para iniciar Nginx
+# Nginx procesará el template y reemplazará $PORT automáticamente
 CMD ["nginx", "-g", "daemon off;"]
