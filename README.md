@@ -7,7 +7,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 
-<img src="/img/portada.png" width="600" alt="Banner" />
+<img src="/img/portada.png" width="800" alt="Banner" />
 
 **CineBook** es una aplicación web full-stack para la reserva de entradas de cine. Explorá películas en cartelera, elegí tu cine favorito, seleccioná asientos y gestioná tus reservas con una interfaz moderna y responsive.
 
