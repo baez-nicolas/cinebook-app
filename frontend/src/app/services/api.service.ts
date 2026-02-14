@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 import { BookingRequest, BookingResponse } from '../models/booking.model';
 import { Cinema } from '../models/cinema.model';
 import { Movie } from '../models/movie.model';
@@ -12,7 +11,10 @@ import { Showtime } from '../models/showtime.model';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:8080/api'
+      : 'https://cinebook-app-production.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 
