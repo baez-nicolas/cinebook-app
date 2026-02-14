@@ -41,10 +41,8 @@ export class MovieDetailComponent implements OnInit {
       next: (data) => {
         this.movie = data;
         this.loading = false;
-        console.log('Pelicula cargada:', this.movie);
       },
-      error: (error) => {
-        console.error('Error al cargar pelicula:', error);
+      error: () => {
         this.loading = false;
       },
     });
@@ -54,17 +52,12 @@ export class MovieDetailComponent implements OnInit {
     this.apiService.getCinemas().subscribe({
       next: (data) => {
         this.cinemas = data;
-        console.log('Cines cargados:', this.cinemas.length);
       },
-      error: (error) => {
-        console.error('Error al cargar cines:', error);
-      },
+      error: () => {},
     });
   }
 
   onCinemaChange(): void {
-    console.log('Cambio de cine detectado:', this.selectedCinemaId);
-
     if (!this.selectedCinemaId || !this.movie) {
       this.availableDates = [];
       this.filteredShowtimes = [];
@@ -78,7 +71,6 @@ export class MovieDetailComponent implements OnInit {
     if (!this.movie || !this.selectedCinemaId) return;
 
     this.loadingShowtimes = true;
-    console.log('Cargando funciones para cine:', this.selectedCinemaId, 'pelicula:', this.movie.id);
 
     setTimeout(() => {
       this.apiService
@@ -86,7 +78,6 @@ export class MovieDetailComponent implements OnInit {
         .subscribe({
           next: (showtimes) => {
             this.allShowtimes = showtimes;
-            console.log('Funciones cargadas:', showtimes.length);
 
             this.generateAvailableDatesFromShowtimes();
 
@@ -99,8 +90,7 @@ export class MovieDetailComponent implements OnInit {
 
             this.loadingShowtimes = false;
           },
-          error: (error) => {
-            console.error('Error al cargar funciones:', error);
+          error: () => {
             this.allShowtimes = [];
             this.availableDates = [];
             this.filteredShowtimes = [];
@@ -119,28 +109,19 @@ export class MovieDetailComponent implements OnInit {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    console.log('Fecha de hoy:', today);
-
     const uniqueDates = new Set<string>();
 
     this.allShowtimes.forEach((showtime) => {
       const showtimeDate = new Date(showtime.showDateTime);
       showtimeDate.setHours(0, 0, 0, 0);
 
-      console.log('Comparando fecha de funcion:', showtimeDate, 'con hoy:', today);
-
       if (showtimeDate >= today) {
         const dateStr = new Date(showtime.showDateTime).toISOString().split('T')[0];
         uniqueDates.add(dateStr);
-        console.log('Fecha agregada:', dateStr);
-      } else {
-        console.log('Fecha descartada (pasada):', showtimeDate);
       }
     });
 
     const sortedDates = Array.from(uniqueDates).sort();
-
-    console.log('Fechas unicas encontradas:', sortedDates);
 
     this.availableDates = sortedDates.map((dateStr) => {
       const date = new Date(dateStr + 'T12:00:00');
@@ -152,12 +133,9 @@ export class MovieDetailComponent implements OnInit {
 
       return { label, value: dateStr };
     });
-
-    console.log('Fechas disponibles para el combo box:', this.availableDates);
   }
 
   onDateChange(): void {
-    console.log('Cambio de fecha detectado:', this.selectedDate);
     this.loadingShowtimes = true;
     setTimeout(() => {
       this.filterShowtimesByDate();
@@ -171,8 +149,6 @@ export class MovieDetailComponent implements OnInit {
       return;
     }
 
-    console.log('Filtrando funciones para fecha:', this.selectedDate);
-
     this.filteredShowtimes = this.allShowtimes
       .filter((showtime) => {
         const showtimeDate = new Date(showtime.showDateTime).toISOString().split('T')[0];
@@ -181,12 +157,9 @@ export class MovieDetailComponent implements OnInit {
       .sort((a, b) => {
         return new Date(a.showDateTime).getTime() - new Date(b.showDateTime).getTime();
       });
-
-    console.log('Funciones filtradas:', this.filteredShowtimes.length);
   }
 
   selectShowtime(showtimeId: number): void {
-    console.log('Seleccionando funcion:', showtimeId);
     this.router.navigate(['/booking', showtimeId]);
   }
 

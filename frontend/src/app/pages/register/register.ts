@@ -105,7 +105,6 @@ export class RegisterComponent {
       },
       error: (error) => {
         this.loading = false;
-        console.error('Error de registro:', error);
 
         let errorMessage = 'Ocurrió un error al registrar';
         if (error.error?.message) {

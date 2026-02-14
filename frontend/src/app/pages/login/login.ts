@@ -65,7 +65,6 @@ export class LoginComponent {
       },
       error: (error) => {
         this.loading = false;
-        console.error('Error de login:', error);
 
         Swal.fire({
           title: 'Error de Login',

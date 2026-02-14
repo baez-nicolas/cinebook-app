@@ -101,7 +101,6 @@ button {
   color: var(--primary-gray);
 }
 
-/* Prevenir que SweetAlert2 manipule el scroll - SOLUCIÓN DEFINITIVA */
 html.swal2-shown {
   overflow: hidden !important;
 }
@@ -124,7 +123,6 @@ body.swal2-height-auto {
   height: 100% !important;
 }
 
-/* Prevenir scroll en focus */
 .swal2-popup:focus {
   outline: none;
 }

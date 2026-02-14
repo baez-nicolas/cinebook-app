@@ -69,8 +69,7 @@ export class AdminMoviesComponent implements OnInit {
         this.filteredMovies = [...this.movies];
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error al cargar películas:', error);
+      error: () => {
         this.loading = false;
       },
     });
@@ -174,7 +173,6 @@ export class AdminMoviesComponent implements OnInit {
       next: (response) => {
         this.closeForm();
 
-        // Si hay funciones huérfanas, asignarlas automáticamente
         if (response.orphanShowtimesAvailable > 0) {
           this.apiService.reassignShowtimes(response.movie.id).subscribe({
             next: (reassignResponse) => {

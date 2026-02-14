@@ -59,8 +59,7 @@ export class UsersComponent implements OnInit {
         this.filteredUsers = [...this.users];
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error al cargar usuarios:', error);
+      error: () => {
         this.loading = false;
       },
     });
@@ -86,9 +85,7 @@ export class UsersComponent implements OnInit {
       next: (data) => {
         this.userStats = data;
       },
-      error: (error) => {
-        console.error('Error al cargar estadísticas:', error);
-      },
+      error: () => {},
     });
   }
 

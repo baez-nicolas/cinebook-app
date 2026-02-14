@@ -44,8 +44,7 @@ export class MoviesComponent implements OnInit {
         this.movies = data;
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error al cargar películas:', error);
+      error: () => {
         this.loading = false;
       },
     });

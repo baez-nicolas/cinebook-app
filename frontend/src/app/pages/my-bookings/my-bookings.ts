@@ -67,8 +67,7 @@ export class MyBookingsComponent implements OnInit {
         );
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error al cargar reservas:', err);
+      error: () => {
         this.loading = false;
         Swal.fire({
           title: 'Error',
@@ -99,8 +98,7 @@ export class MyBookingsComponent implements OnInit {
         this.filteredBookings = [...this.allBookings];
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error al cargar todas las reservas (admin):', err);
+      error: () => {
         this.loading = false;
         Swal.fire({
           title: 'Error',
