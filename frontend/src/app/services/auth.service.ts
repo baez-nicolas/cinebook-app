@@ -8,7 +8,10 @@ import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/aut
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:8080/api/auth'
+      : 'https://cinebook-app-production.up.railway.app/api/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
