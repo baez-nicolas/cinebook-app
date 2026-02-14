@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Base de datos PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: cinebook-postgres
@@ -20,6 +21,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # Backend Spring Boot
   backend:
     build:
       context: ./backend
@@ -34,6 +36,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - cinebook-network
+    restart: unless-stopped
+
+  # Frontend Angular + Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cinebook-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
     networks:
       - cinebook-network
     restart: unless-stopped

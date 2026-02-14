@@ -1,5 +1,5 @@
 # STAGE 1: BUILD (Compilar Angular)
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -19,7 +19,6 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copiar archivos compilados de Angular al directorio de Nginx
-# Angular 17+ compila en dist/frontend/browser
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 
 # Copiar configuración personalizada de Nginx
