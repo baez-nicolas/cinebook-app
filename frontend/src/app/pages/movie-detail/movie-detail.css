@@ -386,7 +386,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 912px) {
   .movie-header {
     height: 300px;
   }

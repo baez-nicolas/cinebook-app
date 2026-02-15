@@ -1,7 +1,7 @@
 .footer {
   background: linear-gradient(135deg, var(--darker-bg) 0%, #000 100%);
-  border-top: 3px solid var(--primary-red);
-  margin-top: 80px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 40px;
   padding: 60px 0 30px;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -121,15 +121,14 @@
 }
 
 .footer-divider {
-  height: 2px;
+  height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.3) 50%,
     transparent 100%
   );
-  margin: 40px 0;
-  opacity: 0.5;
+  margin: 30px 0 25px;
 }
 
 .footer-bottom {
@@ -191,7 +190,68 @@
   margin-top: 10px;
 }
 
-@media (max-width: 768px) {
+/* Tablet styles - iPad 11 y similares */
+@media (min-width: 913px) and (max-width: 1366px) {
+  .footer {
+    margin-top: 50px;
+    padding: 40px 0 20px;
+  }
+
+  .footer-top {
+    gap: 25px;
+    margin-bottom: 25px;
+  }
+
+  .footer-logo {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+  }
+
+  .logo-icon {
+    font-size: 2rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.9rem;
+  }
+
+  .social-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .social-links {
+    gap: 15px;
+  }
+
+  .social-link {
+    padding: 12px 16px;
+    min-width: 90px;
+  }
+
+  .social-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .social-name {
+    font-size: 0.85rem;
+  }
+
+  .footer-divider {
+    margin: 25px 0;
+  }
+
+  .footer-copyright {
+    font-size: 1rem;
+  }
+
+  .footer-legal {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 912px) {
   .footer {
     padding: 20px 0 10px;
     margin-top: 30px;

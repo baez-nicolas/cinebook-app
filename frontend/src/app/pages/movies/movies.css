@@ -235,7 +235,6 @@
 
 .movies-section {
   padding: 40px 0 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   margin-bottom: 0;
 }
 
@@ -432,7 +431,51 @@
   font-size: 1.2rem;
 }
 
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (max-width: 1366px) and (min-width: 913px) {
+  /* Navbar tablet styles */
+  .nav-container {
+    padding: 0 15px;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+
+  .brand-logo {
+    height: 30px;
+  }
+
+  .nav-links {
+    gap: 6px;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  .user-section {
+    gap: 6px;
+    padding: 5px 10px;
+  }
+
+  .user-label {
+    font-size: 0.75rem;
+  }
+
+  .admin-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+
+  .btn-logout {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  /* Carousel y grid */
   .hero-carousel {
     max-width: 800px;
     width: 80%;
@@ -458,7 +501,35 @@
   }
 }
 
-@media (max-width: 768px) {
+/* Mantener tamaño de películas entre 768px y 912px */
+@media (max-width: 912px) and (min-width: 768px) {
+  .movies-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .movie-card {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+
+  .movie-title {
+    font-size: 0.85rem;
+    min-height: 40px;
+  }
+
+  .movie-info {
+    padding: 10px;
+  }
+
+  .hero-carousel {
+    max-width: 100%;
+    width: 92%;
+    height: 380px;
+  }
+}
+
+@media (max-width: 912px) {
   .nav-container {
     flex-direction: row;
     justify-content: space-between;
@@ -568,14 +639,6 @@
     visibility: visible;
   }
 
-  .hero-carousel {
-    height: 220px;
-    max-width: 400px;
-    width: 92%;
-    margin: 10px auto 15px;
-    border-radius: 8px;
-  }
-
   .movies-section {
     padding-top: 10px;
     padding-bottom: 20px;
@@ -633,5 +696,16 @@
   .btn-destacado {
     padding: 8px 16px;
     font-size: 0.85rem;
+  }
+}
+
+/* Mobile específico - carrusel pequeño */
+@media (max-width: 767px) {
+  .hero-carousel {
+    height: 220px;
+    max-width: 400px;
+    width: 92%;
+    margin: 10px auto 15px;
+    border-radius: 8px;
   }
 }

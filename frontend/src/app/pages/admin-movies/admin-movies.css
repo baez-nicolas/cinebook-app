@@ -179,7 +179,6 @@
 
 .admin-content {
   padding: 60px 0 80px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .container {
@@ -608,7 +607,52 @@
   }
 }
 
-@media (max-width: 768px) {
+/* Tablet styles - iPad 11 y similares */
+@media (max-width: 1366px) and (min-width: 913px) {
+  .nav-container {
+    padding: 0 15px;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+  }
+
+  .brand-logo {
+    height: 30px;
+  }
+
+  .nav-links {
+    gap: 6px;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  .user-section {
+    gap: 6px;
+    padding: 5px 10px;
+  }
+
+  .user-label {
+    font-size: 0.75rem;
+  }
+
+  .admin-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+
+  .btn-logout {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 912px) {
   .nav-container {
     flex-direction: row;
     justify-content: space-between;

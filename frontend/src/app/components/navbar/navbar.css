@@ -161,7 +161,57 @@
   visibility: visible;
 }
 
-@media (max-width: 768px) {
+/* Tablet styles - iPad 11 y similares */
+@media (min-width: 913px) and (max-width: 1366px) {
+  .navbar-content {
+    padding: 0.75rem 0;
+  }
+
+  .logo a {
+    font-size: 1.4rem;
+    gap: 6px;
+  }
+
+  .logo-img {
+    height: 32px;
+  }
+
+  .logo-text {
+    letter-spacing: 1px;
+  }
+
+  .nav-links {
+    gap: 8px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    gap: 5px;
+    border-radius: 20px;
+  }
+
+  .nav-icon {
+    font-size: 1rem;
+  }
+
+  .user-menu {
+    gap: 8px;
+  }
+
+  .user-name {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .btn-logout {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 912px) {
   .desktop-menu {
     display: none;
   }
