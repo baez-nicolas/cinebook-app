@@ -50,7 +50,7 @@ public class DataLoader implements CommandLineRunner {
 
         showtimeService.generateShowtimesForCurrentWeek();
 
-        log.info("Generando asientos para todas las funciones...");
+        log.info("Verificando y generando asientos faltantes...");
         seatService.generateSeatsForAllShowtimes();
 
         log.info("Carga de datos completada exitosamente");

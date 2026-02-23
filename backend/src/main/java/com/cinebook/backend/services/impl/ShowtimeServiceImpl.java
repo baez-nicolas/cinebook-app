@@ -11,8 +11,9 @@ import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.repositories.WeeklyScheduleRepository;
 import com.cinebook.backend.services.interfaces.IShowtimeService;
-import lombok.RequiredArgsConstructor;
+import com.cinebook.backend.services.interfaces.ISeatService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ShowtimeServiceImpl implements IShowtimeService {
 
@@ -32,6 +32,21 @@ public class ShowtimeServiceImpl implements IShowtimeService {
     private final MovieRepository movieRepository;
     private final CinemaRepository cinemaRepository;
     private final WeeklyScheduleRepository weeklyScheduleRepository;
+    private final ISeatService seatService;
+
+    public ShowtimeServiceImpl(
+            ShowtimeRepository showtimeRepository,
+            MovieRepository movieRepository,
+            CinemaRepository cinemaRepository,
+            WeeklyScheduleRepository weeklyScheduleRepository,
+            @Lazy ISeatService seatService
+    ) {
+        this.showtimeRepository = showtimeRepository;
+        this.movieRepository = movieRepository;
+        this.cinemaRepository = cinemaRepository;
+        this.weeklyScheduleRepository = weeklyScheduleRepository;
+        this.seatService = seatService;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -149,14 +164,19 @@ public class ShowtimeServiceImpl implements IShowtimeService {
 
                     if (existing.isEmpty()) {
                         List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, currentDate, currentWeek);
-                        showtimeRepository.saveAll(dailyShowtimes);
+                        List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
+
+                        for (Showtime showtime : savedShowtimes) {
+                            seatService.generateSeatsForShowtime(showtime);
+                        }
+
                         totalGenerated += dailyShowtimes.size();
                     }
                 }
             }
         }
 
-        log.info("{} funciones generadas para {} películas en {} cines",
+        log.info("{} funciones generadas con asientos para {} películas en {} cines",
             totalGenerated, activeMovies.size(), cinemas.size());
     }
 
@@ -192,13 +212,18 @@ public class ShowtimeServiceImpl implements IShowtimeService {
 
                 if (existing.isEmpty()) {
                     List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, date, currentWeek);
-                    showtimeRepository.saveAll(dailyShowtimes);
+                    List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
+
+                    for (Showtime showtime : savedShowtimes) {
+                        seatService.generateSeatsForShowtime(showtime);
+                    }
+
                     totalGenerated += dailyShowtimes.size();
                 }
             }
         }
 
-        log.info("{} funciones generadas para {} películas en {} cines para la fecha {}",
+        log.info("{} funciones generadas con asientos para {} películas en {} cines para la fecha {}",
             totalGenerated, activeMovies.size(), cinemas.size(), date);
     }
 

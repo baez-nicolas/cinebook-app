@@ -7,11 +7,11 @@ import com.cinebook.backend.repositories.CinemaRepository;
 import com.cinebook.backend.repositories.MovieRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.repositories.WeeklyScheduleRepository;
+import com.cinebook.backend.services.interfaces.ISeatService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -44,8 +44,9 @@ class ShowtimeServiceImplTest {
     @Mock
     private WeeklyScheduleRepository weeklyScheduleRepository;
 
+    @Mock
+    private ISeatService seatService;
 
-    @InjectMocks
     private ShowtimeServiceImpl showtimeService;
 
     private Movie mockMovie;
@@ -56,6 +57,14 @@ class ShowtimeServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        showtimeService = new ShowtimeServiceImpl(
+                showtimeRepository,
+                movieRepository,
+                cinemaRepository,
+                weeklyScheduleRepository,
+                seatService
+        );
+
         mockMovie = new Movie();
         mockMovie.setId(1L);
         mockMovie.setTitle("Test Movie");
@@ -244,7 +253,13 @@ class ShowtimeServiceImplTest {
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Arrays.asList(mockMovie));
         when(cinemaRepository.findByIsActiveTrue()).thenReturn(Arrays.asList(mockCinema));
         when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
-        when(showtimeRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(showtimeRepository.saveAll(anyList())).thenAnswer(invocation -> {
+            List<Showtime> showtimes = invocation.getArgument(0);
+            for (int i = 0; i < showtimes.size(); i++) {
+                showtimes.get(i).setId((long) (i + 1));
+            }
+            return showtimes;
+        });
 
         showtimeService.generateShowtimesForCurrentWeek();
 
@@ -252,6 +267,7 @@ class ShowtimeServiceImplTest {
         verify(movieRepository, times(1)).findByIsActiveTrueOrderByIdAsc();
         verify(cinemaRepository, times(1)).findByIsActiveTrue();
         verify(showtimeRepository, atLeast(1)).saveAll(anyList());
+        verify(seatService, atLeast(1)).generateSeatsForShowtime(any(Showtime.class));
     }
 
     @Test
@@ -289,7 +305,13 @@ class ShowtimeServiceImplTest {
         when(movieRepository.findByIsActiveTrueOrderByIdAsc()).thenReturn(Arrays.asList(mockMovie));
         when(cinemaRepository.findByIsActiveTrue()).thenReturn(Arrays.asList(mockCinema));
         when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
-        when(showtimeRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(showtimeRepository.saveAll(anyList())).thenAnswer(invocation -> {
+            List<Showtime> showtimes = invocation.getArgument(0);
+            for (int i = 0; i < showtimes.size(); i++) {
+                showtimes.get(i).setId((long) (i + 1));
+            }
+            return showtimes;
+        });
 
         showtimeService.generateShowtimesForDate(targetDate);
 
@@ -297,6 +319,7 @@ class ShowtimeServiceImplTest {
         verify(movieRepository, times(1)).findByIsActiveTrueOrderByIdAsc();
         verify(cinemaRepository, times(1)).findByIsActiveTrue();
         verify(showtimeRepository, times(1)).saveAll(anyList());
+        verify(seatService, atLeast(1)).generateSeatsForShowtime(any(Showtime.class));
     }
 
     @Test

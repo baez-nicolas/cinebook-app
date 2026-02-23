@@ -115,60 +115,44 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
     @Transactional
     protected void performDailyUpdate(WeeklySchedule currentWeek, LocalDate today) {
         log.info("╔══════════════════════════════════════════════════════════╗");
-        log.info("║  ACTUALIZACIÓN DIARIA DE FUNCIONES                      ║");
+        log.info("║  ACTUALIZACIÓN DIARIA DE VENTANA DE FUNCIONES          ║");
+        log.info("╠══════════════════════════════════════════════════════════╣");
+        log.info("║  Fecha actual: {}", today);
+        log.info("║  Ventana actual: {} a {}", currentWeek.getWeekStartDate(), currentWeek.getWeekEndDate());
         log.info("╚══════════════════════════════════════════════════════════╝");
-        log.info("Fecha actual: {}", today);
 
-        LocalDate oldStartDate = currentWeek.getWeekStartDate();
-        LocalDate newEndDate = today.plusDays(7);
-        Long newWeekId = calculateWeekId(today);
+        LocalDate dateToRemove = currentWeek.getWeekStartDate();
+        log.info("Eliminando funciones y asientos del día: {}", dateToRemove);
 
-        log.info("[1/4] Eliminando funciones y reservas del día pasado ({})...", oldStartDate);
-
-        List<Showtime> oldShowtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId()).stream()
-                .filter(st -> st.getShowDateTime().toLocalDate().isBefore(today))
+        List<Showtime> showtimesToRemove = showtimeRepository.findAll().stream()
+                .filter(s -> s.getShowDateTime().toLocalDate().equals(dateToRemove))
                 .toList();
 
-        if (!oldShowtimes.isEmpty()) {
-            List<Long> oldShowtimeIds = oldShowtimes.stream().map(Showtime::getId).toList();
-
-            bookingRepository.deleteByShowtimeIdIn(oldShowtimeIds);
-            log.info("   Reservas del día pasado eliminadas");
-
-            List<Seat> oldSeats = seatRepository.findAll().stream()
-                    .filter(seat -> oldShowtimeIds.contains(seat.getShowtime().getId()))
-                    .toList();
-            seatRepository.deleteAll(oldSeats);
-            log.info("   Asientos del día pasado eliminados");
-
-            showtimeRepository.deleteAll(oldShowtimes);
-            log.info("   {} funciones del día pasado eliminadas", oldShowtimes.size());
+        if (!showtimesToRemove.isEmpty()) {
+            for (Showtime showtime : showtimesToRemove) {
+                List<Seat> seatsToRemove = seatRepository.findByShowtimeId(showtime.getId());
+                if (!seatsToRemove.isEmpty()) {
+                    seatRepository.deleteAll(seatsToRemove);
+                    log.info("   Eliminados {} asientos de función ID {}", seatsToRemove.size(), showtime.getId());
+                }
+            }
+            showtimeRepository.deleteAll(showtimesToRemove);
+            log.info("Resultado: {} funciones eliminadas del día {}", showtimesToRemove.size(), dateToRemove);
         }
 
-        log.info("[2/4] Actualizando weekId de funciones y asientos restantes...");
-        List<Showtime> remainingShowtimes = showtimeRepository.findByWeekId(currentWeek.getWeekId());
-        remainingShowtimes.forEach(st -> st.setWeekId(newWeekId));
-        showtimeRepository.saveAll(remainingShowtimes);
-
-        List<Seat> remainingSeats = seatRepository.findByWeekId(currentWeek.getWeekId());
-        remainingSeats.forEach(seat -> seat.setWeekId(newWeekId));
-        seatRepository.saveAll(remainingSeats);
-        log.info("   WeekId actualizado para {} funciones", remainingShowtimes.size());
-
-        log.info("[3/4] Actualizando ventana de fechas...");
         currentWeek.setWeekStartDate(today);
-        currentWeek.setWeekEndDate(newEndDate);
-        currentWeek.setWeekId(newWeekId);
+        currentWeek.setWeekEndDate(today.plusDays(6));
         weeklyScheduleRepository.save(currentWeek);
 
-        log.info("[4/4] Generando funciones para el nuevo día 7 ({})...", newEndDate);
-        showtimeService.generateShowtimesForDate(newEndDate);
+        log.info("Nueva ventana: {} a {}", currentWeek.getWeekStartDate(), currentWeek.getWeekEndDate());
 
-        log.info("╔══════════════════════════════════════════════════════════╗");
-        log.info("║  ACTUALIZACIÓN COMPLETADA                               ║");
-        log.info("╚══════════════════════════════════════════════════════════╝");
-        log.info("Nueva ventana: {} - {}", today, newEndDate);
-        log.info("Funciones actualizadas automáticamente. Siempre hay 7 días disponibles.");
+        LocalDate newDate = today.plusDays(6);
+        log.info("Generando funciones para el nuevo día: {}", newDate);
+
+        showtimeService.generateShowtimesForDate(newDate);
+
+        log.info("Actualización diaria completada exitosamente");
+        log.info("═══════════════════════════════════════════════════════════");
     }
 
     @Override
