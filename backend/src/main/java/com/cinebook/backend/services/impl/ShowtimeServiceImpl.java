@@ -166,6 +166,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                         List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, currentDate, currentWeek);
                         List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
 
+                        log.info("Generando asientos para {} funciones guardadas", savedShowtimes.size());
                         for (Showtime showtime : savedShowtimes) {
                             seatService.generateSeatsForShowtime(showtime);
                         }
@@ -214,6 +215,7 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                     List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, date, currentWeek);
                     List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
 
+                    log.info("Generando asientos para {} funciones guardadas de la fecha {}", savedShowtimes.size(), date);
                     for (Showtime showtime : savedShowtimes) {
                         seatService.generateSeatsForShowtime(showtime);
                     }

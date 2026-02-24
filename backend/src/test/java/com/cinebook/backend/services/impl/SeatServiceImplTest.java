@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -36,7 +35,6 @@ class SeatServiceImplTest {
     @Mock
     private IWeeklyScheduleService weeklyScheduleService;
 
-    @InjectMocks
     private SeatServiceImpl seatService;
 
     private Showtime mockShowtime;
@@ -47,6 +45,12 @@ class SeatServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        seatService = new SeatServiceImpl(
+                seatRepository,
+                showtimeRepository,
+                weeklyScheduleService
+        );
+
         mockMovie = new Movie();
         mockMovie.setId(1L);
         mockMovie.setTitle("Test Movie");
@@ -142,8 +146,9 @@ class SeatServiceImplTest {
     @Test
     @DisplayName("generateSeatsForShowtime - Genera 120 asientos correctamente")
     void generateSeatsForShowtime_Generates120Seats() {
+        mockShowtime.setWeekId(1L);
+
         when(seatRepository.findByShowtimeId(1L)).thenReturn(Collections.emptyList());
-        when(weeklyScheduleService.getCurrentWeek()).thenReturn(mockWeeklySchedule);
         when(seatRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
         when(showtimeRepository.findById(1L)).thenReturn(Optional.of(mockShowtime));
         when(showtimeRepository.save(any(Showtime.class))).thenReturn(mockShowtime);
@@ -151,7 +156,6 @@ class SeatServiceImplTest {
         seatService.generateSeatsForShowtime(mockShowtime);
 
         verify(seatRepository, atLeast(2)).saveAll(anyList());
-        verify(weeklyScheduleService, times(1)).getCurrentWeek();
         verify(showtimeRepository, times(1)).findById(1L);
     }
 
@@ -164,17 +168,19 @@ class SeatServiceImplTest {
 
         verify(seatRepository, times(1)).findByShowtimeId(1L);
         verify(seatRepository, never()).saveAll(anyList());
-        verify(weeklyScheduleService, never()).getCurrentWeek();
     }
 
     @Test
     @DisplayName("generateSeatsForAllShowtimes - Genera asientos para todas las funciones")
     void generateSeatsForAllShowtimes_GeneratesForAllShowtimes() {
+        mockShowtime.setWeekId(1L);
+
         Showtime showtime2 = new Showtime();
         showtime2.setId(2L);
         showtime2.setMovie(mockMovie);
         showtime2.setCinema(mockCinema);
         showtime2.setAvailableSeats(120);
+        showtime2.setWeekId(1L);
 
         List<Showtime> showtimes = Arrays.asList(mockShowtime, showtime2);
 
@@ -187,7 +193,7 @@ class SeatServiceImplTest {
 
         seatService.generateSeatsForAllShowtimes();
 
-        verify(weeklyScheduleService, times(3)).getCurrentWeek();
+        verify(weeklyScheduleService, times(1)).getCurrentWeek();
         verify(showtimeRepository, times(1)).findByWeekId(1L);
         verify(seatRepository, atLeast(2)).findByShowtimeId(anyLong());
     }

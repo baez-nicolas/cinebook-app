@@ -9,8 +9,8 @@ import com.cinebook.backend.repositories.SeatRepository;
 import com.cinebook.backend.repositories.ShowtimeRepository;
 import com.cinebook.backend.services.interfaces.ISeatService;
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +18,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class SeatServiceImpl implements ISeatService {
 
     private final SeatRepository seatRepository;
     private final ShowtimeRepository showtimeRepository;
     private final IWeeklyScheduleService weeklyScheduleService;
+
+    public SeatServiceImpl(
+            SeatRepository seatRepository,
+            ShowtimeRepository showtimeRepository,
+            @Lazy IWeeklyScheduleService weeklyScheduleService
+    ) {
+        this.seatRepository = seatRepository;
+        this.showtimeRepository = showtimeRepository;
+        this.weeklyScheduleService = weeklyScheduleService;
+    }
 
     @Override
     public List<SeatDTO> getSeatsByShowtime(Long showtimeId) {
@@ -58,7 +67,6 @@ public class SeatServiceImpl implements ISeatService {
                 showtime.getMovie().getTitle(),
                 showtime.getCinema().getName());
 
-        WeeklySchedule currentWeek = weeklyScheduleService.getCurrentWeek();
         List<Seat> seats = new ArrayList<>();
         String[] rows = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
@@ -68,7 +76,7 @@ public class SeatServiceImpl implements ISeatService {
                 seat.setShowtime(showtime);
                 seat.setSeatNumber(row + number);
                 seat.setStatus(SeatStatus.AVAILABLE);
-                seat.setWeekId(currentWeek.getWeekId());
+                seat.setWeekId(showtime.getWeekId());
                 seats.add(seat);
             }
         }
@@ -83,7 +91,7 @@ public class SeatServiceImpl implements ISeatService {
         Random random = new Random();
         int seatsToOccupy = 20 + random.nextInt(11);
 
-        log.info("🎲 Ocupando {} asientos aleatoriamente para función {}", seatsToOccupy, showtimeId);
+        log.info("Ocupando {} asientos aleatoriamente para función {}", seatsToOccupy, showtimeId);
 
         List<Seat> allSeats = seatRepository.findByShowtimeId(showtimeId);
         Collections.shuffle(allSeats);
