@@ -130,7 +130,7 @@
 
 .booking-content {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr minmax(320px, 380px);
   gap: 40px;
   align-items: start;
 }
@@ -307,6 +307,8 @@
 .summary-section {
   position: sticky;
   top: 30px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .summary-card {
@@ -315,6 +317,7 @@
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
 }
 
 .summary-title {
@@ -323,6 +326,8 @@
   margin-bottom: 25px;
   text-align: center;
   font-weight: 600;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .form-group {
@@ -599,13 +604,16 @@
   margin: 0;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1350px) {
   .booking-content {
     grid-template-columns: 1fr;
   }
 
   .summary-section {
     position: static;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .cinema-seats {
