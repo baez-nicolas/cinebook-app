@@ -19,10 +19,13 @@
 
 ### 📺 Video Marketing
 
+## 🎥 Video Demo
+
 <a href="https://www.youtube.com/watch?v=62qrqWJDxLY" target="_blank">
-  <img src="https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube" alt="Ver video en YouTube">
+  <img src="https://img.shields.io/badge/▶️_Ver_Video_Completo-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Ver video en YouTube">
 </a>
 
+*Clic derecho → Abrir en nueva pestaña, o presiona Ctrl+Click*
 
 [![Ver video en YouTube](https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=62qrqWJDxLY)
 
