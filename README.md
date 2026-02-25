@@ -25,8 +25,6 @@
   <img src="https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg" alt="Video Preview" width="500">
 </a>
 
-<br><br>
-
 [![Ver video en YouTube](https://img.shields.io/badge/▶️_VER_VIDEO_COMPLETO-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=62qrqWJDxLY)
 
 </div>
