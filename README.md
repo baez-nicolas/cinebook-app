@@ -31,6 +31,20 @@
 
 </div>
 
+## 🎥 Video Explicativo
+
+<div>
+
+<a href="https://www.youtube.com/watch?v=ZTC3kCY1Wg">
+  <img src="https://img.youtube.com/vi/ZTC3kCY1Wg/maxresdefault.jpg" alt="Video Preview" width="500">
+</a>
+
+<br>
+
+[![Ver video en YouTube](https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=AZTC3kCY1Wg)
+
+</div>
+
 > **⚠️ Importante:** Mirá el video antes de usar la aplicación para entender las diferencias entre **Usuario** y **Admin**.
 
 ---
