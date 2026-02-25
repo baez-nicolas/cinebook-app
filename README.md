@@ -22,10 +22,8 @@
 <div>
 
 <a href="https://www.youtube.com/watch?v=62qrqWJDxLY">
-  <img src="https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg" alt="Video Preview" width="500">
+  <img src="https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg" alt="Video Preview" width="450">
 </a>
-
-<br>
 
 [![Ver video en YouTube](https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=62qrqWJDxLY)
 
@@ -37,7 +35,7 @@
   <img src="https://img.youtube.com/vi/AZTC3kCY1Wg/maxresdefault.jpg" alt="Explicativo" width="450">
 </a>
 
-[![YouTube](https://img.shields.io/badge/▶️_Ver_Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=AZTC3kCY1Wg)
+[![Ver video en YouTube](https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=AZTC3kCY1Wg)
 
 </div>
 
