@@ -19,7 +19,7 @@
 
 ## 🎥 Video Marketing
 
-<div align="center">
+<div>
 
 <a href="https://www.youtube.com/watch?v=62qrqWJDxLY">
   <img src="https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg" alt="Video Preview" width="500">
