@@ -19,6 +19,11 @@
 
 ### 📺 Video Marketing
 
+<a href="https://www.youtube.com/watch?v=62qrqWJDxLY" target="_blank">
+  <img src="https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube" alt="Ver video en YouTube">
+</a>
+
+
 [![Ver video en YouTube](https://img.shields.io/badge/YouTube-Ver_Video-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=62qrqWJDxLY)
 
 > **⚠️ Importante:** Mirá el video antes de usar la aplicación para entender las diferencias entre **Usuario** y **Admin**.
