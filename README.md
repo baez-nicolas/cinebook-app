@@ -17,11 +17,25 @@
 
 ---
 
-## 🎥 Video Marketing
+**## 🎥 Video Marketing
 
 <div align="center">
 
 [![Video Preview](https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg)](https://www.youtube.com/watch?v=62qrqWJDxLY)
+
+[![Ver video en YouTube](https://img.shields.io/badge/▶️_VER_VIDEO_COMPLETO-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=62qrqWJDxLY)
+
+</div>
+
+> **⚠️ Importante:** Mirá el video antes de usar la aplicación para entender las diferencias entre **Usuario** y **Admin**.**## 🎥 Video Marketing
+
+<div align="center">
+
+<a href="https://www.youtube.com/watch?v=62qrqWJDxLY">
+  <img src="https://img.youtube.com/vi/62qrqWJDxLY/maxresdefault.jpg" alt="Video Preview" width="500">
+</a>
+
+<br><br>
 
 [![Ver video en YouTube](https://img.shields.io/badge/▶️_VER_VIDEO_COMPLETO-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=62qrqWJDxLY)
 
