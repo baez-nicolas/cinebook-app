@@ -39,7 +39,7 @@
 
 </div>
 
-> **⚠️ Tip:** Mirá el video explicativo para entender las diferencias entre **Usuario** y **Admin**.
+> **⚠️** Mirá el video explicativo para entender las diferencias entre **Usuario** y **Admin**.
 
 ---
 
