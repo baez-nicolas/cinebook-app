@@ -50,6 +50,13 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
+  private parseArgentinaDate(dateString: string): Date {
+    const hasTimezone =
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+    const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
+    return new Date(correctedDateString);
+  }
+
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.isAdmin = this.authService.isAdmin();
@@ -76,15 +83,15 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
    */
   private filterExpiredBookings(bookings: Booking[]): Booking[] {
     const now = new Date();
-    const cutoffTime = new Date(now.getTime() - this.EXPIRY_HOURS * 60 * 60 * 1000);
 
     return bookings.filter((booking) => {
-      const showtimeStart = new Date(booking.showDateTime);
+      const showtimeStart = this.parseArgentinaDate(booking.showDateTime);
       const showtimeEnd = new Date(
         showtimeStart.getTime() + this.MOVIE_DURATION_HOURS * 60 * 60 * 1000,
       );
-      // Mostrar solo si la función no terminó hace más de 5 horas
-      return showtimeEnd > cutoffTime;
+      const cutoffTime = new Date(showtimeEnd.getTime() + this.EXPIRY_HOURS * 60 * 60 * 1000);
+
+      return cutoffTime > now;
     });
   }
 
@@ -204,7 +211,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
+    const date = this.parseArgentinaDate(dateString);
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       day: '2-digit',

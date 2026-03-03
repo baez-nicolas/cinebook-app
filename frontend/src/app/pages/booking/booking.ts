@@ -33,6 +33,13 @@ export class BookingComponent implements OnInit {
     private authService: AuthService,
   ) {}
 
+  private parseArgentinaDate(dateString: string): Date {
+    const hasTimezone =
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+    const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
+    return new Date(correctedDateString);
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('showtimeId');
     if (id) {
@@ -291,7 +298,7 @@ export class BookingComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
+    const date = this.parseArgentinaDate(dateString);
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'short',
       day: '2-digit',
@@ -304,7 +311,7 @@ export class BookingComponent implements OnInit {
   }
 
   formatDateForDialog(dateString: string): string {
-    const date = new Date(dateString);
+    const date = this.parseArgentinaDate(dateString);
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       day: '2-digit',

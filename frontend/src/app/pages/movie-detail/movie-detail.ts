@@ -30,6 +30,13 @@ export class MovieDetailComponent implements OnInit {
     private apiService: ApiService,
   ) {}
 
+  private parseArgentinaDate(dateString: string): Date {
+    const hasTimezone =
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+    const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
+    return new Date(correctedDateString);
+  }
+
   ngOnInit(): void {
     const movieId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadMovieDetails(movieId);
@@ -112,11 +119,11 @@ export class MovieDetailComponent implements OnInit {
     const uniqueDates = new Set<string>();
 
     this.allShowtimes.forEach((showtime) => {
-      const showtimeDate = new Date(showtime.showDateTime);
+      const showtimeDate = this.parseArgentinaDate(showtime.showDateTime);
       showtimeDate.setHours(0, 0, 0, 0);
 
       if (showtimeDate >= today) {
-        const dateStr = new Date(showtime.showDateTime).toISOString().split('T')[0];
+        const dateStr = this.parseArgentinaDate(showtime.showDateTime).toISOString().split('T')[0];
         uniqueDates.add(dateStr);
       }
     });
@@ -159,11 +166,16 @@ export class MovieDetailComponent implements OnInit {
 
     this.filteredShowtimes = this.allShowtimes
       .filter((showtime) => {
-        const showtimeDate = new Date(showtime.showDateTime).toISOString().split('T')[0];
+        const showtimeDate = this.parseArgentinaDate(showtime.showDateTime)
+          .toISOString()
+          .split('T')[0];
         return showtimeDate === this.selectedDate;
       })
       .sort((a, b) => {
-        return new Date(a.showDateTime).getTime() - new Date(b.showDateTime).getTime();
+        return (
+          this.parseArgentinaDate(a.showDateTime).getTime() -
+          this.parseArgentinaDate(b.showDateTime).getTime()
+        );
       });
   }
 
@@ -178,7 +190,8 @@ export class MovieDetailComponent implements OnInit {
   }
 
   formatTime(dateTime: string): string {
-    return new Date(dateTime).toLocaleTimeString('es-AR', {
+    const date = this.parseArgentinaDate(dateTime);
+    return date.toLocaleTimeString('es-AR', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
