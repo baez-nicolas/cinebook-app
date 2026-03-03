@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
@@ -48,6 +48,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   private parseArgentinaDate(dateString: string): Date {
@@ -135,6 +136,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
         const filteredBookings = this.filterExpiredBookings(data);
         this.bookings = this.sortBookings(filteredBookings);
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
@@ -164,6 +166,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
         this.bookings = this.allBookings;
         this.filteredBookings = [...this.allBookings];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
