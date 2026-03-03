@@ -34,7 +34,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Iniciando carga de datos...");
 
-        weeklyScheduleService.checkAndResetIfNeeded();
+        // weeklyScheduleService.checkAndResetIfNeeded();
 
         if (movieRepository.count() == 0) {
             loadMovies();
