@@ -32,9 +32,25 @@ export class MovieDetailComponent implements OnInit {
 
   private parseArgentinaDate(dateString: string): Date {
     const hasTimezone =
-      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 11);
     const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
     return new Date(correctedDateString);
+  }
+
+  private getDateString(date: Date): string {
+    const year = date.toLocaleDateString('es-AR', {
+      year: 'numeric',
+      timeZone: 'America/Argentina/Buenos_Aires',
+    });
+    const month = date.toLocaleDateString('es-AR', {
+      month: '2-digit',
+      timeZone: 'America/Argentina/Buenos_Aires',
+    });
+    const day = date.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      timeZone: 'America/Argentina/Buenos_Aires',
+    });
+    return `${year}-${month}-${day}`;
   }
 
   ngOnInit(): void {
@@ -114,37 +130,36 @@ export class MovieDetailComponent implements OnInit {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const uniqueDates = new Set<string>();
 
     this.allShowtimes.forEach((showtime) => {
       const showtimeDate = this.parseArgentinaDate(showtime.showDateTime);
-      showtimeDate.setHours(0, 0, 0, 0);
+      const todayStr = this.getDateString(new Date());
+      const showtimeDateStr = this.getDateString(showtimeDate);
 
-      if (showtimeDate >= today) {
-        const dateStr = this.parseArgentinaDate(showtime.showDateTime).toISOString().split('T')[0];
-        uniqueDates.add(dateStr);
+      if (showtimeDateStr >= todayStr) {
+        uniqueDates.add(showtimeDateStr);
       }
     });
 
     const sortedDates = Array.from(uniqueDates).sort();
 
     this.availableDates = sortedDates.map((dateStr) => {
-      const date = new Date(dateStr + 'T00:00:00');
+      const date = this.parseArgentinaDate(dateStr + 'T12:00:00');
       const options: Intl.DateTimeFormatOptions = {
         weekday: 'long',
         timeZone: 'America/Argentina/Buenos_Aires',
       };
       const dayName = date.toLocaleDateString('es-AR', options);
-      const dayNumber = date.getDate();
       const monthOptions: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
         month: '2-digit',
         timeZone: 'America/Argentina/Buenos_Aires',
       };
-      const month = date.toLocaleDateString('es-AR', monthOptions);
+      const dayMonth = date.toLocaleDateString('es-AR', monthOptions);
 
-      const label = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNumber}/${month}`;
+      const label = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayMonth}`;
 
       return { label, value: dateStr };
     });
@@ -166,9 +181,7 @@ export class MovieDetailComponent implements OnInit {
 
     this.filteredShowtimes = this.allShowtimes
       .filter((showtime) => {
-        const showtimeDate = this.parseArgentinaDate(showtime.showDateTime)
-          .toISOString()
-          .split('T')[0];
+        const showtimeDate = this.getDateString(this.parseArgentinaDate(showtime.showDateTime));
         return showtimeDate === this.selectedDate;
       })
       .sort((a, b) => {

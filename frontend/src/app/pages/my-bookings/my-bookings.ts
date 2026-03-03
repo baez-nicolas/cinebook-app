@@ -52,7 +52,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
 
   private parseArgentinaDate(dateString: string): Date {
     const hasTimezone =
-      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 11);
     const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
     return new Date(correctedDateString);
   }
@@ -285,7 +285,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
   }
 
   isPastShowtime(dateString: string): boolean {
-    return new Date(dateString) < new Date();
+    return this.parseArgentinaDate(dateString) < new Date();
   }
 
   toggleMenu(): void {

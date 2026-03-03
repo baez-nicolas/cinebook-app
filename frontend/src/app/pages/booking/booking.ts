@@ -35,7 +35,7 @@ export class BookingComponent implements OnInit {
 
   private parseArgentinaDate(dateString: string): Date {
     const hasTimezone =
-      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 10);
+      dateString.includes('Z') || dateString.includes('+') || dateString.includes('-', 11);
     const correctedDateString = hasTimezone ? dateString : dateString + '-03:00';
     return new Date(correctedDateString);
   }
