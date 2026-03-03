@@ -42,7 +42,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
   menuOpen = false;
   private refreshSubscription?: Subscription;
   private readonly MOVIE_DURATION_HOURS = 2.5;
-  private readonly EXPIRY_HOURS = 12;
+  private readonly EXPIRY_HOURS = 5;
 
   constructor(
     private apiService: ApiService,
@@ -71,7 +71,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Filtra las reservas excluyendo aquellas cuyas funciones terminaron hace más de 12 horas.
+   * Filtra las reservas excluyendo aquellas cuyas funciones terminaron hace más de 5 horas.
    * Se considera que una función termina después de showDateTime + duración de la película.
    */
   private filterExpiredBookings(bookings: Booking[]): Booking[] {
