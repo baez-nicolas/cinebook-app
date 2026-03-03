@@ -152,7 +152,7 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
     @Override
     @Transactional
     public WeeklySchedule createNewWeek(LocalDate startDate) {
-        LocalDate weekEnd = startDate.plusDays(7);
+        LocalDate weekEnd = startDate.plusDays(6);
         Long weekId = calculateWeekId(startDate);
 
         List<WeeklySchedule> activeWeeks = weeklyScheduleRepository.findAll().stream()

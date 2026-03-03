@@ -100,12 +100,31 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
    */
   private applyExpirationFilter(): void {
     if (this.isAdmin) {
-      this.allBookings = this.filterExpiredBookings(this.allBookings);
-      this.filteredBookings = this.filterExpiredBookings(this.filteredBookings);
+      this.allBookings = this.sortBookings(this.filterExpiredBookings(this.allBookings));
+      this.filteredBookings = this.sortBookings(this.filterExpiredBookings(this.filteredBookings));
       this.bookings = this.allBookings;
     } else {
-      this.bookings = this.filterExpiredBookings(this.bookings);
+      this.bookings = this.sortBookings(this.filterExpiredBookings(this.bookings));
     }
+  }
+
+  private sortBookings(bookings: Booking[]): Booking[] {
+    const now = new Date();
+    return bookings.sort((a, b) => {
+      const aShowtime = this.parseArgentinaDate(a.showDateTime);
+      const bShowtime = this.parseArgentinaDate(b.showDateTime);
+      const aIsPast = aShowtime < now;
+      const bIsPast = bShowtime < now;
+
+      if (aIsPast !== bIsPast) {
+        return aIsPast ? 1 : -1;
+      }
+
+      if (aIsPast) {
+        return bShowtime.getTime() - aShowtime.getTime();
+      }
+      return aShowtime.getTime() - bShowtime.getTime();
+    });
   }
 
   loadMyBookings(): void {
@@ -113,11 +132,8 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
 
     this.apiService.getMyBookings().subscribe({
       next: (data) => {
-        const sortedBookings = data.sort(
-          (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
-        );
-        // Filtrar reservas de funciones finalizadas hace más de 5 horas
-        this.bookings = this.filterExpiredBookings(sortedBookings);
+        const filteredBookings = this.filterExpiredBookings(data);
+        this.bookings = this.sortBookings(filteredBookings);
         this.loading = false;
       },
       error: () => {
@@ -143,11 +159,8 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
 
     this.apiService.getAllBookings().subscribe({
       next: (data) => {
-        const sortedBookings = data.sort(
-          (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
-        );
-        // Filtrar reservas de funciones finalizadas hace más de 5 horas
-        this.allBookings = this.filterExpiredBookings(sortedBookings);
+        const filteredBookings = this.filterExpiredBookings(data);
+        this.allBookings = this.sortBookings(filteredBookings);
         this.bookings = this.allBookings;
         this.filteredBookings = [...this.allBookings];
         this.loading = false;
@@ -193,10 +206,10 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
   filterBookings(): void {
     const term = this.normalizeText(this.searchTerm);
     if (!term) {
-      this.filteredBookings = [...this.allBookings];
+      this.filteredBookings = this.sortBookings(this.filterExpiredBookings([...this.allBookings]));
       return;
     }
-    this.filteredBookings = this.allBookings.filter(
+    const filtered = this.allBookings.filter(
       (booking) =>
         this.normalizeText(booking.userName || '').includes(term) ||
         this.normalizeText(booking.movieTitle || '').includes(term) ||
@@ -208,6 +221,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
         this.normalizeText(booking.confirmationCode || '').includes(term) ||
         booking.totalPrice?.toString().includes(term),
     );
+    this.filteredBookings = this.sortBookings(this.filterExpiredBookings(filtered));
   }
 
   formatDate(dateString: string): string {

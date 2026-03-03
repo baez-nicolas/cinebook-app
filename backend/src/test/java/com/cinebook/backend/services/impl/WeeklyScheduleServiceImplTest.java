@@ -64,7 +64,7 @@ class WeeklyScheduleServiceImplTest {
         mockActiveWeek = new WeeklySchedule();
         mockActiveWeek.setWeekId(1L);
         mockActiveWeek.setWeekStartDate(today);
-        mockActiveWeek.setWeekEndDate(today.plusDays(7));
+        mockActiveWeek.setWeekEndDate(today.plusDays(6));
         mockActiveWeek.setIsActive(true);
         mockActiveWeek.setCreatedAt(today);
     }
@@ -180,7 +180,7 @@ class WeeklyScheduleServiceImplTest {
 
         assertNotNull(result);
         assertEquals(startDate, result.getWeekStartDate());
-        assertEquals(startDate.plusDays(7), result.getWeekEndDate());
+        assertEquals(startDate.plusDays(6), result.getWeekEndDate());
         assertTrue(result.getIsActive());
 
         verify(weeklyScheduleRepository, times(1)).save(any(WeeklySchedule.class));
