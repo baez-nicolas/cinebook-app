@@ -21,28 +21,23 @@ public class BookingCleanupService {
     @Scheduled(cron = "0 0 0,12 * * *", zone = "America/Argentina/Buenos_Aires")
     @Transactional
     public void cleanupOldBookings() {
-        log.info("╔══════════════════════════════════════════════════════════╗");
-        log.info("║  LIMPIEZA DE RESERVAS ANTIGUAS                         ║");
-        log.info("╚══════════════════════════════════════════════════════════╝");
+        log.info("Iniciando limpieza de reservas antiguas...");
 
         LocalDateTime cutoffTime = LocalDateTime.now().minusHours(5);
 
-        List<Booking> bookings = bookingRepository.findAll();
-
-        List<Booking> bookingsToDelete = bookings.stream()
-                .filter(booking -> booking.getShowtime() != null)
-                .filter(booking -> booking.getShowtime().getShowDateTime().isBefore(cutoffTime))
+        List<Booking> bookingsToDelete = bookingRepository.findAll().stream()
+                .filter(booking -> {
+                    if (booking.getShowtime() == null) return false;
+                    return booking.getShowtime().getShowDateTime().isBefore(cutoffTime);
+                })
                 .toList();
 
         if (!bookingsToDelete.isEmpty()) {
             bookingRepository.deleteAll(bookingsToDelete);
-            log.info("Eliminadas {} reservas de funciones finalizadas hace más de 5 horas",
-                    bookingsToDelete.size());
+            log.info("Eliminadas {} reservas antiguas", bookingsToDelete.size());
         } else {
             log.info("No hay reservas antiguas para eliminar");
         }
-
-        log.info("═══════════════════════════════════════════════════════════");
     }
 }
 
