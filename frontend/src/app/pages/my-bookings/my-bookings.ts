@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { FooterComponent } from '../../components/footer/footer';
+import { ExpiredBookingFilterPipe } from '../../pipes/expired-booking-filter.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -27,7 +28,7 @@ interface Booking {
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FormsModule, FooterComponent, ExpiredBookingFilterPipe],
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })

@@ -115,7 +115,10 @@
         </div>
 
         <div class="bookings-grid">
-          @for (booking of isAdmin ? filteredBookings : bookings; track booking.bookingId) {
+          @for (
+            booking of (isAdmin ? filteredBookings : bookings) | expiredBookingFilter;
+            track booking.bookingId
+          ) {
             <div class="booking-card" [class.past]="isPastShowtime(booking.showDateTime)">
               <div class="booking-poster">
                 <img [src]="booking.moviePosterUrl" [alt]="booking.movieTitle" />
