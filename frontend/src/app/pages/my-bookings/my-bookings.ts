@@ -212,6 +212,7 @@ export class MyBookingsComponent implements OnInit, OnDestroy {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'America/Argentina/Buenos_Aires',
     };
     return date.toLocaleDateString('es-AR', options);
   }

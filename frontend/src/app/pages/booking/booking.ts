@@ -298,6 +298,7 @@ export class BookingComponent implements OnInit {
       month: 'short',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'America/Argentina/Buenos_Aires',
     };
     return date.toLocaleDateString('es-AR', options);
   }
@@ -311,6 +312,7 @@ export class BookingComponent implements OnInit {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'America/Argentina/Buenos_Aires',
     };
     return date.toLocaleDateString('es-AR', options);
   }

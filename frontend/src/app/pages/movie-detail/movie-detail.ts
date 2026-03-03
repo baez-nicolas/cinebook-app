@@ -124,10 +124,16 @@ export class MovieDetailComponent implements OnInit {
     const sortedDates = Array.from(uniqueDates).sort();
 
     this.availableDates = sortedDates.map((dateStr) => {
-      const date = new Date(dateStr + 'T12:00:00');
-      const dayName = date.toLocaleDateString('es-AR', { weekday: 'long' });
+      const date = new Date(dateStr + 'T12:00:00-03:00');
+      const dayName = date.toLocaleDateString('es-AR', {
+        weekday: 'long',
+        timeZone: 'America/Argentina/Buenos_Aires',
+      });
       const dayNumber = date.getDate();
-      const month = date.toLocaleDateString('es-AR', { month: '2-digit' });
+      const month = date.toLocaleDateString('es-AR', {
+        month: '2-digit',
+        timeZone: 'America/Argentina/Buenos_Aires',
+      });
 
       const label = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNumber}/${month}`;
 
@@ -174,6 +180,7 @@ export class MovieDetailComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
+      timeZone: 'America/Argentina/Buenos_Aires',
     });
   }
 
