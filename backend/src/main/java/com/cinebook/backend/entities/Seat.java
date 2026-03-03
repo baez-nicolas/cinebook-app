@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "seats")
@@ -19,6 +21,7 @@ public class Seat {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Showtime showtime;
 
     @Column(nullable = false, length = 5)

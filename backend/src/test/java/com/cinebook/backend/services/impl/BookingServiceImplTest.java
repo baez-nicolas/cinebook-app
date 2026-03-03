@@ -430,5 +430,27 @@ class BookingServiceImplTest {
         assertEquals(new BigDecimal("15000"), result.getTotalPrice());
         assertEquals(PaymentStatus.CONFIRMED, result.getPaymentStatus());
     }
+
+    @Test
+    @DisplayName("convertToDTO - Maneja correctamente showtime null después de cascade delete")
+    void convertToDTO_HandlesNullShowtime() {
+        mockBooking.setShowtime(null);
+
+        BookingResponseDTO result = bookingService.convertToDTO(mockBooking);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getBookingId());
+        assertEquals("CNB-20260213-0001", result.getConfirmationCode());
+        assertEquals("John Doe", result.getUserName());
+        assertEquals("Función eliminada", result.getMovieTitle());
+        assertNull(result.getMoviePosterUrl());
+        assertEquals("N/A", result.getCinemaName());
+        assertEquals("N/A", result.getCinemaAddress());
+        assertNull(result.getShowDateTime());
+        assertNull(result.getShowtimeType());
+        assertEquals(3, result.getSeatNumbers().size());
+        assertEquals(new BigDecimal("15000"), result.getTotalPrice());
+        assertEquals(PaymentStatus.CONFIRMED, result.getPaymentStatus());
+    }
 }
 

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,7 +29,8 @@ public class Booking {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "showtime_id", nullable = false)
+    @JoinColumn(name = "showtime_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Showtime showtime;
 
     @ManyToMany

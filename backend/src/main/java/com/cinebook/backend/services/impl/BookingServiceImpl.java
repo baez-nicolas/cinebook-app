@@ -157,14 +157,23 @@ public class BookingServiceImpl implements IBookingService {
         dto.setConfirmationCode(booking.getConfirmationCode());
         dto.setUserName(booking.getUser().getFirstName() + " " + booking.getUser().getLastName());
 
-        dto.setMovieTitle(booking.getShowtime().getMovie().getTitle());
-        dto.setMoviePosterUrl(booking.getShowtime().getMovie().getPosterUrl());
+        if (booking.getShowtime() != null) {
+            dto.setMovieTitle(booking.getShowtime().getMovie().getTitle());
+            dto.setMoviePosterUrl(booking.getShowtime().getMovie().getPosterUrl());
 
-        dto.setCinemaName(booking.getShowtime().getCinema().getName());
-        dto.setCinemaAddress(booking.getShowtime().getCinema().getAddress());
+            dto.setCinemaName(booking.getShowtime().getCinema().getName());
+            dto.setCinemaAddress(booking.getShowtime().getCinema().getAddress());
 
-        dto.setShowDateTime(booking.getShowtime().getShowDateTime());
-        dto.setShowtimeType(booking.getShowtime().getType());
+            dto.setShowDateTime(booking.getShowtime().getShowDateTime());
+            dto.setShowtimeType(booking.getShowtime().getType());
+        } else {
+            dto.setMovieTitle("Función eliminada");
+            dto.setMoviePosterUrl(null);
+            dto.setCinemaName("N/A");
+            dto.setCinemaAddress("N/A");
+            dto.setShowDateTime(null);
+            dto.setShowtimeType(null);
+        }
 
         List<String> seatNumbers = booking.getSeats()
                 .stream()
