@@ -2,7 +2,6 @@ package com.cinebook.backend.dtos;
 
 import com.cinebook.backend.entities.enums.PaymentStatus;
 import com.cinebook.backend.entities.enums.ShowtimeType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,15 +18,12 @@ public class BookingResponseDTO {
     private String confirmationCode;
     private String userName;
 
-    // Datos de la película
     private String movieTitle;
     private String moviePosterUrl;
 
-    // Datos del cine
     private String cinemaName;
     private String cinemaAddress;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "America/Argentina/Buenos_Aires")
     private LocalDateTime showDateTime;
     private ShowtimeType showtimeType;
 
@@ -35,6 +31,5 @@ public class BookingResponseDTO {
 
     private BigDecimal totalPrice;
     private PaymentStatus paymentStatus;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "America/Argentina/Buenos_Aires")
     private LocalDateTime bookingDateTime;
 }

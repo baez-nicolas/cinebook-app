@@ -1,7 +1,6 @@
 package com.cinebook.backend.dtos;
 
 import com.cinebook.backend.entities.enums.ShowtimeType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,6 @@ public class ShowtimeDTO {
     private String moviePosterUrl;
     private Long cinemaId;
     private String cinemaName;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "America/Argentina/Buenos_Aires")
     private LocalDateTime showDateTime;
     private ShowtimeType type;
     private BigDecimal price;
