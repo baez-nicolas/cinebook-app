@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { interval, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { FooterComponent } from '../../components/footer/footer';
 import { ApiService } from '../../services/api.service';
@@ -30,7 +31,7 @@ interface Booking {
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
-export class MyBookingsComponent implements OnInit {
+export class MyBookingsComponent implements OnInit, OnDestroy {
   bookings: Booking[] = [];
   allBookings: Booking[] = [];
   filteredBookings: Booking[] = [];
@@ -39,6 +40,9 @@ export class MyBookingsComponent implements OnInit {
   isAdmin = false;
   currentUser: any = null;
   menuOpen = false;
+  private refreshSubscription?: Subscription;
+  private readonly MOVIE_DURATION_HOURS = 2.5;
+  private readonly EXPIRY_HOURS = 12;
 
   constructor(
     private apiService: ApiService,
@@ -55,6 +59,46 @@ export class MyBookingsComponent implements OnInit {
     } else {
       this.loadMyBookings();
     }
+
+    // Actualizar lista cada 5 minutos para mantener sincronía con el filtro de expiración
+    this.refreshSubscription = interval(5 * 60 * 1000).subscribe(() => {
+      this.applyExpirationFilter();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSubscription?.unsubscribe();
+  }
+
+  /**
+   * Filtra las reservas excluyendo aquellas cuyas funciones terminaron hace más de 12 horas.
+   * Se considera que una función termina después de showDateTime + duración de la película.
+   */
+  private filterExpiredBookings(bookings: Booking[]): Booking[] {
+    const now = new Date();
+    const cutoffTime = new Date(now.getTime() - this.EXPIRY_HOURS * 60 * 60 * 1000);
+
+    return bookings.filter((booking) => {
+      const showtimeStart = new Date(booking.showDateTime);
+      const showtimeEnd = new Date(
+        showtimeStart.getTime() + this.MOVIE_DURATION_HOURS * 60 * 60 * 1000,
+      );
+      // Mostrar solo si la función no terminó hace más de 5 horas
+      return showtimeEnd > cutoffTime;
+    });
+  }
+
+  /**
+   * Re-aplica el filtro de expiración a las reservas actuales (para actualización reactiva)
+   */
+  private applyExpirationFilter(): void {
+    if (this.isAdmin) {
+      this.allBookings = this.filterExpiredBookings(this.allBookings);
+      this.filteredBookings = this.filterExpiredBookings(this.filteredBookings);
+      this.bookings = this.allBookings;
+    } else {
+      this.bookings = this.filterExpiredBookings(this.bookings);
+    }
   }
 
   loadMyBookings(): void {
@@ -62,9 +106,11 @@ export class MyBookingsComponent implements OnInit {
 
     this.apiService.getMyBookings().subscribe({
       next: (data) => {
-        this.bookings = data.sort(
+        const sortedBookings = data.sort(
           (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
         );
+        // Filtrar reservas de funciones finalizadas hace más de 5 horas
+        this.bookings = this.filterExpiredBookings(sortedBookings);
         this.loading = false;
       },
       error: () => {
@@ -90,10 +136,11 @@ export class MyBookingsComponent implements OnInit {
 
     this.apiService.getAllBookings().subscribe({
       next: (data) => {
-        this.allBookings = data.sort(
+        const sortedBookings = data.sort(
           (a, b) => new Date(b.bookingDateTime).getTime() - new Date(a.bookingDateTime).getTime(),
         );
-
+        // Filtrar reservas de funciones finalizadas hace más de 5 horas
+        this.allBookings = this.filterExpiredBookings(sortedBookings);
         this.bookings = this.allBookings;
         this.filteredBookings = [...this.allBookings];
         this.loading = false;
