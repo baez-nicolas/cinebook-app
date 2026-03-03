@@ -282,14 +282,13 @@ class WeeklyScheduleServiceImplTest {
         oldShowtime.setShowDateTime(LocalDateTime.of(yesterday, java.time.LocalTime.of(19, 0)));
 
         when(showtimeRepository.findAll()).thenReturn(Arrays.asList(oldShowtime));
-        when(seatRepository.findByShowtimeId(1L)).thenReturn(Collections.emptyList());
         when(weeklyScheduleRepository.save(any(WeeklySchedule.class))).thenReturn(mockActiveWeek);
 
         weeklyScheduleService.performDailyUpdate(mockActiveWeek, today);
 
-        verify(seatRepository, times(1)).findByShowtimeId(1L);
         verify(showtimeRepository, times(1)).deleteAll(anyList());
         verify(showtimeService, times(1)).generateShowtimesForDate(any(LocalDate.class));
+        verify(seatRepository, never()).deleteAll(anyList());
     }
 
     @Test

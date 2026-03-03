@@ -122,22 +122,16 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         log.info("╚══════════════════════════════════════════════════════════╝");
 
         LocalDate dateToRemove = currentWeek.getWeekStartDate();
-        log.info("Eliminando funciones y asientos del día: {}", dateToRemove);
+        log.info("Eliminando funciones del día: {}", dateToRemove);
 
         List<Showtime> showtimesToRemove = showtimeRepository.findAll().stream()
                 .filter(s -> s.getShowDateTime().toLocalDate().equals(dateToRemove))
                 .toList();
 
         if (!showtimesToRemove.isEmpty()) {
-            for (Showtime showtime : showtimesToRemove) {
-                List<Seat> seatsToRemove = seatRepository.findByShowtimeId(showtime.getId());
-                if (!seatsToRemove.isEmpty()) {
-                    seatRepository.deleteAll(seatsToRemove);
-                    log.info("   Eliminados {} asientos de función ID {}", seatsToRemove.size(), showtime.getId());
-                }
-            }
             showtimeRepository.deleteAll(showtimesToRemove);
             log.info("Resultado: {} funciones eliminadas del día {}", showtimesToRemove.size(), dateToRemove);
+            log.info("Nota: Los asientos asociados permanecen en la BD para mantener integridad referencial");
         }
 
         currentWeek.setWeekStartDate(today);
