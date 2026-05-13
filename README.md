@@ -8,7 +8,7 @@
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Railway](https://img.shields.io/badge/Deploy-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)
 
-<img src="/img/portada.png" width="700" alt="Banner" />
+<img src="/img/portada.png" width="600" alt="Banner" />
 
 **CineBook** es una aplicación web full-stack para la reserva de entradas de cine. Explorá películas en cartelera, elegí tu cine favorito, seleccioná asientos y gestioná tus reservas con una interfaz moderna y responsive.
 
@@ -174,6 +174,8 @@
 - **Framework Frontend:** [Angular](https://angular.io)
 - **Base de Datos:** [PostgreSQL](https://www.postgresql.org)
 - **Hosting:** [Railway](https://railway.app)
+
+<img src="/img/imagenfinal.png" width="600" alt="Banner" />
 
 ---
 
