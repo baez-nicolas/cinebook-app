@@ -81,36 +81,22 @@ public class SeatServiceImpl implements ISeatService {
             }
         }
 
-        seatRepository.saveAll(seats);
-        log.info("120 asientos generados para función {}", showtime.getId());
-
-        occupyRandomSeats(showtime.getId());
-    }
-
-    private void occupyRandomSeats(Long showtimeId) {
         Random random = new Random();
         int seatsToOccupy = 20 + random.nextInt(11);
-
-        log.info("Ocupando {} asientos aleatoriamente para función {}", seatsToOccupy, showtimeId);
-
-        List<Seat> allSeats = seatRepository.findByShowtimeId(showtimeId);
-        Collections.shuffle(allSeats);
-
-        for (int i = 0; i < seatsToOccupy && i < allSeats.size(); i++) {
-            Seat seat = allSeats.get(i);
-            seat.setStatus(SeatStatus.RESERVED_RANDOM);
+        Collections.shuffle(seats, random);
+        for (int i = 0; i < seatsToOccupy; i++) {
+            seats.get(i).setStatus(SeatStatus.RESERVED_RANDOM);
         }
-
-        seatRepository.saveAll(allSeats.subList(0, Math.min(seatsToOccupy, allSeats.size())));
-
-        Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + showtimeId));
 
         int availableSeats = 120 - seatsToOccupy;
         showtime.setAvailableSeats(availableSeats);
+        showtime.setTotalSeats(120);
         showtimeRepository.save(showtime);
 
-        log.info("{} asientos fueron ocupados, {} asientos disponibles", seatsToOccupy, availableSeats);
+        seatRepository.saveAll(seats);
+
+        log.info("Función {}: 120 asientos creados, {} disponibles, {} ocupados",
+                showtime.getId(), availableSeats, seatsToOccupy);
     }
 
     @Override

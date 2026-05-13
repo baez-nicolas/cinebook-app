@@ -284,15 +284,12 @@ class WeeklyScheduleServiceImplTest {
         oldShowtime.setId(1L);
         oldShowtime.setShowDateTime(LocalDateTime.of(yesterday, java.time.LocalTime.of(19, 0)));
 
-        when(showtimeRepository.findByWeekId(anyLong())).thenReturn(Arrays.asList(oldShowtime));
-        when(seatRepository.findAll()).thenReturn(Collections.emptyList());
-        when(seatRepository.findByWeekId(anyLong())).thenReturn(Collections.emptyList());
+        when(showtimeRepository.findAll()).thenReturn(Arrays.asList(oldShowtime));
+        when(weeklyScheduleRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockActiveWeek));
         when(weeklyScheduleRepository.save(any(WeeklySchedule.class))).thenReturn(mockActiveWeek);
 
-        weeklyScheduleService.performDailyUpdate(mockActiveWeek, today);
+        weeklyScheduleService.performDailyUpdate(mockActiveWeek.getId(), yesterday, today);
 
-        verify(bookingRepository, times(1)).deleteByShowtimeIdIn(anyList());
-        verify(showtimeRepository, times(1)).deleteAll(anyList());
         verify(showtimeService, times(1)).generateShowtimesForDate(any(LocalDate.class));
     }
 
@@ -302,22 +299,12 @@ class WeeklyScheduleServiceImplTest {
         LocalDate yesterday = today.minusDays(1);
         mockActiveWeek.setWeekStartDate(yesterday);
 
-        Showtime futureShowtime = new Showtime();
-        futureShowtime.setId(2L);
-        futureShowtime.setShowDateTime(LocalDateTime.of(today.plusDays(1), java.time.LocalTime.of(19, 0)));
-        futureShowtime.setWeekId(1L);
-
-        when(showtimeRepository.findByWeekId(anyLong()))
-            .thenReturn(Collections.emptyList())
-            .thenReturn(Arrays.asList(futureShowtime));
-        when(seatRepository.findByWeekId(anyLong())).thenReturn(Collections.emptyList());
-        when(showtimeRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
-        when(seatRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
+        when(weeklyScheduleRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockActiveWeek));
         when(weeklyScheduleRepository.save(any(WeeklySchedule.class))).thenReturn(mockActiveWeek);
 
-        weeklyScheduleService.performDailyUpdate(mockActiveWeek, today);
+        weeklyScheduleService.performDailyUpdate(mockActiveWeek.getId(), yesterday, today);
 
-        verify(showtimeRepository, times(1)).saveAll(anyList());
         verify(weeklyScheduleRepository, times(1)).save(any(WeeklySchedule.class));
     }
 
@@ -326,13 +313,13 @@ class WeeklyScheduleServiceImplTest {
     void performDailyUpdate_GeneratesShowtimesForNewDay() {
         LocalDate yesterday = today.minusDays(1);
         mockActiveWeek.setWeekStartDate(yesterday);
-        LocalDate newEndDate = today.plusDays(7);
+        LocalDate newEndDate = today.plusDays(6);
 
-        when(showtimeRepository.findByWeekId(anyLong())).thenReturn(Collections.emptyList());
-        when(seatRepository.findByWeekId(anyLong())).thenReturn(Collections.emptyList());
+        when(showtimeRepository.findAll()).thenReturn(Collections.emptyList());
+        when(weeklyScheduleRepository.findById(anyLong())).thenReturn(java.util.Optional.of(mockActiveWeek));
         when(weeklyScheduleRepository.save(any(WeeklySchedule.class))).thenReturn(mockActiveWeek);
 
-        weeklyScheduleService.performDailyUpdate(mockActiveWeek, today);
+        weeklyScheduleService.performDailyUpdate(mockActiveWeek.getId(), yesterday, today);
 
         verify(showtimeService, times(1)).generateShowtimesForDate(newEndDate);
     }
