@@ -192,8 +192,6 @@
 
 <div align="center">
 
-**[⬆ Volver arriba](#-cinebook)**
-
-Hecho con ❤️ y 🎬 para los amantes del cine
+**[Volver arriba](#-cinebook)**
 
 </div>
