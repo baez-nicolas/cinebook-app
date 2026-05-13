@@ -34,8 +34,6 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Iniciando carga de datos...");
 
-        // weeklyScheduleService.checkAndResetIfNeeded();
-
         if (movieRepository.count() == 0) {
             loadMovies();
         } else {
@@ -48,7 +46,8 @@ public class DataLoader implements CommandLineRunner {
             log.info("Los cines ya están cargados");
         }
 
-        showtimeService.generateShowtimesForCurrentWeek();
+        log.info("Verificando estado de la ventana de funciones...");
+        weeklyScheduleService.checkAndResetIfNeeded();
 
         log.info("Verificando y generando asientos faltantes...");
         seatService.generateSeatsForAllShowtimes();
