@@ -30,7 +30,6 @@ public class DataLoader implements CommandLineRunner {
     private final ISeatService seatService;
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
         log.info("Iniciando carga de datos...");
 

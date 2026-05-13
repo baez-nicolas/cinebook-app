@@ -149,6 +149,9 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             return;
         }
 
+        List<Showtime> allExistingShowtimes = showtimeRepository.findAll();
+        log.info("Total de funciones existentes en BD: {}", allExistingShowtimes.size());
+
         int totalGenerated = 0;
 
         for (Movie movie : activeMovies) {
@@ -156,17 +159,15 @@ public class ShowtimeServiceImpl implements IShowtimeService {
                 for (LocalDate date = today; !date.isAfter(endDate); date = date.plusDays(1)) {
                     final LocalDate currentDate = date;
 
-                    List<Showtime> existing = showtimeRepository.findAll().stream()
-                        .filter(s -> s.getMovie().getId().equals(movie.getId()))
-                        .filter(s -> s.getCinema().getId().equals(cinema.getId()))
-                        .filter(s -> s.getShowDateTime().toLocalDate().equals(currentDate))
-                        .collect(Collectors.toList());
+                    boolean exists = allExistingShowtimes.stream()
+                        .anyMatch(s -> s.getMovie().getId().equals(movie.getId())
+                            && s.getCinema().getId().equals(cinema.getId())
+                            && s.getShowDateTime().toLocalDate().equals(currentDate));
 
-                    if (existing.isEmpty()) {
+                    if (!exists) {
                         List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, currentDate, currentWeek);
                         List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
 
-                        log.info("Generando asientos para {} funciones guardadas", savedShowtimes.size());
                         for (Showtime showtime : savedShowtimes) {
                             seatService.generateSeatsForShowtime(showtime);
                         }
@@ -201,21 +202,22 @@ public class ShowtimeServiceImpl implements IShowtimeService {
             return;
         }
 
+        List<Showtime> allExistingShowtimes = showtimeRepository.findAll();
+        log.info("Total de funciones existentes en BD: {}", allExistingShowtimes.size());
+
         int totalGenerated = 0;
 
         for (Movie movie : activeMovies) {
             for (Cinema cinema : cinemas) {
-                List<Showtime> existing = showtimeRepository.findAll().stream()
-                    .filter(s -> s.getMovie().getId().equals(movie.getId()))
-                    .filter(s -> s.getCinema().getId().equals(cinema.getId()))
-                    .filter(s -> s.getShowDateTime().toLocalDate().equals(date))
-                    .collect(Collectors.toList());
+                boolean exists = allExistingShowtimes.stream()
+                    .anyMatch(s -> s.getMovie().getId().equals(movie.getId())
+                        && s.getCinema().getId().equals(cinema.getId())
+                        && s.getShowDateTime().toLocalDate().equals(date));
 
-                if (existing.isEmpty()) {
+                if (!exists) {
                     List<Showtime> dailyShowtimes = generateDailyShowtimes(movie, cinema, date, currentWeek);
                     List<Showtime> savedShowtimes = showtimeRepository.saveAll(dailyShowtimes);
 
-                    log.info("Generando asientos para {} funciones guardadas de la fecha {}", savedShowtimes.size(), date);
                     for (Showtime showtime : savedShowtimes) {
                         seatService.generateSeatsForShowtime(showtime);
                     }
