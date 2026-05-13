@@ -1,6 +1,7 @@
 package com.cinebook.backend.controllers;
 
 import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
+import com.cinebook.backend.services.interfaces.IShowtimeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class TestController {
 
     private final IWeeklyScheduleService weeklyScheduleService;
+    private final IShowtimeService showtimeService;
 
     @PostMapping("/daily-update")
     @Operation(summary = "PRUEBA: Forzar actualización diaria de funciones")
@@ -69,6 +71,28 @@ public class TestController {
             log.error("Error obteniendo info: {}", e.getMessage());
             return ResponseEntity.status(500).body(Map.of(
                 "error", e.getMessage()
+            ));
+        }
+    }
+
+    @PostMapping("/regenerate-showtimes")
+    @Operation(summary = "EMERGENCIA: Regenerar todas las funciones de la semana actual")
+    public ResponseEntity<?> regenerateShowtimes() {
+        log.info("EMERGENCIA: Regenerando todas las funciones de la semana actual...");
+
+        try {
+            showtimeService.generateShowtimesForCurrentWeek();
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Funciones regeneradas exitosamente",
+                "info", "Se generaron funciones para todas las películas activas en todos los cines para la semana actual"
+            ));
+        } catch (Exception e) {
+            log.error("Error regenerando funciones: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                "success", false,
+                "message", "Error: " + e.getMessage()
             ));
         }
     }

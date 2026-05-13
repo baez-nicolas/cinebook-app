@@ -102,8 +102,16 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         WeeklySchedule currentWeek = activeWeeks.get(0);
 
         if (!currentWeek.getWeekStartDate().equals(today)) {
-            log.info("ACTUALIZACIÓN DIARIA: Moviendo ventana de funciones...");
-            performDailyUpdate(currentWeek, today);
+            long daysDifference = java.time.temporal.ChronoUnit.DAYS.between(currentWeek.getWeekStartDate(), today);
+
+            if (daysDifference > 7) {
+                log.warn("REINICIO COMPLETO: Han pasado {} días desde la última actualización", daysDifference);
+                log.warn("Recreando toda la ventana de 7 días desde cero...");
+                performCompleteReset(currentWeek, today);
+            } else {
+                log.info("ACTUALIZACIÓN DIARIA: Moviendo ventana de funciones...");
+                performDailyUpdate(currentWeek, today);
+            }
             return true;
         }
 
@@ -149,6 +157,39 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         log.info("═══════════════════════════════════════════════════════════");
     }
 
+    @Transactional
+    protected void performCompleteReset(WeeklySchedule currentWeek, LocalDate today) {
+        log.info("╔══════════════════════════════════════════════════════════╗");
+        log.info("║       REINICIO COMPLETO DE VENTANA DE FUNCIONES        ║");
+        log.info("╠══════════════════════════════════════════════════════════╣");
+        log.info("║  Última actualización: {}", currentWeek.getWeekStartDate());
+        log.info("║  Fecha actual: {}", today);
+        log.info("╚══════════════════════════════════════════════════════════╝");
+
+        log.info("Eliminando TODAS las funciones antiguas...");
+        List<Showtime> allOldShowtimes = showtimeRepository.findAll();
+        if (!allOldShowtimes.isEmpty()) {
+            showtimeRepository.deleteAll(allOldShowtimes);
+            log.info("Resultado: {} funciones antiguas eliminadas", allOldShowtimes.size());
+        }
+
+        currentWeek.setWeekStartDate(today);
+        currentWeek.setWeekEndDate(today.plusDays(6));
+        weeklyScheduleRepository.save(currentWeek);
+
+        log.info("Nueva ventana: {} a {}", currentWeek.getWeekStartDate(), currentWeek.getWeekEndDate());
+        log.info("Generando funciones para los 7 días completos...");
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate dateToGenerate = today.plusDays(i);
+            log.info("Generando funciones para el día: {} (día {}/7)", dateToGenerate, i + 1);
+            showtimeService.generateShowtimesForDate(dateToGenerate);
+        }
+
+        log.info("REINICIO COMPLETO finalizado exitosamente");
+        log.info("═══════════════════════════════════════════════════════════");
+    }
+
     @Override
     @Transactional
     public WeeklySchedule createNewWeek(LocalDate startDate) {
@@ -174,6 +215,15 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
 
         weeklyScheduleRepository.save(newWeek);
         log.info("Nueva ventana de 7 días creada: {} - {} (weekId: {})", startDate, weekEnd, weekId);
+
+        // Generar funciones para toda la ventana de 7 días
+        log.info("Generando funciones para los 7 días de la nueva ventana...");
+        for (int i = 0; i < 7; i++) {
+            LocalDate dateToGenerate = startDate.plusDays(i);
+            log.info("Generando funciones para el día: {}", dateToGenerate);
+            showtimeService.generateShowtimesForDate(dateToGenerate);
+        }
+        log.info("Funciones generadas para toda la ventana de 7 días");
 
         return newWeek;
     }
