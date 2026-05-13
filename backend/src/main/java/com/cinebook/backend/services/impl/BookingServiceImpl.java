@@ -45,21 +45,14 @@ public class BookingServiceImpl implements IBookingService {
         log.info("Procesando reserva para usuario: {}", userEmail);
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + userEmail));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + userEmail));
 
         Showtime showtime = showtimeRepository.findById(request.getShowtimeId())
                 .orElseThrow(() -> new RuntimeException("Función no encontrada con ID: " + request.getShowtimeId()));
 
-        LocalDateTime now = LocalDateTime.now();
-        if (showtime.getShowDateTime().isBefore(now) || showtime.getShowDateTime().isEqual(now)) {
-            log.warn("Intento de reserva de función pasada: {} (Actual: {})",
-                    showtime.getShowDateTime(), now);
-            throw new RuntimeException("No se pueden reservar funciones que ya comenzaron o están en curso");
+        if (showtime.getShowDateTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("No se pueden reservar funciones pasadas");
         }
-
-        long minutesUntilShowtime = java.time.temporal.ChronoUnit.MINUTES.between(now, showtime.getShowDateTime());
-        log.info("Función válida: {} (Faltan {} minutos)",
-                showtime.getShowDateTime(), minutesUntilShowtime);
 
         List<Seat> seats = seatRepository.findAllById(request.getSeatIds());
 
@@ -76,7 +69,7 @@ public class BookingServiceImpl implements IBookingService {
         BigDecimal pricePerSeat = showtime.getPrice();
         BigDecimal totalPrice = pricePerSeat.multiply(BigDecimal.valueOf(seats.size()));
 
-        log.info("Precio total: ${} ({} asientos x ${})", totalPrice, seats.size(), pricePerSeat);
+        log.info("Precio total: ${} ({} asientos × ${})", totalPrice, seats.size(), pricePerSeat);
 
         seatService.reserveSeats(request.getSeatIds());
 
@@ -100,12 +93,10 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingResponseDTO> getBookingsByUser(String userEmail) {
         log.info("Obteniendo reservas del usuario: {}", userEmail);
-
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + userEmail));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + userEmail));
 
         return bookingRepository.findByUserId(user.getId())
                 .stream()
@@ -114,7 +105,15 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> searchBookings(String searchTerm) {
+        log.info("Buscando reservas con término: {}", searchTerm);
+        return bookingRepository.searchBookings(searchTerm)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<BookingResponseDTO> getAllBookings() {
         log.info("Obteniendo todas las reservas");
         return bookingRepository.findAll()
@@ -124,7 +123,6 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public BookingResponseDTO getBookingByConfirmationCode(String confirmationCode) {
         log.info("Buscando reserva con código: {}", confirmationCode);
         Booking booking = bookingRepository.findByConfirmationCode(confirmationCode)
@@ -133,7 +131,6 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public BookingResponseDTO getBookingById(Long bookingId) {
         log.info("Obteniendo reserva con ID: {}", bookingId);
         Booking booking = bookingRepository.findById(bookingId)
@@ -155,25 +152,16 @@ public class BookingServiceImpl implements IBookingService {
 
         dto.setBookingId(booking.getId());
         dto.setConfirmationCode(booking.getConfirmationCode());
-        dto.setUserName(booking.getUser().getFirstName() + " " + booking.getUser().getLastName());
+        dto.setUserName(booking.getUser().getEmail());
 
-        if (booking.getShowtime() != null) {
-            dto.setMovieTitle(booking.getShowtime().getMovie().getTitle());
-            dto.setMoviePosterUrl(booking.getShowtime().getMovie().getPosterUrl());
+        dto.setMovieTitle(booking.getShowtime().getMovie().getTitle());
+        dto.setMoviePosterUrl(booking.getShowtime().getMovie().getPosterUrl());
 
-            dto.setCinemaName(booking.getShowtime().getCinema().getName());
-            dto.setCinemaAddress(booking.getShowtime().getCinema().getAddress());
+        dto.setCinemaName(booking.getShowtime().getCinema().getName());
+        dto.setCinemaAddress(booking.getShowtime().getCinema().getAddress());
 
-            dto.setShowDateTime(booking.getShowtime().getShowDateTime());
-            dto.setShowtimeType(booking.getShowtime().getType());
-        } else {
-            dto.setMovieTitle("Función eliminada");
-            dto.setMoviePosterUrl(null);
-            dto.setCinemaName("N/A");
-            dto.setCinemaAddress("N/A");
-            dto.setShowDateTime(null);
-            dto.setShowtimeType(null);
-        }
+        dto.setShowDateTime(booking.getShowtime().getShowDateTime());
+        dto.setShowtimeType(booking.getShowtime().getType());
 
         List<String> seatNumbers = booking.getSeats()
                 .stream()
@@ -186,21 +174,5 @@ public class BookingServiceImpl implements IBookingService {
         dto.setBookingDateTime(booking.getBookingDateTime());
 
         return dto;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<BookingResponseDTO> searchBookings(String searchTerm) {
-        log.info("Buscando reservas con término: {}", searchTerm);
-
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return getAllBookings();
-        }
-
-        return bookingRepository.searchBookings(searchTerm.trim())
-                .stream()
-                .map(this::convertToDTO)
-                .sorted((a, b) -> b.getBookingDateTime().compareTo(a.getBookingDateTime()))
-                .collect(Collectors.toList());
     }
 }

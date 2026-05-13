@@ -137,9 +137,17 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
                 .toList();
 
         if (!showtimesToRemove.isEmpty()) {
+            log.info("Eliminando asientos de {} funciones antes de eliminarlas...", showtimesToRemove.size());
+            for (Showtime showtime : showtimesToRemove) {
+                List<Seat> seatsToDelete = seatRepository.findAll().stream()
+                        .filter(seat -> seat.getShowtime().getId().equals(showtime.getId()))
+                        .toList();
+                if (!seatsToDelete.isEmpty()) {
+                    seatRepository.deleteAll(seatsToDelete);
+                }
+            }
             showtimeRepository.deleteAll(showtimesToRemove);
             log.info("Resultado: {} funciones eliminadas del día {}", showtimesToRemove.size(), dateToRemove);
-            log.info("Nota: Los asientos asociados permanecen en la BD para mantener integridad referencial");
         }
 
         currentWeek.setWeekStartDate(today);
@@ -166,7 +174,14 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         log.info("║  Fecha actual: {}", today);
         log.info("╚══════════════════════════════════════════════════════════╝");
 
-        log.info("Eliminando TODAS las funciones antiguas...");
+        log.info("Paso 1: Eliminando TODOS los asientos antiguos...");
+        List<Seat> allOldSeats = seatRepository.findAll();
+        if (!allOldSeats.isEmpty()) {
+            seatRepository.deleteAll(allOldSeats);
+            log.info("Resultado: {} asientos eliminados", allOldSeats.size());
+        }
+
+        log.info("Paso 2: Eliminando TODAS las funciones antiguas...");
         List<Showtime> allOldShowtimes = showtimeRepository.findAll();
         if (!allOldShowtimes.isEmpty()) {
             showtimeRepository.deleteAll(allOldShowtimes);
