@@ -115,14 +115,25 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
             return true;
         }
 
-        log.debug("No es necesario actualizar. Ventana actual: {} - {}",
+        // La ventana ya empieza hoy, pero pueden faltar días intermedios.
+        // generateShowtimesForDate es idempotente: si ya existen funciones para ese día, no hace nada.
+        log.info("Ventana ya actualizada ({} - {}). Verificando gaps...",
                 currentWeek.getWeekStartDate(), currentWeek.getWeekEndDate());
+        for (int i = 0; i < 7; i++) {
+            LocalDate dateToCheck = today.plusDays(i);
+            try {
+                showtimeService.generateShowtimesForDate(dateToCheck);
+            } catch (Exception e) {
+                log.error("Error al verificar gap para {}: {}", dateToCheck, e.getMessage(), e);
+            }
+        }
         return false;
     }
 
     protected void performDailyUpdate(Long weekId, LocalDate dateToRemove, LocalDate today) {
         log.info("ACTUALIZACIÓN DIARIA: {} -> {}", dateToRemove, today);
 
+        // Eliminar funciones del día más antiguo que ya no entra en la ventana
         List<Showtime> showtimesToRemove = showtimeRepository.findAll().stream()
                 .filter(s -> s.getShowDateTime().toLocalDate().equals(dateToRemove))
                 .toList();
@@ -138,9 +149,18 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
 
         updateWeeklySchedule(weekId, today, today.plusDays(6));
 
-        LocalDate newDate = today.plusDays(6);
-        log.info("Generando funciones para el nuevo día: {}", newDate);
-        showtimeService.generateShowtimesForDate(newDate);
+        // Generar TODOS los días de la ventana que falten (no sólo el último).
+        // generateShowtimesForDate ya verifica duplicados, es seguro llamarlo para cada día.
+        log.info("Verificando y generando funciones para los 7 días de la ventana: {} - {}", today, today.plusDays(6));
+        for (int i = 0; i < 7; i++) {
+            LocalDate dateToGenerate = today.plusDays(i);
+            try {
+                log.info("Verificando día {} de 7: {}", i + 1, dateToGenerate);
+                showtimeService.generateShowtimesForDate(dateToGenerate);
+            } catch (Exception e) {
+                log.error("Error al generar funciones para {}: {}. Continuando...", dateToGenerate, e.getMessage(), e);
+            }
+        }
 
         log.info("Actualización diaria completada exitosamente. Nueva ventana: {} - {}", today, today.plusDays(6));
     }
