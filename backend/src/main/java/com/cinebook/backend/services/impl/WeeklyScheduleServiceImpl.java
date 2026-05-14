@@ -166,13 +166,21 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         updateWeeklySchedule(weekId, today, today.plusDays(6));
 
         log.info("Paso 4: Generando funciones para los 7 días completos...");
+        int diasGenerados = 0;
         for (int i = 0; i < 7; i++) {
             LocalDate dateToGenerate = today.plusDays(i);
             log.info("Generando día {} de 7: {}", i + 1, dateToGenerate);
-            showtimeService.generateShowtimesForDate(dateToGenerate);
+            try {
+                showtimeService.generateShowtimesForDate(dateToGenerate);
+                diasGenerados++;
+            } catch (Exception e) {
+                log.error("Error generando funciones para el día {}: {}. Continuando con el siguiente día...",
+                        dateToGenerate, e.getMessage(), e);
+            }
         }
 
-        log.info("REINICIO COMPLETO finalizado. Nueva ventana: {} - {}", today, today.plusDays(6));
+        log.info("REINICIO COMPLETO finalizado. {} de 7 días generados. Nueva ventana: {} - {}",
+                diasGenerados, today, today.plusDays(6));
     }
 
     @Transactional
@@ -214,7 +222,12 @@ public class WeeklyScheduleServiceImpl implements IWeeklyScheduleService {
         for (int i = 0; i < 7; i++) {
             LocalDate dateToGenerate = startDate.plusDays(i);
             log.info("Generando funciones para el día: {}", dateToGenerate);
-            showtimeService.generateShowtimesForDate(dateToGenerate);
+            try {
+                showtimeService.generateShowtimesForDate(dateToGenerate);
+            } catch (Exception e) {
+                log.error("Error generando funciones para el día {}: {}. Continuando...",
+                        dateToGenerate, e.getMessage(), e);
+            }
         }
         log.info("Funciones generadas para toda la ventana de 7 días");
 

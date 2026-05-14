@@ -93,6 +93,7 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDTO> getBookingsByUser(String userEmail) {
         log.info("Obteniendo reservas del usuario: {}", userEmail);
         User user = userRepository.findByEmail(userEmail)
@@ -105,6 +106,7 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDTO> searchBookings(String searchTerm) {
         log.info("Buscando reservas con término: {}", searchTerm);
         return bookingRepository.searchBookings(searchTerm)
@@ -114,6 +116,7 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDTO> getAllBookings() {
         log.info("Obteniendo todas las reservas");
         return bookingRepository.findAll()
@@ -123,6 +126,7 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponseDTO getBookingByConfirmationCode(String confirmationCode) {
         log.info("Buscando reserva con código: {}", confirmationCode);
         Booking booking = bookingRepository.findByConfirmationCode(confirmationCode)
@@ -131,6 +135,7 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponseDTO getBookingById(Long bookingId) {
         log.info("Obteniendo reserva con ID: {}", bookingId);
         Booking booking = bookingRepository.findById(bookingId)

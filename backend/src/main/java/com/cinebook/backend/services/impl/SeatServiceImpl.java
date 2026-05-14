@@ -12,6 +12,7 @@ import com.cinebook.backend.services.interfaces.IWeeklyScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -54,7 +55,7 @@ public class SeatServiceImpl implements ISeatService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateSeatsForShowtime(Showtime showtime) {
         List<Seat> existingSeats = seatRepository.findByShowtimeId(showtime.getId());
         if (!existingSeats.isEmpty()) {
